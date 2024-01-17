@@ -21,12 +21,12 @@ class HubitatBase(udi_interface.Node):
         self.primary = primary
         self.n_queue = []
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        
+
         self.poly.ready()
         self.poly.addNode(self)
         self.wait_for_node_done()
         self.node = self.poly.getNode(address)
-        logging.debug('self.node : {}'.debug(self.node ))
+        logging.debug('self.node : {}'.format(self.node ))
         # self.st = None
         self.maker_uri = polyglot.Parameters['maker_uri']
         logging.debug('maker_uri: {}'.format(self.maker_uri))

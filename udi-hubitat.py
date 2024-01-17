@@ -81,7 +81,7 @@ class Controller(udi_interface.Node):
     def stopHandler(self):
         # Set nodes offline
         self.node.setDriver('ST', 0, True, True)
-        self.node.setOffline()
+        #self.node.setOffline()
         self.poly.stop()
 
 
