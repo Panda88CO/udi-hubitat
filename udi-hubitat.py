@@ -20,8 +20,6 @@ import node_types
 version = '0.0.2'
 #LOGGER = polyinterface.LOGGER
 
-logging.basicConfig(level=logging.DEBUG)
-
 class Controller(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
         self.poly = polyglot
