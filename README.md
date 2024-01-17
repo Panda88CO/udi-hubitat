@@ -2,19 +2,10 @@
 
 #### Installation
 
-Until published to the NodeServer store the install will be manual.
+Provide Marker URI from hubitat Marker API setup under configuration
 
-- Clone this repo to your polyglot nodeserver directory
-  - ~/.polyglot/nodeservers
-    - If installed as user 'pi' this will be
-    /home/pi/.polyglot/nodeservers
 
-- Steps
-  - cd .polyglot/nodeservers
-  - git clone https://github.com/simplextech/udi-hubitat-poly.git Hubitat
-  - run install.sh
-    - bash ./install.sh
-  - Add nodeserver via Polyglot web interface
+Note, there is no pollong in this node server
   
 #### Requirements
 

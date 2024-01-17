@@ -22,7 +22,7 @@ import node_types
 version = '0.0.1'
 #LOGGER = polyinterface.LOGGER
 
-    logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 class Controller(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
@@ -166,48 +166,48 @@ class Controller(udi_interface.Node):
             _id = dev['id']
 
             # if dev['type'] == 'Virtual Switch':
-            #     self.addNode(node_types.VirtualSwitchNode(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label))
             # if dev['type'] == 'Generic Z-Wave Switch':
-            #     self.addNode(node_types.ZWaveSwitchNode(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.ZWaveSwitchNode(self.poly,  self.address, _id, _label))
             # if dev['type'] == 'Generic Z-Wave Dimmer':
-            #     self.addNode(node_types.ZWaveDimmerNode(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.ZWaveDimmerNode(self.poly,  self.address, _id, _label))
             # if dev['type'] == 'Generic Zigbee Bulb':
-            #     self.addNode(node_types.ZigbeeBulbNode(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.ZigbeeBulbNode(self.poly,  self.address, _id, _label))
             # if dev['type'] == 'NYCE Motion Sensor Series':
-            #     self.addNode(node_types.NYCEMotionSensorNode(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.NYCEMotionSensorNode(self.poly,  self.address, _id, _label))
             # if dev['type'] == 'Zooz 4-in-1 Sensor':
-            #     self.addNode(node_types.Zooz4n1SensorNode(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.Zooz4n1SensorNode(self.poly,  self.address, _id, _label))
             # if dev['type'] == 'Hue Motion Sensor':
-            #     self.addNode(node_types.HueMotionSensorNode(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.HueMotionSensorNode(self.poly,  self.address, _id, _label))
             # if dev['type'] == 'Dome Motion Sensor':
-            #     self.addNode(node_types.DomeMotionSensorNode(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.DomeMotionSensorNode(self.poly,  self.address, _id, _label))
             # # if dev['type'] == 'Zooz Power Switch':
-            # #     self.addNode(node_types.ZoozPowerSwitchNode(self, self.poly, self.address, _id, _label))
+            # #     self.addNode(node_types.ZoozPowerSwitchNode(self.poly,  self.address, _id, _label))
             # if dev['type'] == 'Fibaro Motion Sensor ZW5':
-            #     self.addNode(node_types.FibaroZW5Node(self, self.poly, self.address, _id, _label))
+            #     self.addNode(node_types.FibaroZW5Node(self.poly,  self.address, _id, _label))
             if dev['type'] == 'Lutron Pico':
-                node_types.LutronPicoNode(self, self.poly, self.address, _id, _label)
+                node_types.LutronPicoNode(self.poly, self.address, _id, _label)
             if dev['type'] == 'Lutron Fast Pico':
-                node_types.LutronFastPicoNode(self, self.poly, self.address, _id, _label)
+                node_types.LutronFastPicoNode( self.poly, self.address, _id, _label)
             if dev['type'] == 'Virtual Switch':
-                node_types.SwitchNode(self, self.poly, self.address, _id, _label)
+                node_types.SwitchNode(self.poly, self.address, _id, _label)
             if dev['type'] == 'Virtual Dimmer':
-                node_types.DimmerNode(self, self.poly, self.address, _id, _label)
+                node_types.DimmerNode(self.poly,  self.address, _id, _label)
                 pass
             if 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
                     if 'ColorControl' in dev['capabilities']:
-                        node_types.RgbLampNode(self, self.poly, self.address, _id, _label)
+                        node_types.RgbLampNode(self.poly,  self.address, _id, _label)
                     else:
-                        node_types.CtLampNode(self, self.poly, self.address, _id, _label)
+                        node_types.CtLampNode(self.poly,  self.address, _id, _label)
                 else:
-                    node_types.StdLampNode(self, self.poly, self.address, _id, _label)
+                    node_types.StdLampNode(self.poly,  self.address, _id, _label)
 
             if 'Outlet' in dev['capabilities']:
                 if 'EnergyMeter' in dev['capabilities']:
-                    node_types.EnergyOutletNode(self, self.poly, self.address, _id, _label)
+                    node_types.EnergyOutletNode(self.poly,  self.address, _id, _label)
                 else:
-                    node_types.OutletNode(self, self.poly, self.address, _id, _label)
+                    node_types.OutletNode(self.poly,  self.address, _id, _label)
 
             if 'Switch' in dev['capabilities']:
                 if 'Virtual' not in dev['type']:
@@ -215,35 +215,35 @@ class Controller(udi_interface.Node):
                         if 'Light' not in dev['capabilities']:
                             if 'Actuator' in dev['capabilities']:
                                 if 'SwitchLevel' in dev['capabilities']:
-                                    node_types.DimmerNode(self, self.poly, self.address, _id, _label)
+                                    node_types.DimmerNode(self.poly,  self.address, _id, _label)
                                 else:
-                                    node_types.SwitchNode(self, self.poly, self.address, _id, _label)
+                                    node_types.SwitchNode(self.poly,  self.address, _id, _label)
                             else:
-                                node_types.SwitchNode(self, self.poly, self.address, _id, _label)
+                                node_types.SwitchNode(self.poly,  self.address, _id, _label)
 
             if 'MotionSensor' in dev['capabilities']:
                 if 'TemperatureMeasurement' in dev['capabilities'] and 'IlluminanceMeasurement' in dev['capabilities']:
                     if 'AccelerationSensor' in dev['capabilities']:
-                        node_types.MultiSensorTLAS(self, self.poly, self.address, _id, _label)
+                        node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label)
                     elif 'RelativeHumidityMeasurement' in dev['capabilities']:
-                        node_types.MultiSensorTHLA(self, self.poly, self.address, _id, _label)
+                        node_types.MultiSensorTHLA(self.poly,  self.address, _id, _label)
                     else:
-                        node_types.MultiSensorTL(self, self.poly, self.address, _id, _label)
+                        node_types.MultiSensorTL(self.poly,  self.address, _id, _label)
                 elif 'TemperatureMeasurement' in dev['capabilities'] and 'RelativeHumidityMeasurement' in dev['capabilities']:
                     if 'IlluminanceMeasurement' not in dev['capabilities']:
-                        node_types.MultiSensorTH(self, self.poly, self.address, _id, _label)
+                        node_types.MultiSensorTH(self.poly,  self.address, _id, _label)
                 elif 'IlluminanceMeasurement' in dev['capabilities']:
-                    node_types.MultiSensorL(self, self.poly, self.address, _id, _label)
+                    node_types.MultiSensorL(self.poly,  self.address, _id, _label)
                 elif 'TemperatureMeasurement' in dev['capabilities']:
-                    node_types.MultiSensorT(self, self.poly, self.address, _id, _label)
+                    node_types.MultiSensorT(self.poly,  self.address, _id, _label)
                 else:
-                    node_types.MotionSensor(self, self.poly, self.address, _id, _label)
+                    node_types.MotionSensor(self.poly,  self.address, _id, _label)
 
             if dev['type'] == 'Sonoff Zigbee Temperature/Humidity Sensor':
-                node_types.THSensor(self, self.poly, self.address, _id, _label)
+                node_types.THSensor(self.poly,  self.address, _id, _label)
 
             if 'ContactSensor' in dev['capabilities']:
-                node_types.ContactNode(self, self.poly, self.address, _id, _label)
+                node_types.ContactNode(self.poly,  self.address, _id, _label)
                 
         # Build node list
         for node in self.nodes:
@@ -423,7 +423,7 @@ if __name__ == "__main__":
         Starts MQTT and connects to Polyglot.
         """
         polyglot.setCustomParamsDoc()
-        control = Controller(polyglot 'controller', 'controller', 'hubitat')
+        control = Controller(polyglot, 'controller', 'controller', 'hubitat')
         """
         Creates the Controller Node and passes in the Interface
         """
