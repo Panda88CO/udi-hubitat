@@ -101,11 +101,11 @@ class Controller(udi_interface.Node):
         self.Parameters.load(userParams)
         logging.debug('customParamsHandler called')
         default_maker_uri = 'http://<IP_ADDRESS>/apps/api/<APP_ID>/devices/all?access_token=<TOKEN>'
-        maker_uri = default_maker_uri
+        self.maker_uri = default_maker_uri
 
         if 'maker_uri' in userParams:
-            maker_uri = userParams['maker_uri']
-            if maker_uri != default_maker_uri:
+            self.maker_uri = userParams['maker_uri']
+            if self.maker_uri != default_maker_uri:
                 maker_st = True
             else:
                 maker_st = False
@@ -119,10 +119,8 @@ class Controller(udi_interface.Node):
                 self.debug_enabled = True
             else:
                 self.debug_enabled = False
-        else:
-            self.Parameters['debug_enabled'] =  "False"
 
-        if maker_uri == default_maker_uri:
+        if self.maker_uri == default_maker_uri:
             self.poly.Notices['maker_uri'] = 'Please set proper Hubitat and Maker API URI, and restart this NodeServer'
  
     '''
@@ -173,48 +171,48 @@ class Controller(udi_interface.Node):
             _id = dev['id']
 
             # if dev['type'] == 'Virtual Switch':
-            #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Z-Wave Switch':
-            #     self.addNode(node_types.ZWaveSwitchNode(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.ZWaveSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Z-Wave Dimmer':
-            #     self.addNode(node_types.ZWaveDimmerNode(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.ZWaveDimmerNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Zigbee Bulb':
-            #     self.addNode(node_types.ZigbeeBulbNode(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.ZigbeeBulbNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'NYCE Motion Sensor Series':
-            #     self.addNode(node_types.NYCEMotionSensorNode(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.NYCEMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Zooz 4-in-1 Sensor':
-            #     self.addNode(node_types.Zooz4n1SensorNode(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.Zooz4n1SensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Hue Motion Sensor':
-            #     self.addNode(node_types.HueMotionSensorNode(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.HueMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Dome Motion Sensor':
-            #     self.addNode(node_types.DomeMotionSensorNode(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.DomeMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # # if dev['type'] == 'Zooz Power Switch':
-            # #     self.addNode(node_types.ZoozPowerSwitchNode(self.poly,  self.address, _id, _label))
+            # #     self.addNode(node_types.ZoozPowerSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Fibaro Motion Sensor ZW5':
-            #     self.addNode(node_types.FibaroZW5Node(self.poly,  self.address, _id, _label))
+            #     self.addNode(node_types.FibaroZW5Node(self.poly,  self.address, _id, _label, self.maker_uri ))
             if dev['type'] == 'Lutron Pico':
-                node_types.LutronPicoNode(self.poly, self.address, _id, _label)
+                node_types.LutronPicoNode(self.poly, self.address, _id, _label, self.maker_uri )
             if dev['type'] == 'Lutron Fast Pico':
-                node_types.LutronFastPicoNode( self.poly, self.address, _id, _label)
+                node_types.LutronFastPicoNode( self.poly, self.address, _id, _label, self.maker_uri )
             if dev['type'] == 'Virtual Switch':
-                node_types.SwitchNode(self.poly, self.address, _id, _label)
+                node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
             if dev['type'] == 'Virtual Dimmer':
-                node_types.DimmerNode(self.poly,  self.address, _id, _label)
+                node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 pass
             if 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
                     if 'ColorControl' in dev['capabilities']:
-                        node_types.RgbLampNode(self.poly,  self.address, _id, _label)
+                        node_types.RgbLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
                     else:
-                        node_types.CtLampNode(self.poly,  self.address, _id, _label)
+                        node_types.CtLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
-                    node_types.StdLampNode(self.poly,  self.address, _id, _label)
+                    node_types.StdLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if 'Outlet' in dev['capabilities']:
                 if 'EnergyMeter' in dev['capabilities']:
-                    node_types.EnergyOutletNode(self.poly,  self.address, _id, _label)
+                    node_types.EnergyOutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
-                    node_types.OutletNode(self.poly,  self.address, _id, _label)
+                    node_types.OutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if 'Switch' in dev['capabilities']:
                 if 'Virtual' not in dev['type']:
@@ -222,35 +220,35 @@ class Controller(udi_interface.Node):
                         if 'Light' not in dev['capabilities']:
                             if 'Actuator' in dev['capabilities']:
                                 if 'SwitchLevel' in dev['capabilities']:
-                                    node_types.DimmerNode(self.poly,  self.address, _id, _label)
+                                    node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                                 else:
-                                    node_types.SwitchNode(self.poly,  self.address, _id, _label)
+                                    node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
                             else:
-                                node_types.SwitchNode(self.poly,  self.address, _id, _label)
+                                node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if 'MotionSensor' in dev['capabilities']:
                 if 'TemperatureMeasurement' in dev['capabilities'] and 'IlluminanceMeasurement' in dev['capabilities']:
                     if 'AccelerationSensor' in dev['capabilities']:
-                        node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label)
+                        node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label, self.maker_uri )
                     elif 'RelativeHumidityMeasurement' in dev['capabilities']:
-                        node_types.MultiSensorTHLA(self.poly,  self.address, _id, _label)
+                        node_types.MultiSensorTHLA(self.poly,  self.address, _id, _label, self.maker_uri )
                     else:
-                        node_types.MultiSensorTL(self.poly,  self.address, _id, _label)
+                        node_types.MultiSensorTL(self.poly,  self.address, _id, _label, self.maker_uri )
                 elif 'TemperatureMeasurement' in dev['capabilities'] and 'RelativeHumidityMeasurement' in dev['capabilities']:
                     if 'IlluminanceMeasurement' not in dev['capabilities']:
-                        node_types.MultiSensorTH(self.poly,  self.address, _id, _label)
+                        node_types.MultiSensorTH(self.poly,  self.address, _id, _label, self.maker_uri )
                 elif 'IlluminanceMeasurement' in dev['capabilities']:
-                    node_types.MultiSensorL(self.poly,  self.address, _id, _label)
+                    node_types.MultiSensorL(self.poly,  self.address, _id, _label, self.maker_uri )
                 elif 'TemperatureMeasurement' in dev['capabilities']:
-                    node_types.MultiSensorT(self.poly,  self.address, _id, _label)
+                    node_types.MultiSensorT(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
-                    node_types.MotionSensor(self.poly,  self.address, _id, _label)
+                    node_types.MotionSensor(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if dev['type'] == 'Sonoff Zigbee Temperature/Humidity Sensor':
-                node_types.THSensor(self.poly,  self.address, _id, _label)
+                node_types.THSensor(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if 'ContactSensor' in dev['capabilities']:
-                node_types.ContactNode(self.poly,  self.address, _id, _label)
+                node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 
         # Build node list
         for node in self.nodes:
