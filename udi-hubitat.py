@@ -33,7 +33,7 @@ class Controller(udi_interface.Node):
 
         self.Parameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(self.poly, 'notices')
-        self.config_completed = False
+        self.configDone = False
         self.n_queue = []
         self.poly.subscribe(self.poly.STOP, self.stopHandler)
         self.poly.subscribe(self.poly.START, self.start, address)
@@ -67,12 +67,32 @@ class Controller(udi_interface.Node):
 
     def start(self):
         logging.info('Started Hubitat')
+        self.node.setDriver('ST', 1, True, True)
         # Remove all existing notices
         self.poly.Notices.clear()
         #self.removeNoticesAll()
         if self.check_params():
             self.discover()
             self.hubitat_events()
+
+
+    def stopHandler(self):
+        # Set nodes offline
+        self.node.setDriver('ST', 0, True, True)
+        self.node.setOffline()
+        self.poly.stop()
+
+
+    def addNodeDoneHandler(self, node):
+        pass
+
+
+
+    def configDoneHandler(self):
+        # We use this to discover devices, or ask to authenticate if user has not already done so
+        self.poly.Notices.clear()
+        self.configDone = True
+
 
     def query(self):
         for node in self.nodes:
