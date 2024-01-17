@@ -39,7 +39,7 @@ class Controller(udi_interface.Node):
         self.poly.subscribe(self.poly.START, self.start, address)
         self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
         self.poly.subscribe(self.poly.CONFIGDONE, self.configDoneHandler)
-        self.poly.subscribe(self.poly.ADDNODEDONE, self.addNodeDoneHandler)
+        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
 
         self.poly.addNode(self)
         self.node = self.poly.getNode(self.address)
@@ -83,10 +83,6 @@ class Controller(udi_interface.Node):
         self.node.setDriver('ST', 0, True, True)
         self.node.setOffline()
         self.poly.stop()
-
-
-    def addNodeDoneHandler(self, node):
-        pass
 
 
 
