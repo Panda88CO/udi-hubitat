@@ -101,11 +101,11 @@ class HubitatBase(udi_interface.Node):
         # if h_cmd == 'on':
         #     r = requests.get(cmd_uri)
         #     if r.status_code == 200:
-        #         self.setDriver('ST', 100)
+        #         self.node.setDriver('ST', 100)
         # elif h_cmd == 'off':
         #     r = requests.get(cmd_uri)
         #     if r.status_code == 200:
-        #         self.setDriver('ST', 0)
+        #         self.node.setDriver('ST', 0)
 
         # print('debug------------------')
 
@@ -124,21 +124,16 @@ New Class definitions for generalization
 class StdLampNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name):
         super().__init__(polyglot, primary, address, name)
-        self.name = name
-
-        self.poly.ready()
-        self.poly.addNode(self)
-        self.wait_for_node_done()
         self.node = self.poly.getNode(address)
 
     def start(self):
         pass
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -162,10 +157,10 @@ class RgbLampNode(HubitatBase):
         pass
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -195,10 +190,10 @@ class CtLampNode(HubitatBase):
         pass
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -265,13 +260,13 @@ class SwitchNode(HubitatBase):
 
     def start(self):
         pass
-    #     self.setDriver('ST', 0)
+    #     self.node.setDriver('ST', 0)
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -289,13 +284,13 @@ class DimmerNode(HubitatBase):
 
     def start(self):
         pass
-    #     self.setDriver('ST', 0)
+    #     self.node.setDriver('ST', 0)
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -439,13 +434,13 @@ class LutronPicoNode(HubitatBase):
 
     def start(self):
         pass
-    #     self.setDriver('ST', 0)
+    #     self.node.setDriver('ST', 0)
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         self.reportDrivers()
@@ -468,10 +463,10 @@ class LutronFastPicoNode(HubitatBase):
         pass
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         self.reportDrivers()

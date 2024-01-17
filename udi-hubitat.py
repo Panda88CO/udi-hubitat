@@ -166,12 +166,11 @@ class Controller(udi_interface.Node):
 
     def discover(self, *args, **kwargs):
         r = requests.get(self.Parameters['maker_uri'])
-        logging.debug('Request restul : {}'.format(r))
-
+        logging.debug('Request result : {}'.format(r))
         data = r.json()
-
+        logging.debug( 'Request data {}'.format(data))
         for dev in data:
-            # logging.info(dev)
+            logging.debug('device id: {}'.format(dev))
             _name = dev['name']
             _label = dev['label']
             _type = dev['type']
