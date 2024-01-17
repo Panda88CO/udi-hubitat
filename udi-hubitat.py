@@ -71,7 +71,7 @@ class Controller(udi_interface.Node):
         # Remove all existing notices
         self.poly.Notices.clear()
         while not self.configDone:
-            time.sleep(1)
+            time.sleep(10)
             logging.info('Waiting for confuguration to complete')
         #self.removeNoticesAll()
         self.discover()
@@ -108,7 +108,7 @@ class Controller(udi_interface.Node):
         maker_uri = default_maker_uri
 
         if 'maker_uri' in userParams:
-            maker_uri = self.Parameters['maker_uri']
+            maker_uri = userParams['maker_uri']
             if maker_uri != default_maker_uri:
                 maker_st = True
             else:
@@ -118,7 +118,7 @@ class Controller(udi_interface.Node):
             maker_st = False
 
         if 'debug_enabled' in userParams:
-            debug_enabled = self.Parameters['debug_enabled']
+            debug_enabled = userParams['debug_enabled']
             if debug_enabled == "true" or debug_enabled == "True":
                 self.debug_enabled = True
             else:
@@ -126,15 +126,9 @@ class Controller(udi_interface.Node):
         else:
             self.Parameters['debug_enabled'] =  "False"
 
-        # Make sure they are in the params
-        self.Parameters['maker_uri'] = maker_uri
-
-
         if maker_uri == default_maker_uri:
             self.poly.Notices['maker_uri'] = 'Please set proper Hubitat and Maker API URI, and restart this NodeServer'
-
-        if maker_st:
-            return True            
+ 
     '''
     def check_params(self):
         default_maker_uri = 'http://<IP_ADDRESS>/apps/api/<APP_ID>/devices/all?access_token=<TOKEN>'
