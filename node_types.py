@@ -486,7 +486,7 @@ class LutronFastPicoNode(HubitatBase):
         # 'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
 
-class THSensor(polyinterface.Node):
+class THSensor(HubitatBase):
     def __init__(self, polyglot, primary, address, name):
         super().__init__(polyglot, primary, address, name)
 
