@@ -19,7 +19,7 @@ import requests
 import traceback
 from lomond import WebSocket
 import node_types
-version = '0.0.1'
+version = '0.0.2'
 #LOGGER = polyinterface.LOGGER
 
 logging.basicConfig(level=logging.DEBUG)

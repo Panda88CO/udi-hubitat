@@ -1,6 +1,4 @@
 """ Node classes used by the Hubitat Node Server. """
-
-import polyinterface
 import requests
 import re
 import time 
