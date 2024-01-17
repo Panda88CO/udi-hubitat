@@ -1,0 +1,169 @@
+# controller
+ND-controller-NAME = Hubitat Elevation
+ND-controller-ICON = GenericCtl
+CMD-ctl-DISCOVER-NAME = Re-Discover
+CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
+CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove Notices
+ST-ctl-ST-NAME = NodeServer Online
+
+#Generic for all Types
+CMD-DON-NAME = On
+CMD-DOF-NAME = Off
+CMD-DFON-NAME = Fast On
+CMD-DFOF-NAME = Fast Off
+CMD-BRT-NAME = Brighten
+CMD-DIM-NAME = Dim
+CMD-FDUP-NAME = Fade Up
+CMD-FDDOWN-NAME = Fade Down
+CMD-FDSTOP-NAME = Fade Stop
+CMD-QUERY-NAME = Query
+CMD-SETLVL-NAME = Set Level
+CMD-SET_HUE-NAME = Set Hue
+CMD-SET_SAT-NAME = Set Saturation
+CMD-SET_KELVIN-NAME = Set Color Temperature
+
+#### New Generalized Entries
+# Generic Bulb Node
+ND-STD_LAMP-NAME = Standard Light
+ND-STD_LAMP-ICON = Lamp
+ST-STDL-ST-NAME = Status
+ST-STDL-OL-NAME = On Level
+
+# Generic RGBW Bulb Node
+ND-COLOR_LIGHT-NAME = Color Light
+ND-COLOR_LIGHT-ICON = Lamp
+ST-ZCL-ST-NAME = Status
+ST-ZCL-OL-NAME = On Level
+ST-ZCL-GV3-NAME = Hue
+ST-ZCL-GV4-NAME = Saturation
+ST-ZCL-GV5-NAME = Color Mode
+ST-ZCL-GV6-NAME = Color Temperature
+
+# Energy Meter Outlet
+ND-ENERGY_OUTLET-NAME = Energy Meter Outlet
+ND-ENERGY_OUTLET-ICON = Switch
+ST-EOUTLET-ST-NAME = Status
+ST-EOUTLET-CC-NAME = Current (Amps)
+ST-EOUTLET-CPW-NAME = Power (Watts)
+ST-EOUTLET-CV-NAME = Voltage
+ST-EOUTLET-TPW-NAME = Total Power Used (energy)
+ST-EOUTLET-GV0-NAME = Current High
+ST-EOUTLET-GV1-NAME = Current Low
+ST-EOUTLET-GV2-NAME = Power High
+ST-EOUTLET-GV3-NAME = Power Low
+ST-EOUTLET-GV4-NAME = Voltage High
+ST-EOUTLET-GV5-NAME = Voltage Low
+ST-EOUTLET-GV6-NAME = Duration
+
+# Generic Outlet
+ND-OUTLET-NAME = Generic Outlet
+ND-OUTLET-ICON = Switch
+ST-OUTLET-ST-NAME = Status
+
+# Generic Switch Node
+ND-SWITCH-NAME = Generic Switch
+ND-SWITCH-ICON = Switch
+ST-SWITCH-ST-NAME = Status
+
+# Generic Dimmer Node
+ND-DIMMER-NAME = Generic Dimmer
+ND-DIMMER-ICON = Switch
+ST-DIMMER-ST-NAME = Status
+ST-DIMMER-OL-NAME = On Level
+
+# Generic Multi Sensor - Temp/Humi/Lux/Alarm (Zooz 4-n-1)
+ND-MSTHLA_SENSOR-NAME = Generic Multi-Sensor
+ND-MSTHLA_SENSOR-ICON = MotionSensor
+ST-MSTHLA-ST-NAME = Status
+ST-MSTHLA-BATLVL-NAME = Battery
+ST-MSTHLA-CLIHUM-NAME = Humidity
+ST-MSTHLA-CLITEMP-NAME = Temperature
+ST-MSTHLA-LUMIN-NAME = Illuminance
+ST-MSTHLA-ALARM-NAME = Tamper Alarm
+
+# Generic Multi Sensor - Temp/Lux/Alarm/Speed (Fibaro eye-ball)
+ND-MSTLAS_SENSOR-NAME = Generic Multi-Sensor
+ND-MSTLAS_SENSOR-ICON = MotionSensor
+ST-MSTLAS-ST-NAME = Status
+ST-MSTLAS-BATLVL-NAME = Battery
+ST-MSTLAS-CLITEMP-NAME = Temperature
+ST-MSTLAS-LUMIN-NAME = Illuminance
+ST-MSTLAS-ALARM-NAME = Tamper Alarm
+ST-MSTLAS-SPEED-NAME = Acceleration
+
+# Generic Multi Sensor - Temp/Humi
+ND-MSTH_SENSOR-NAME = Generic Multi-Sensor
+ND-MSTH_SENSOR-ICON = MotionSensor
+ST-MSTH-ST-NAME = Status
+ST-MSTH-BATLVL-NAME = Battery
+ST-MSTH-CLIHUM-NAME = Humidity
+ST-MSTH-CLITEMP-NAME = Temperature
+
+# Generic Multi Sensor - Temp
+ND-MST_SENSOR-NAME = Generic Multi-Sensor
+ND-MST_SENSOR-ICON = MotionSensor
+ST-MST-ST-NAME = Status
+ST-MST-BATLVL-NAME = Battery
+ST-MST-CLITEMP-NAME = Temperature
+
+# Generic Multi Sensor - Temp/Lux
+ND-MSTL_SENSOR-NAME = Generic Multi-Sensor
+ND-MSTL_SENSOR-ICON = MotionSensor
+ST-MSTL-ST-NAME = Status
+ST-MSTL-BATLVL-NAME = Battery
+ST-MSTL-CLITEMP-NAME = Temperature
+ST-MSTL-LUMIN-NAME = Illuminance
+
+# Generic Multi Sensor - Lux
+ND-MSL_SENSOR-NAME = Generic Multi-Sensor
+ND-MSL_SENSOR-ICON = MotionSensor
+ST-MSL-ST-NAME = Status
+ST-MSL-BATLVL-NAME = Battery
+ST-MSL-LUMIN-NAME = Illuminance
+
+# Generic Motion Sensor
+ND-MS_SENSOR-NAME = Generic Motion Sensor
+ND-MS_SENSOR-ICON = MotionSensor
+ST-MS-ST-NAME = Status
+ST-MS-BATLVL-NAME = Battery
+
+# Generic Sensor - Temp/Humi
+ND-TH_SENSOR-NAME = Generic Temp/Humidity Sensor
+ND-TH_SENSOR-ICON = TempSensor
+ST-TH-ST-NAME = Status
+ST-TH-BATLVL-NAME = Battery
+ST-TH-CLIHUM-NAME = Humidity
+ST-TH-CLITEMP-NAME = Temperature
+
+# Generic Contact Sensor
+ND-CONTACT_SENSOR-NAME = Generic Contact Sensor
+ND-CONTACT_SENSOR-ICON = Sensor
+ST-CONTACT-ST-NAME = Status
+ST-CONTACT-BATLVL-NAME = Battery
+
+###### Original Entries ######
+# Lutron Pico
+ND-piconode-NAME = Pico Remote
+ND-piconode-ICON = Switch
+ST-pico-ST-NAME = Status
+ST-pico-GV7-NAME = Button
+
+# Lutron Fast Pico
+ND-fastpiconode-NAME = Pico Remote
+ND-fastpiconode-ICON = Switch
+ST-fastpico-ST-NAME = Status
+ST-fastpico-GV7-NAME = Pushed
+ST-fastpico-GV8-NAME = Released
+
+# Lutron Pico Buttons
+PICO_BUTTON-0 = N/A
+PICO_BUTTON-1 = 1
+PICO_BUTTON-2 = 2
+PICO_BUTTON-3 = 3
+PICO_BUTTON-4 = 4
+PICO_BUTTON-5 = 5
+
+# Color Modes
+COLOR_MODE-0 = N/A
+COLOR_MODE-1 = CT
+COLOR_MODE-2 = RGB

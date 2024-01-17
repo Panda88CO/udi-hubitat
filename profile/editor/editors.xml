@@ -1,0 +1,115 @@
+<editors>
+    <!-- Boolean -->
+    <editor id="bool">
+        <range uom="2" subset="0,1" />
+    </editor>
+
+    <editor id="STATUS">
+        <range uom="78" subset="0,100" />
+    </editor>
+
+    <editor id="CONTACT">
+        <range uom="79" subset="0,100" />
+    </editor>
+
+    <editor id="OL">
+        <range uom="51" min="0" max="100" step="1" prec="0" />
+    </editor>
+
+    <editor id="BATLVL">
+        <range uom="51" subset="0,100" />
+    </editor>
+
+    <editor id="CLITEMP">
+		<range uom="17" min="-40" max="149" step="1" prec="0" />
+	</editor>
+
+	<editor id="CLIHUM">
+		<range uom="22" min="10" max="100" prec="0" />
+	</editor>
+
+    <editor id="LUMIN">
+		<range uom="36" min="0" max="200000" prec="0" />
+	</editor>
+
+    <editor id="ALARM">
+        <range uom="2" subset="0,1" />
+    </editor>
+
+    <editor id="SPEED">
+        <range uom="2" subset="0,1" />
+    </editor>
+
+    <editor id="CC">
+        <range uom="1" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="CPW">
+        <range uom="73" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="CV">
+        <range uom="72" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="TPW">
+        <range uom="33" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="CURRENT_H">
+        <range uom="73" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="CURRENT_L">
+        <range uom="73" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="POWER_H">
+        <range uom="33" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="POWER_L">
+        <range uom="33" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="VOLTAGE_H">
+        <range uom="72" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="VOLTAGE_L">
+        <range uom="72" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="ENERGY_DURATION">
+        <range uom="45" min="0" max="1000" step="1" prec="3" />
+    </editor>
+
+    <editor id="PICO_BUTTON">
+        <range uom="25" subset="0-5" nls="PICO_BUTTON" />
+    </editor>
+
+    <!-- Hue Editor -->
+    <editor id="ZCLHUE">
+        <range uom="56" min="0" max="100" prec="0" step="1" />
+    </editor>
+
+    <!-- Saturation Editor -->
+    <editor id="ZCLSAT">
+        <range uom="100" min="0" max="100" prec="0" step="1" />
+    </editor>
+
+    <!-- Hue Kelvin Editor -->
+    <editor id="KELVIN">
+        <range uom="26" min="2000" max="6535" prec="0" step="1" />
+    </editor>
+
+    <!-- Hue Duration Editor -->
+    <editor id="HDURATION">
+        <range uom="57" min="0" max="300" prec="0" step="1" />
+    </editor>
+
+    <editor id="COLOR_MODE">
+        <range uom="25" subset="0-2" nls="COLOR_MODE" />
+    </editor>
+
+</editors>

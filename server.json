@@ -1,0 +1,21 @@
+{
+    "name": "Hubitat",
+    "docs": "https://github.com/Einstein42/udi-poly-template-python",
+    "type": "python3",
+    "executable": "hubitat-poly.py",
+    "install": "install.sh",
+    "description": "Hubitat Elevation integration",
+    "notice": "You've been warned",
+    "shortPoll": "120",
+    "longPoll": "240",
+    "credits": [
+        {
+            "title": "Hubitat: a NodeServer for integrating the Hubitat Elevation hub",
+            "author": "Simplex Technology",
+            "version": "0.1.33",
+            "date": "March 12, 2019",
+            "source": "github",
+            "license": "LICENSE"
+        }
+    ]
+}
