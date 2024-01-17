@@ -20,7 +20,8 @@ class HubitatBase(udi_interface.Node):
         self.address = self.getValidAddress(address)
         self.primary = primary
         self.n_queue = []
-
+        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+        
         self.poly.ready()
         self.poly.addNode(self)
         self.wait_for_node_done()
