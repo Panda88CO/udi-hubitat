@@ -25,7 +25,7 @@ class HubitatBase(udi_interface.Node):
         self.poly.addNode(self)
         self.wait_for_node_done()
         self.node = self.poly.getNode(address)
-
+        logging.debug('self.node : {}'.debug(self.node ))
         # self.st = None
         self.maker_uri = polyglot.Parameters['maker_uri']
         logging.debug('maker_uri: {}'.format(self.maker_uri))
@@ -47,6 +47,7 @@ class HubitatBase(udi_interface.Node):
     def wait_for_node_done(self):
         while len(self.n_queue) == 0:
             time.sleep(0.1)
+            logging.debug('wait_for_node_done')
         self.n_queue.pop()
 
 

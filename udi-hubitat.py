@@ -284,7 +284,8 @@ class Controller(udi_interface.Node):
         return st
 
     def hubitat_events(self):
-        maker_uri = self.polyConfig['customParams']['maker_uri']
+        logging.debug('hubitat_events')
+        maker_uri = self.Parameters['maker_uri']
         ws_uri = 'ws://' + maker_uri.split('/')[2] + '/eventsocket'
 
         #logging.info(ws_uri)
