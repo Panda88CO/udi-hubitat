@@ -5,13 +5,11 @@
 #except ImportError:
 #    import pgc_interface as polyinterface
 
-try:
-    import udi_interface
-    logging = udi_interface.LOGGER
-    Custom = udi_interface.Custom
-except ImportError:
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
+
+import udi_interface
+logging = udi_interface.LOGGER
+Custom = udi_interface.Custom
+
 
 import sys
 import time
