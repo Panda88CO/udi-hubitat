@@ -70,10 +70,12 @@ class Controller(udi_interface.Node):
         self.node.setDriver('ST', 1, True, True)
         # Remove all existing notices
         self.poly.Notices.clear()
+        while not self.configDone:
+            time.sleep(1)
+            logging.info('Waiting for confuguration to complete')
         #self.removeNoticesAll()
-        if self.check_params():
-            self.discover()
-            self.hubitat_events()
+        self.discover()
+        self.hubitat_events()
 
 
     def stopHandler(self):
@@ -444,7 +446,7 @@ if __name__ == "__main__":
         Creates the Controller Node and passes in the Interface
         """
         polyglot.ready()
-        control.runForever()
+        polyglot.runForever()
         """
         Sits around and does nothing forever, keeping your program running.
         """
