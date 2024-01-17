@@ -124,7 +124,6 @@ New Class definitions for generalization
 class StdLampNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name):
         super().__init__(polyglot, primary, address, name)
-        self.node = self.poly.getNode(address)
 
     def start(self):
         pass
