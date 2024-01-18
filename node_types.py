@@ -15,6 +15,10 @@ class HubitatBase(udi_interface.Node):
     """ Base class for lights and groups """
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name)
+        self.RESPONSE_OK = 200
+        self.RESPONSE_NO_SUPPORT = 400
+        self.RESPONSE_NO_RESPONSE = 404
+        self.RESPONSE_SERVER_ERROR = 500
         self.poly = polyglot
         self.name = self.getValidName(name)
         self.address = self.getValidAddress(address)
@@ -116,7 +120,7 @@ class HubitatBase(udi_interface.Node):
 
         if cmd_ok:
             r = requests.get(cmd_uri)
-            while str(r) != self.RESPONSE_OK:
+            while r.status_code!= self.RESPONSE_OK:
                 time.sleep(1)
                 logging.error('Hubitat not responding - waiting for good response')
                 r = requests.get(cmd_uri)
@@ -131,7 +135,7 @@ class HubitatBase(udi_interface.Node):
         h_cmd = 'refresh'
         cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
         r = requests.get(cmd_uri)
-        while str(r) != self.RESPONSE_OK:
+        while r.status_code != self.RESPONSE_OK:
             time.sleep(1)
             logging.error('Hubitat not responding - waiting for good response')
             r = requests.get(cmd_uri)
