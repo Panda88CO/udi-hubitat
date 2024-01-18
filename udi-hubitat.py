@@ -163,6 +163,8 @@ class Controller(udi_interface.Node):
         logging.debug('Request result : {}'.format(r))
         data = r.json()
         logging.debug( 'Request data {}'.format(data))
+        logging.debug('marker_uri: {}'.format(self.maker_uri))
+        
         for dev in data:
             logging.debug('device id: {}'.format(dev))
             _name = dev['name']

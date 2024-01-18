@@ -14,7 +14,7 @@ except ImportError:
 class HubitatBase(udi_interface.Node):
     """ Base class for lights and groups """
     def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
+        super().__init__(polyglot, primary, address, name)
         self.poly = polyglot
         self.name = self.getValidName(name)
         self.address = self.getValidAddress(address)
