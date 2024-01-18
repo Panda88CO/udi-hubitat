@@ -335,7 +335,7 @@ class SimpleRemoteNode(HubitatBase):
                 ]
     id = 'remotebtnnnode'
     commands = {
-        'PUSH_BTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl,, 'QUERY': query
+        'PUSH_BTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl, 'QUERY': query
     }
 
 
