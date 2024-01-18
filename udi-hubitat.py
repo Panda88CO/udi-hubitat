@@ -17,16 +17,16 @@ import requests
 import traceback
 from lomond import WebSocket
 import node_types
-version = '0.0.2'
+version = '0.1.0'
 #LOGGER = polyinterface.LOGGER
 
 class Controller(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
 
-        self.RESPONSE_OK = '<Response [200]>'
-        self.RESPONSE_NO_SUPPORT = '<Response [400]>'
-        self.RESPONSE_NO_RESPONSE = '<Response [404]>'
-        self.RESPONSE_SERVER_ERROR = '<Response [500]>'
+        self.RESPONSE_OK = 200
+        self.RESPONSE_NO_SUPPORT = 400
+        self.RESPONSE_NO_RESPONSE = 404
+        self.RESPONSE_SERVER_ERROR = 500
 
         self.poly = polyglot
         self.primary = primary
@@ -167,7 +167,7 @@ class Controller(udi_interface.Node):
     def discover(self, *args, **kwargs):
         r = requests.get(self.maker_uri)
         logging.debug('respose code {}'.format(r.status_code))
-        while str(r) != self.RESPONSE_OK:
+        while r.status_code!= self.RESPONSE_OK:
             time.sleep(30)
             logging.error('Hubitat not responding - waiting for good response')
             r = requests.get(self.maker_uri)
