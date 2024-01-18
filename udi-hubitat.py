@@ -298,7 +298,6 @@ class Controller(udi_interface.Node):
 
         #logging.info(ws_uri)
         #logging.info(maker_uri)
-
         websocket = WebSocket(ws_uri)
         for event in websocket:
             if event.name == "text":
