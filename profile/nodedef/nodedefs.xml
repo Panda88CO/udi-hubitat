@@ -380,6 +380,8 @@
         <sts>
             <st id="ST" editor="bool" hide="True" />
             <st id="GV7" editor="PICO_BUTTON" />
+            <st id="GV8" editor="PICO_BUTTON" />
+            <st id="GV9" editor="PICO_BUTTON" />
         </sts>
         <cmds>
             <sends />
@@ -398,6 +400,7 @@
             <st id="ST" editor="bool" hide="True" />
             <st id="GV7" editor="PICO_BUTTON" />
             <st id="GV8" editor="PICO_BUTTON" />
+            <st id="GV9" editor="PICO_BUTTON" />
         </sts>
         <cmds>
             <sends />
@@ -405,6 +408,24 @@
                 <!--<cmd id="DON" />-->
                 <!--<cmd id="DOF" />-->
                 <!--<cmd id="BRT" />-->
+                <!--<cmd id="DIM" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+    <nodeDef id="remotebtnnnode" nls="remotebtn">
+        <editors />
+        <sts>
+            <st id="ST" editor="bool" hide="True" />
+            <st id="GV7" editor="REMOTE_BTN" />
+            <st id="GV8" editor="REMOTE_BTN" />
+            <st id="GV9" editor="REMOTE_BTN" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="PUSH_BTN" />
+                <cmd id="HOLD_BTN" />
+                <cmd id="RELEASE_BTN" />
                 <!--<cmd id="DIM" />-->
             </accepts>
         </cmds>

@@ -154,6 +154,18 @@ ND-fastpiconode-ICON = Switch
 ST-fastpico-ST-NAME = Status
 ST-fastpico-GV7-NAME = Pushed
 ST-fastpico-GV8-NAME = Released
+ST-remotebtn-GV9-NAME = Held
+
+# Generic Remote button Xiaomi/Aqara/Opple
+ND-remotebtnnnode-NAME = Pico Remote
+ND-remotebtnnnode-ICON = Switch
+ST-remotebtn-ST-NAME = Status
+ST-remotebtn-GV7-NAME = Pushed 
+ST-remotebtn-GV8-NAME = Released
+ST-remotebtn-GV9-NAME = Held
+CMD-remotebtn-PUSH_BTN-NAME = Push Button
+CMD-remotebtn-HOLD_BTN-NAME = Hold Button
+CMD-remotebtn-RELEASE_BTN-NAME = Release Button
 
 # Lutron Pico Buttons
 PICO_BUTTON-0 = N/A
@@ -167,3 +179,4 @@ PICO_BUTTON-5 = 5
 COLOR_MODE-0 = N/A
 COLOR_MODE-1 = CT
 COLOR_MODE-2 = RGB
+

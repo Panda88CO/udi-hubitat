@@ -83,9 +83,16 @@
     <editor id="ENERGY_DURATION">
         <range uom="45" min="0" max="1000" step="1" prec="3" />
     </editor>
-
+    <!--
     <editor id="PICO_BUTTON">
         <range uom="25" subset="0-5" nls="PICO_BUTTON" />
+    </editor> -->
+    <editor id="PICO_BUTTON">
+        <range uom="57" min="0" max="5" step="1" prec="0"  />
+    </editor>
+    
+    <editor id="REMOTE_BTN">
+        <range uom="57" min="0" max="5" step="1" prec="0"  />
     </editor>
 
     <!-- Hue Editor -->
