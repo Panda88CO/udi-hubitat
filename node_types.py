@@ -328,7 +328,11 @@ class SimpleRemoteNode(HubitatBase):
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 78}]
+    drivers = [ {'driver': 'ST', 'value': 0, 'uom': 78},
+                {'driver': 'GV7', 'value': 0, 'uom': 25},
+                {'driver': 'GV8', 'value': 0, 'uom': 25},
+                {'driver': 'GV9', 'value': 0, 'uom': 25},
+                ]
     id = 'SWITCH'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
@@ -506,6 +510,7 @@ class LutronPicoNode(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 2},
         {'driver': 'GV7', 'value': 0, 'uom': 25},
+        {'driver': 'GV8', 'value': 0, 'uom': 25},
         ]
     id = 'piconode'
     commands = {

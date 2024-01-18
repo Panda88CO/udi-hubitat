@@ -380,6 +380,8 @@
         <sts>
             <st id="ST" editor="bool" hide="True" />
             <st id="GV7" editor="PICO_BUTTON" />
+            <st id="GV8" editor="PICO_BUTTON" />
+            <st id="GV9" editor="PICO_BUTTON" />
         </sts>
         <cmds>
             <sends />
@@ -398,6 +400,7 @@
             <st id="ST" editor="bool" hide="True" />
             <st id="GV7" editor="PICO_BUTTON" />
             <st id="GV8" editor="PICO_BUTTON" />
+            <st id="GV9" editor="PICO_BUTTON" />
         </sts>
         <cmds>
             <sends />
