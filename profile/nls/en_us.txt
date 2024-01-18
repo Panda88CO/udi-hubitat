@@ -166,6 +166,7 @@ ST-remotebtn-GV9-NAME = Held
 CMD-remotebtn-PUSH_BTN-NAME = Push Button
 CMD-remotebtn-HOLD_BTN-NAME = Hold Button
 CMD-remotebtn-RELEASE_BTN-NAME = Release Button
+
 # Lutron Pico Buttons
 PICO_BUTTON-0 = N/A
 PICO_BUTTON-1 = 1
