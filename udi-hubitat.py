@@ -261,9 +261,9 @@ class Controller(udi_interface.Node):
                 node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 
         # Build node list
-        nodes = self.poly.getNodes()
-        for node in nodes:
-            self.node_list.append(nodes[node].address)
+        self.nodes = self.poly.getNodes()
+        for node in self.nodes:
+            self.node_list.append(self.nodes[node].address)
 
     def delete(self):
         """
