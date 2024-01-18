@@ -164,7 +164,7 @@ class Controller(udi_interface.Node):
         data = r.json()
         logging.debug( 'Request data {}'.format(data))
         logging.debug('marker_uri: {}'.format(self.maker_uri))
-        
+
         for dev in data:
             logging.debug('device id: {}'.format(dev))
             _name = dev['name']
@@ -253,8 +253,9 @@ class Controller(udi_interface.Node):
                 node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 
         # Build node list
-        for node in self.nodes:
-            self.node_list.append(self.nodes[node].address)
+        nodes = self.poly.getNodes()
+        for node in nodes:
+            self.node_list.append(nodes[node].address)
 
     def delete(self):
         """
