@@ -62,7 +62,7 @@ class HubitatBase(udi_interface.Node):
         device_id = command.get('address')
         _raw_uri = self.maker_uri.split('?')
         _raw_http = _raw_uri[0].replace('all', device_id)
-
+        cmd_ok = True
         # print('debug------------------')
         # print(command.keys())
         # print(self.maker_uri)
@@ -74,32 +74,32 @@ class HubitatBase(udi_interface.Node):
         if cmd in ['DON', 'DFON']:
             h_cmd = 'on'
             cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
             # val = command.get('value')
             # print(cmd_uri)
         elif cmd in ['DOF', 'DFOF']:
             h_cmd = 'off'
             cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
             # val = command.get('value')
             # print(cmd_uri)
         elif cmd == 'SETLVL':
             h_cmd = 'setLevel'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
         elif cmd == 'SET_HUE':
             h_cmd = 'setHue'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
         elif cmd == 'SET_SAT':
             h_cmd = 'setSaturation'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
         elif cmd == 'SET_KELVIN':
             h_cmd = 'setColorTemperature'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
-
+            #requests.get(cmd_uri)
+            
         # print(r.status_code)
 
         # if h_cmd == 'on':
@@ -110,6 +110,16 @@ class HubitatBase(udi_interface.Node):
         #     r = requests.get(cmd_uri)
         #     if r.status_code == 200:
         #         self.node.setDriver('ST', 0)
+        else:
+            logging.error('unsupported command; {} , {}'.format(cmd, val))
+            cmd_ok = False
+
+        if cmd_ok:
+            r = requests.get(cmd_uri)
+            while str(r) != self.RESPONSE_OK:
+                time.sleep(1)
+                logging.error('Hubitat not responding - waiting for good response')
+                r = requests.get(cmd_uri)
 
         # print('debug------------------')
 
@@ -120,7 +130,12 @@ class HubitatBase(udi_interface.Node):
 
         h_cmd = 'refresh'
         cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-        requests.get(cmd_uri)
+        r = requests.get(cmd_uri)
+        while str(r) != self.RESPONSE_OK:
+            time.sleep(1)
+            logging.error('Hubitat not responding - waiting for good response')
+            r = requests.get(cmd_uri)
+
 
 """
 New Class definitions for generalization

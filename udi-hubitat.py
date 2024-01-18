@@ -22,6 +22,12 @@ version = '0.0.2'
 
 class Controller(udi_interface.Node):
     def __init__(self, polyglot, primary, address, name):
+
+        self.RESPONSE_OK = '<Response [200]>'
+        self.RESPONSE_NO_SUPPORT = '<Response [400]>'
+        self.RESPONSE_NO_RESPONSE = '<Response [404]>'
+        self.RESPONSE_SERVER_ERROR = '<Response [500]>'
+
         self.poly = polyglot
         self.primary = primary
         self.address = address
@@ -159,11 +165,13 @@ class Controller(udi_interface.Node):
     '''
 
     def discover(self, *args, **kwargs):
-        r = requests.get(self.Parameters['maker_uri'])
-        logging.debug('Request result : {}'.format(r))
+        r = requests.get(self.maker_uri)
+        logging.debug('respose code {}'.format(r.status_code))
+        while str(r) != self.RESPONSE_OK:
+            time.sleep(30)
+            logging.error('Hubitat not responding - waiting for good response')
+            r = requests.get(self.maker_uri)
         data = r.json()
-        logging.debug( 'Request data {}'.format(data))
-        logging.debug('marker_uri: {}'.format(self.maker_uri))
 
         for dev in data:
             logging.debug('device id: {}'.format(dev))
