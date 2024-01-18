@@ -172,7 +172,7 @@ class Controller(udi_interface.Node):
             logging.error('Hubitat not responding - waiting for good response')
             r = requests.get(self.maker_uri)
         data = r.json()
-
+        logging.debug('Hubitat data: {}'.format(data))
         for dev in data:
             logging.debug('device id: {}'.format(dev))
             _name = dev['name']
