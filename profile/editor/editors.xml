@@ -88,6 +88,10 @@
         <range uom="25" subset="0-5" nls="PICO_BUTTON" />
     </editor>
 
+    <editor id="REMOTE_BTN">
+        <range uom="57" min="0" max="5" step="1" prec="0"  />
+    </editor>
+
     <!-- Hue Editor -->
     <editor id="ZCLHUE">
         <range uom="56" min="0" max="100" prec="0" step="1" />

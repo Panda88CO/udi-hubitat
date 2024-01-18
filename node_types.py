@@ -103,8 +103,19 @@ class HubitatBase(udi_interface.Node):
             h_cmd = 'setColorTemperature'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
-            
-        # print(r.status_code)
+        elif cmd == 'TOGGLE_BTN':
+            h_cmd = 'push'
+            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
+            #requests.get(cmd_uri)
+        elif cmd == 'HOLD_BTN':
+            h_cmd = 'hold'
+            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
+            #requests.get(cmd_uri)
+        elif cmd == 'RELEASE_BTN':
+            h_cmd = 'release'
+            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
+            #requests.get(cmd_uri)                                                
+        
 
         # if h_cmd == 'on':
         #     r = requests.get(cmd_uri)
@@ -124,7 +135,8 @@ class HubitatBase(udi_interface.Node):
                 time.sleep(1)
                 logging.error('Hubitat not responding - waiting for good response')
                 r = requests.get(cmd_uri)
-
+                # print(r.status_code)
+            # print(r.status_code)
         # print('debug------------------')
 
     def hubitatRefresh(self):
@@ -298,6 +310,30 @@ class SwitchNode(HubitatBase):
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
+
+class SimpleRemoteNode(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
+
+    def start(self):
+        pass
+    #     self.node.setDriver('ST', 0)
+
+    def setOn(self, command):
+        self.node.setDriver('ST', 100)
+
+    def setOff(self, command):
+        self.node.setDriver('ST', 0)
+
+    def query(self):
+        HubitatBase.hubitatRefresh(self)
+
+    drivers = [{'driver': 'ST', 'value': 0, 'uom': 78}]
+    id = 'SWITCH'
+    commands = {
+        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
+    }
+
 
 
 class DimmerNode(HubitatBase):

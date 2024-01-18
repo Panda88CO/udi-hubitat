@@ -259,7 +259,10 @@ class Controller(udi_interface.Node):
 
             if 'ContactSensor' in dev['capabilities']:
                 node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                
+            # newly added
+            if 'PushableButton' in dev['capabilities']:
+                node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
+
         # Build node list
         self.nodes = self.poly.getNodes()
         for node in self.nodes:
@@ -385,7 +388,7 @@ class Controller(udi_interface.Node):
                             elif h_name == 'energyDuration':
                                 _h_value = h_value.split(' ')[0]
                                 m_node.setDriver('GV6', _h_value)
-                                # Lutron Pico buttons
+                                # Lutron Pico buttons ## and remobe botton
                             elif h_name == 'pushed':
                                 if h_value == '1':
                                     m_node.setDriver('GV7', h_value)
@@ -408,6 +411,17 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('GV8', h_value)
                                 elif h_value == '5':
                                     m_node.setDriver('GV8', h_value)
+                            elif h_name == 'held':
+                                if h_value.isdigit():
+                                    m_node.setDriver('GV9', int(h_value))
+                                elif h_value == '2':
+                                    m_node.setDriver('GV9', h_value)
+                                elif h_value == '3':
+                                    m_node.setDriver('GV9', h_value)
+                                elif h_value == '4':
+                                    m_node.setDriver('GV9', h_value)
+                                elif h_value == '5':
+                                    m_node.setDriver('GV9', h_value)
                             elif h_name == 'contact':
                                 if h_value == 'open':
                                     m_node.setDriver('ST', 0)
