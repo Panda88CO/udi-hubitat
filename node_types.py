@@ -103,7 +103,7 @@ class HubitatBase(udi_interface.Node):
             h_cmd = 'setColorTemperature'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
-        elif cmd == 'TOGGLE_BTN':
+        elif cmd == 'PUSH_BTN':
             h_cmd = 'push'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
@@ -333,9 +333,9 @@ class SimpleRemoteNode(HubitatBase):
                 {'driver': 'GV8', 'value': 0, 'uom': 25},
                 {'driver': 'GV9', 'value': 0, 'uom': 25},
                 ]
-    id = 'SWITCH'
+    id = 'remotebtnnnode'
     commands = {
-        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
+        'PUSH_BTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl,, 'QUERY': query
     }
 
 
