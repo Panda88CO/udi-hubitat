@@ -1,19 +1,62 @@
 """ Node classes used by the Hubitat Node Server. """
-
-import polyinterface
 import requests
+import re
+import time 
 
-LOGGER = polyinterface.LOGGER
+try:
+    import udi_interface
+    logging = udi_interface.LOGGER
+    Custom = udi_interface.Custom
+except ImportError:
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
 
-
-class HubitatBase(polyinterface.Node):
+class HubitatBase(udi_interface.Node):
     """ Base class for lights and groups """
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
-        self.name = name
-        self.address = address
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name)
+        self.RESPONSE_OK = 200
+        self.RESPONSE_NO_SUPPORT = 400
+        self.RESPONSE_NO_RESPONSE = 404
+        self.RESPONSE_SERVER_ERROR = 500
+        self.poly = polyglot
+        self.name = self.getValidName(name)
+        self.address = self.getValidAddress(address)
+        self.primary = primary
+        self.maker_uri = marker_uri
+        self.n_queue = []
+        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+
+
+        self.poly.ready()
+        self.poly.addNode(self)
+        self.wait_for_node_done()
+        self.node = self.poly.getNode(address)
+        logging.debug('self.node : {}'.format(self.node ))
         # self.st = None
-        self.maker_uri = controller.polyConfig['customParams']['maker_uri']
+        #self.maker_uri = polyglot.Parameters['maker_uri']
+        #logging.debug('maker_uri: {}'.format(self.maker_uri))
+
+    def getValidName(self, name):
+        name = bytes(name, 'utf-8').decode('utf-8','ignore')
+        return re.sub(r"[^A-Za-z0-9_ ]", "", name)
+
+    # remove all illegal characters from node address
+    def getValidAddress(self, name):
+        name = bytes(name, 'utf-8').decode('utf-8','ignore')
+        tmp = re.sub(r"[^A-Za-z0-9_]", "", name.lower())
+        logging.debug('getValidAddress {}'.format(tmp))
+        return tmp[:14]
+    
+    def node_queue(self, data):
+        self.n_queue.append(data['address'])
+
+    def wait_for_node_done(self):
+        while len(self.n_queue) == 0:
+            time.sleep(0.1)
+            logging.debug('wait_for_node_done')
+        self.n_queue.pop()
+
 
     """ Basic On/Off controls """
     def hubitatCtl(self, command):
@@ -23,7 +66,7 @@ class HubitatBase(polyinterface.Node):
         device_id = command.get('address')
         _raw_uri = self.maker_uri.split('?')
         _raw_http = _raw_uri[0].replace('all', device_id)
-
+        cmd_ok = True
         # print('debug------------------')
         # print(command.keys())
         # print(self.maker_uri)
@@ -35,42 +78,52 @@ class HubitatBase(polyinterface.Node):
         if cmd in ['DON', 'DFON']:
             h_cmd = 'on'
             cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
             # val = command.get('value')
             # print(cmd_uri)
         elif cmd in ['DOF', 'DFOF']:
             h_cmd = 'off'
             cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
             # val = command.get('value')
             # print(cmd_uri)
         elif cmd == 'SETLVL':
             h_cmd = 'setLevel'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
         elif cmd == 'SET_HUE':
             h_cmd = 'setHue'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
         elif cmd == 'SET_SAT':
             h_cmd = 'setSaturation'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
+            #requests.get(cmd_uri)
         elif cmd == 'SET_KELVIN':
             h_cmd = 'setColorTemperature'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            requests.get(cmd_uri)
-
+            #requests.get(cmd_uri)
+            
         # print(r.status_code)
 
         # if h_cmd == 'on':
         #     r = requests.get(cmd_uri)
         #     if r.status_code == 200:
-        #         self.setDriver('ST', 100)
+        #         self.node.setDriver('ST', 100)
         # elif h_cmd == 'off':
         #     r = requests.get(cmd_uri)
         #     if r.status_code == 200:
-        #         self.setDriver('ST', 0)
+        #         self.node.setDriver('ST', 0)
+        else:
+            logging.error('unsupported command; {} , {}'.format(cmd, val))
+            cmd_ok = False
+
+        if cmd_ok:
+            r = requests.get(cmd_uri)
+            while r.status_code!= self.RESPONSE_OK:
+                time.sleep(1)
+                logging.error('Hubitat not responding - waiting for good response')
+                r = requests.get(cmd_uri)
 
         # print('debug------------------')
 
@@ -81,23 +134,28 @@ class HubitatBase(polyinterface.Node):
 
         h_cmd = 'refresh'
         cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-        requests.get(cmd_uri)
+        r = requests.get(cmd_uri)
+        while r.status_code != self.RESPONSE_OK:
+            time.sleep(1)
+            logging.error('Hubitat not responding - waiting for good response')
+            r = requests.get(cmd_uri)
+
 
 """
 New Class definitions for generalization
 """
 class StdLampNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def start(self):
         pass
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -114,17 +172,17 @@ class StdLampNode(HubitatBase):
 
 
 class RgbLampNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def start(self):
         pass
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -147,17 +205,17 @@ class RgbLampNode(HubitatBase):
 
 
 class CtLampNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def start(self):
         pass
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -176,8 +234,8 @@ class CtLampNode(HubitatBase):
 
 
 class EnergyOutletNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -203,8 +261,8 @@ class EnergyOutletNode(HubitatBase):
 
 
 class OutletNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -219,18 +277,18 @@ class OutletNode(HubitatBase):
 
 
 class SwitchNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def start(self):
         pass
-    #     self.setDriver('ST', 0)
+    #     self.node.setDriver('ST', 0)
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -243,18 +301,18 @@ class SwitchNode(HubitatBase):
 
 
 class DimmerNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def start(self):
         pass
-    #     self.setDriver('ST', 0)
+    #     self.node.setDriver('ST', 0)
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -270,10 +328,13 @@ class DimmerNode(HubitatBase):
     }
 
 
-class MultiSensorTHLA(polyinterface.Node):
+#class MultiSensorTHLA(polyinterface.Node):
+class MultiSensorTHLA(HubitatBase):
 
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
+
+
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
@@ -289,10 +350,10 @@ class MultiSensorTHLA(polyinterface.Node):
     }
 
 
-class MultiSensorTLAS(polyinterface.Node):
-
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+#class MultiSensorTLAS(polyinterface.Node):
+class MultiSensorTLAS (HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
@@ -308,10 +369,10 @@ class MultiSensorTLAS(polyinterface.Node):
     }
 
 
-class MultiSensorTH(polyinterface.Node):
-
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+#class MultiSensorTH(polyinterface.Node):
+class MultiSensorTH(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
@@ -325,10 +386,10 @@ class MultiSensorTH(polyinterface.Node):
     }
 
 
-class MultiSensorT(polyinterface.Node):
-
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+#class MultiSensorT(polyinterface.Node):
+class MultiSensorT(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
@@ -341,10 +402,10 @@ class MultiSensorT(polyinterface.Node):
     }
 
 
-class MultiSensorTL(polyinterface.Node):
-
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+#class MultiSensorTL(polyinterface.Node):
+class MultiSensorTL(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
@@ -358,10 +419,10 @@ class MultiSensorTL(polyinterface.Node):
     }
 
 
-class MultiSensorL(polyinterface.Node):
-
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+#class MultiSensorL(polyinterface.Node):
+class MultiSensorL(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
@@ -374,10 +435,10 @@ class MultiSensorL(polyinterface.Node):
     }
 
 
-class MotionSensor(polyinterface.Node):
-
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+#class MotionSensor(polyinterface.Node):
+class MotionSensor(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
@@ -390,18 +451,18 @@ class MotionSensor(polyinterface.Node):
 
 
 class LutronPicoNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def start(self):
         pass
-    #     self.setDriver('ST', 0)
+    #     self.node.setDriver('ST', 0)
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         self.reportDrivers()
@@ -417,17 +478,17 @@ class LutronPicoNode(HubitatBase):
 
 
 class LutronFastPicoNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def start(self):
         pass
 
     def setOn(self, command):
-        self.setDriver('ST', 100)
+        self.node.setDriver('ST', 100)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.node.setDriver('ST', 0)
 
     def query(self):
         self.reportDrivers()
@@ -442,9 +503,9 @@ class LutronFastPicoNode(HubitatBase):
         # 'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
 
-class THSensor(polyinterface.Node):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+class THSensor(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
@@ -458,8 +519,8 @@ class THSensor(polyinterface.Node):
     }
 
 class ContactNode(HubitatBase):
-    def __init__(self, controller, primary, address, name):
-        super().__init__(controller, primary, address, name)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
 
     def query(self):
         HubitatBase.hubitatRefresh(self)

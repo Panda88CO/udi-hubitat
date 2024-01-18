@@ -1,20 +1,16 @@
 # Hubitat NodeServer
+Ported from Simplex Technologies PG2 hubitat server - added a little extra error handling
+MOre device may be supported in teh future 
 
 #### Installation
 
-Until published to the NodeServer store the install will be manual.
+Provide Marker URI from hubitat Marker API setup under configuration
+Under configuration edit the maker_uri parameter 
+    IP address is IP address of Hubitat 
+    APP_ID is the ID assigned to the maker applicaiton on Hubitat (see examples)
+    TOKEN is the Token from the maker application
 
-- Clone this repo to your polyglot nodeserver directory
-  - ~/.polyglot/nodeservers
-    - If installed as user 'pi' this will be
-    /home/pi/.polyglot/nodeservers
-
-- Steps
-  - cd .polyglot/nodeservers
-  - git clone https://github.com/simplextech/udi-hubitat-poly.git Hubitat
-  - run install.sh
-    - bash ./install.sh
-  - Add nodeserver via Polyglot web interface
+Note, there is no pollong in this node server
   
 #### Requirements
 

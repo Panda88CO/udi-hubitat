@@ -1,43 +1,135 @@
 #!/usr/bin/env python3
 
-try:
-    import polyinterface
-except ImportError:
-    import pgc_interface as polyinterface
+#try:
+#    import polyinterface
+#except ImportError:
+#    import pgc_interface as polyinterface
+
+
+import udi_interface
+logging = udi_interface.LOGGER
+Custom = udi_interface.Custom
+
+
 import sys
 import time
 import requests
+import traceback
 from lomond import WebSocket
 import node_types
+version = '0.1.0'
+#LOGGER = polyinterface.LOGGER
 
-LOGGER = polyinterface.LOGGER
+class Controller(udi_interface.Node):
+    def __init__(self, polyglot, primary, address, name):
 
+        self.RESPONSE_OK = 200
+        self.RESPONSE_NO_SUPPORT = 400
+        self.RESPONSE_NO_RESPONSE = 404
+        self.RESPONSE_SERVER_ERROR = 500
 
-class Controller(polyinterface.Controller):
-    def __init__(self, polyglot):
-        super(Controller, self).__init__(polyglot)
-        self.name = 'Hubitat'
+        self.poly = polyglot
+        self.primary = primary
+        self.address = address
+        self.name = name
+        self.id = 'controller'
+        logging.setLevel(10)
+        self.drivers = [{'driver': 'ST', 'value': 1, 'uom': 2}]
         self.node_list = []
-        self.debug_enabled = None
+
+        self.Parameters = Custom(self.poly, 'customparams')
+        self.Notices = Custom(self.poly, 'notices')
+        self.configDone = False
+        self.n_queue = []
+        self.poly.subscribe(self.poly.STOP, self.stopHandler)
+        self.poly.subscribe(self.poly.START, self.start, address)
+        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
+        self.poly.subscribe(self.poly.CONFIGDONE, self.configDoneHandler)
+        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+
+        self.poly.addNode(self)
+        self.node = self.poly.getNode(self.address)
+        self.debug_enabled = True
+        self.poly.updateProfile()
+        self.poly.ready()
+       
+
+    def node_queue(self, data):
+        self.n_queue.append(data['address'])
+
+    def wait_for_node_done(self):
+        while len(self.n_queue) == 0:
+            time.sleep(0.1)
+        self.n_queue.pop()
+
+
+
+    #def shortPoll(self):
+    #    pass
+
+    #def longPoll(self):
+    #    pass
+
 
     def start(self):
-        LOGGER.info('Started Hubitat')
+        logging.info('Started Hubitat')
+        self.node.setDriver('ST', 1, True, True)
         # Remove all existing notices
-        self.removeNoticesAll()
-        if self.check_params():
-            self.discover()
-            self.hubitat_events()
+        self.poly.Notices.clear()
+        while not self.configDone:
+            time.sleep(10)
+            logging.info('Waiting for confuguration to complete')
+        #self.removeNoticesAll()
+        self.discover()
+        self.hubitat_events()
 
-    def shortPoll(self):
-        pass
 
-    def longPoll(self):
-        pass
+    def stopHandler(self):
+        # Set nodes offline
+        self.node.setDriver('ST', 0, True, True)
+        #self.node.setOffline()
+        self.poly.stop()
+
+
+
+    def configDoneHandler(self):
+        # We use this to discover devices, or ask to authenticate if user has not already done so
+        self.poly.Notices.clear()
+        self.configDone = True
+
 
     def query(self):
         for node in self.nodes:
             self.nodes[node].reportDrivers()
 
+
+    def customParamsHandler(self, userParams):
+        self.Parameters.load(userParams)
+        logging.debug('customParamsHandler called')
+        default_maker_uri = 'http://<IP_ADDRESS>/apps/api/<APP_ID>/devices/all?access_token=<TOKEN>'
+        self.maker_uri = default_maker_uri
+
+        if 'maker_uri' in userParams:
+            self.maker_uri = userParams['maker_uri']
+            if self.maker_uri != default_maker_uri:
+                maker_st = True
+            else:
+                maker_st = False
+        else:
+            logging.error('Hubitat Maker API URL is not defined in configuration')
+            maker_st = False
+
+        if 'debug_enabled' in userParams:
+            debug_enabled = userParams['debug_enabled']
+            if debug_enabled == "true" or debug_enabled == "True":
+                self.debug_enabled = True
+            else:
+                self.debug_enabled = False
+
+        if self.maker_uri == default_maker_uri:
+            self.poly.Notices['maker_uri'] = 'Please set proper Hubitat and Maker API URI, and restart this NodeServer'
+ 
+    '''
     def check_params(self):
         default_maker_uri = 'http://<IP_ADDRESS>/apps/api/<APP_ID>/devices/all?access_token=<TOKEN>'
         maker_uri = default_maker_uri
@@ -49,7 +141,7 @@ class Controller(polyinterface.Controller):
             else:
                 maker_st = False
         else:
-            LOGGER.error('Hubitat Maker API URL is not defined in configuration')
+            logging.error('Hubitat Maker API URL is not defined in configuration')
             maker_st = False
 
         if 'debug_enabled' in self.polyConfig['customParams']:
@@ -70,61 +162,67 @@ class Controller(polyinterface.Controller):
 
         if maker_st:
             return True
+    '''
 
     def discover(self, *args, **kwargs):
-        r = requests.get(self.polyConfig['customParams']['maker_uri'])
+        r = requests.get(self.maker_uri)
+        logging.debug('respose code {}'.format(r.status_code))
+        while r.status_code!= self.RESPONSE_OK:
+            time.sleep(30)
+            logging.error('Hubitat not responding - waiting for good response')
+            r = requests.get(self.maker_uri)
         data = r.json()
 
         for dev in data:
-            # LOGGER.info(dev)
+            logging.debug('device id: {}'.format(dev))
             _name = dev['name']
             _label = dev['label']
             _type = dev['type']
             _id = dev['id']
 
             # if dev['type'] == 'Virtual Switch':
-            #     self.addNode(node_types.VirtualSwitchNode(self, self.address, _id, _label))
+            #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Z-Wave Switch':
-            #     self.addNode(node_types.ZWaveSwitchNode(self, self.address, _id, _label))
+            #     self.addNode(node_types.ZWaveSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Z-Wave Dimmer':
-            #     self.addNode(node_types.ZWaveDimmerNode(self, self.address, _id, _label))
+            #     self.addNode(node_types.ZWaveDimmerNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Zigbee Bulb':
-            #     self.addNode(node_types.ZigbeeBulbNode(self, self.address, _id, _label))
+            #     self.addNode(node_types.ZigbeeBulbNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'NYCE Motion Sensor Series':
-            #     self.addNode(node_types.NYCEMotionSensorNode(self, self.address, _id, _label))
+            #     self.addNode(node_types.NYCEMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Zooz 4-in-1 Sensor':
-            #     self.addNode(node_types.Zooz4n1SensorNode(self, self.address, _id, _label))
+            #     self.addNode(node_types.Zooz4n1SensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Hue Motion Sensor':
-            #     self.addNode(node_types.HueMotionSensorNode(self, self.address, _id, _label))
+            #     self.addNode(node_types.HueMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Dome Motion Sensor':
-            #     self.addNode(node_types.DomeMotionSensorNode(self, self.address, _id, _label))
+            #     self.addNode(node_types.DomeMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # # if dev['type'] == 'Zooz Power Switch':
-            # #     self.addNode(node_types.ZoozPowerSwitchNode(self, self.address, _id, _label))
+            # #     self.addNode(node_types.ZoozPowerSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Fibaro Motion Sensor ZW5':
-            #     self.addNode(node_types.FibaroZW5Node(self, self.address, _id, _label))
+            #     self.addNode(node_types.FibaroZW5Node(self.poly,  self.address, _id, _label, self.maker_uri ))
             if dev['type'] == 'Lutron Pico':
-                self.addNode(node_types.LutronPicoNode(self, self.address, _id, _label))
+                node_types.LutronPicoNode(self.poly, self.address, _id, _label, self.maker_uri )
             if dev['type'] == 'Lutron Fast Pico':
-                self.addNode(node_types.LutronFastPicoNode(self, self.address, _id, _label))
+                node_types.LutronFastPicoNode( self.poly, self.address, _id, _label, self.maker_uri )
             if dev['type'] == 'Virtual Switch':
-                self.addNode(node_types.SwitchNode(self, self.address, _id, _label))
+                node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
             if dev['type'] == 'Virtual Dimmer':
-                self.addNode(node_types.DimmerNode(self, self.address, _id, _label))
+                node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 pass
             if 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
                     if 'ColorControl' in dev['capabilities']:
-                        self.addNode(node_types.RgbLampNode(self, self.address, _id, _label))
+                        node_types.RgbLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
                     else:
-                        self.addNode(node_types.CtLampNode(self, self.address, _id, _label))
+                        node_types.CtLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
-                    self.addNode(node_types.StdLampNode(self, self.address, _id, _label))
+                    node_types.StdLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if 'Outlet' in dev['capabilities']:
                 if 'EnergyMeter' in dev['capabilities']:
-                    self.addNode(node_types.EnergyOutletNode(self, self.address, _id, _label))
+                    node_types.EnergyOutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
-                    self.addNode(node_types.OutletNode(self, self.address, _id, _label))
+                    node_types.OutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if 'Switch' in dev['capabilities']:
                 if 'Virtual' not in dev['type']:
@@ -132,37 +230,38 @@ class Controller(polyinterface.Controller):
                         if 'Light' not in dev['capabilities']:
                             if 'Actuator' in dev['capabilities']:
                                 if 'SwitchLevel' in dev['capabilities']:
-                                    self.addNode(node_types.DimmerNode(self, self.address, _id, _label))
+                                    node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                                 else:
-                                    self.addNode(node_types.SwitchNode(self, self.address, _id, _label))
+                                    node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
                             else:
-                                self.addNode(node_types.SwitchNode(self, self.address, _id, _label))
+                                node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if 'MotionSensor' in dev['capabilities']:
                 if 'TemperatureMeasurement' in dev['capabilities'] and 'IlluminanceMeasurement' in dev['capabilities']:
                     if 'AccelerationSensor' in dev['capabilities']:
-                        self.addNode(node_types.MultiSensorTLAS(self, self.address, _id, _label))
+                        node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label, self.maker_uri )
                     elif 'RelativeHumidityMeasurement' in dev['capabilities']:
-                        self.addNode(node_types.MultiSensorTHLA(self, self.address, _id, _label))
+                        node_types.MultiSensorTHLA(self.poly,  self.address, _id, _label, self.maker_uri )
                     else:
-                        self.addNode(node_types.MultiSensorTL(self, self.address, _id, _label))
+                        node_types.MultiSensorTL(self.poly,  self.address, _id, _label, self.maker_uri )
                 elif 'TemperatureMeasurement' in dev['capabilities'] and 'RelativeHumidityMeasurement' in dev['capabilities']:
                     if 'IlluminanceMeasurement' not in dev['capabilities']:
-                        self.addNode(node_types.MultiSensorTH(self, self.address, _id, _label))
+                        node_types.MultiSensorTH(self.poly,  self.address, _id, _label, self.maker_uri )
                 elif 'IlluminanceMeasurement' in dev['capabilities']:
-                    self.addNode(node_types.MultiSensorL(self, self.address, _id, _label))
+                    node_types.MultiSensorL(self.poly,  self.address, _id, _label, self.maker_uri )
                 elif 'TemperatureMeasurement' in dev['capabilities']:
-                    self.addNode(node_types.MultiSensorT(self, self.address, _id, _label))
+                    node_types.MultiSensorT(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
-                    self.addNode(node_types.MotionSensor(self, self.address, _id, _label))
+                    node_types.MotionSensor(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if dev['type'] == 'Sonoff Zigbee Temperature/Humidity Sensor':
-                self.addNode(node_types.THSensor(self, self.address, _id, _label))
+                node_types.THSensor(self.poly,  self.address, _id, _label, self.maker_uri )
 
             if 'ContactSensor' in dev['capabilities']:
-                self.addNode(node_types.ContactNode(self, self.address, _id, _label))
+                node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 
         # Build node list
+        self.nodes = self.poly.getNodes()
         for node in self.nodes:
             self.node_list.append(self.nodes[node].address)
 
@@ -173,27 +272,29 @@ class Controller(polyinterface.Controller):
         co-resident and controlled by Polyglot, it will be terminiated within 5 seconds
         of receiving this message.
         """
-        LOGGER.info('Oh God I\'m being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
+        logging.info('Oh God I\'m being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
 
     def stop(self):
-        LOGGER.debug('NodeServer stopped.')
+        logging.debug('NodeServer stopped.')
 
     def remove_notices_all(self,command):
-        LOGGER.info('remove_notices_all:')
+        logging.info('remove_notices_all:')
         # Remove all existing notices
-        self.removeNoticesAll()
+        self.poly.Notices.clear()
+        #self.removeNoticesAll()
 
     def update_profile(self,command):
-        LOGGER.info('update_profile:')
+        logging.info('update_profile:')
         st = self.poly.installprofile()
         return st
 
     def hubitat_events(self):
-        maker_uri = self.polyConfig['customParams']['maker_uri']
+        logging.debug('hubitat_events')
+        maker_uri = self.Parameters['maker_uri']
         ws_uri = 'ws://' + maker_uri.split('/')[2] + '/eventsocket'
 
-        #LOGGER.info(ws_uri)
-        #LOGGER.info(maker_uri)
+        #logging.info(ws_uri)
+        #logging.info(maker_uri)
 
         websocket = WebSocket(ws_uri)
         for event in websocket:
@@ -204,10 +305,10 @@ class Controller(polyinterface.Controller):
                     h_name = event.json['name']
 
                     if self.debug_enabled:
-                        LOGGER.debug('---------------- Hubitat Device Info ----------------')
-                        LOGGER.debug(event.json)
-                        LOGGER.debug('Device Property: ' + h_name + " " + h_value)
-                        LOGGER.debug('-----------------------------------------------------')
+                        logging.debug('---------------- Hubitat Device Info ----------------')
+                        logging.debug(event.json)
+                        logging.debug('Device Property: ' + h_name + " " + h_value)
+                        logging.debug('-----------------------------------------------------')
 
                     if _deviceId in self.node_list:
                         m_node = self.nodes[_deviceId]
@@ -330,23 +431,26 @@ class Controller(polyinterface.Controller):
 
 if __name__ == "__main__":
     try:
-        polyglot = polyinterface.Interface('Hubitat')
+        polyglot = udi_interface.Interface([])
         """
         Instantiates the Interface to Polyglot.
         """
-        polyglot.start()
+        polyglot.start({ 'version': version, 'requestId': True })
         """
         Starts MQTT and connects to Polyglot.
         """
-        control = Controller(polyglot)
+        polyglot.setCustomParamsDoc()
+        control = Controller(polyglot, 'controller', 'controller', 'hubitat')
         """
         Creates the Controller Node and passes in the Interface
         """
-        control.runForever()
+        polyglot.ready()
+        polyglot.runForever()
         """
         Sits around and does nothing forever, keeping your program running.
         """
     except (KeyboardInterrupt, SystemExit):
+        logging.error(f"Error starting Nodeserver: {traceback.format_exc()}")
         polyglot.stop()
         sys.exit(0)
         """
