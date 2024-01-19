@@ -208,6 +208,10 @@ class Controller(udi_interface.Node):
                 node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
             if dev['type'] == 'Virtual Dimmer':
                 node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
+            if dev['type'] == 'Ecobee Sensor':
+                node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+            if dev['type'] == 'Ecobee Thermostat':
+                node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
                 pass
             if 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
@@ -359,7 +363,7 @@ class Controller(udi_interface.Node):
                                 m_node.setDriver('BATLVL', h_value)
                             elif h_name == 'temperature':
                                 s_temp = str(int(float(h_value)))
-                                m_node.setDriver('CLITEMP', s_temp)
+                                m_node.setDriver('CLITEMP', s_temp)  # need to update unit handling
                             elif h_name == 'humidity':
                                 m_node.setDriver('CLIHUM', h_value)
                             elif h_name == 'illuminance':
@@ -465,6 +469,16 @@ class Controller(udi_interface.Node):
                                 elif h_value == 'closed':
                                     m_node.setDriver('ST', 100)
                                     m_node.reportCmd('DOF', 2)
+                            elif h_name in ['auto', 'cool', 'heat', 'off', 'emergencyHeat']:
+
+                            elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off', 'emergencyHeat']:
+
+                            elif h_name in ['resumeProgram', 'SetAway']:
+
+                            elif h_name in ['setCoolingSetpoint']:
+
+                            elif h_name in ['setHea tingSetpoint']: 
+
                             else:
                                 print('Driver not implemented')
                         except KeyError:

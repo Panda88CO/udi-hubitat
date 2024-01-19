@@ -311,34 +311,6 @@ class SwitchNode(HubitatBase):
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
 
-class SimpleRemoteNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-
-    def start(self):
-        pass
-    #     self.node.setDriver('ST', 0)
-
-    def setOn(self, command):
-        self.node.setDriver('ST', 100)
-
-    def setOff(self, command):
-        self.node.setDriver('ST', 0)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [ {'driver': 'ST', 'value': 0, 'uom': 78},
-                {'driver': 'GV7', 'value': 0, 'uom': 25},
-                {'driver': 'GV8', 'value': 0, 'uom': 25},
-                {'driver': 'GV9', 'value': 0, 'uom': 25},
-                {'driver': 'BATLVL', 'value': 0, 'uom': 51},
-                ]
-    id = 'remotebtnnnode'
-    commands = {
-        'PUSH_BTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl, 'QUERY': query
-    }
-
 
 
 class DimmerNode(HubitatBase):
@@ -574,3 +546,82 @@ class ContactNode(HubitatBase):
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
+
+#############
+#   Newly added devices
+###############
+    
+
+class SimpleRemoteNode(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
+
+    def start(self):
+        pass
+    #     self.node.setDriver('ST', 0)
+
+    def setOn(self, command):
+        self.node.setDriver('ST', 100)
+
+    def setOff(self, command):
+        self.node.setDriver('ST', 0)
+
+    def query(self):
+        HubitatBase.hubitatRefresh(self)
+
+    drivers = [ {'driver': 'ST', 'value': 0, 'uom': 78},
+                {'driver': 'GV7', 'value': 0, 'uom': 25},
+                {'driver': 'GV8', 'value': 0, 'uom': 25},
+                {'driver': 'GV9', 'value': 0, 'uom': 25},
+                {'driver': 'BATLVL', 'value': 0, 'uom': 51},
+                ]
+    id = 'remotebtnnnode'
+    commands = {
+        'PUSH_BTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl, 'QUERY': query
+    }
+
+
+class EcobeeSensor(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
+
+    def query(self):
+        HubitatBase.hubitatRefresh(self)
+
+    drivers = [
+        {'driver': 'ST', 'value': 0, 'uom': 78},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
+        #{'driver': 'BATLVL', 'value': 0, 'uom': 51},
+        ]
+    id = 'ECO_SENSOR'
+    commands = {  'QUERY': query   }
+
+
+class EcobeeThermostat(HubitatBase):
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri)
+
+    def query(self):
+        HubitatBase.hubitatRefresh(self)
+
+    drivers = [
+        {'driver': 'ST', 'value': 0, 'uom': 78},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},      
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 17},        
+        #{'driver': 'BATLVL', 'value': 0, 'uom': 51},
+        ]
+    id = 'ECO_THERMOSTAT'
+    commands = {  'QUERY': query   }
+    '''
+    CLIEMD	Energy Mode
+CLIFRS	Fan Running State
+CLIFS	Fan Setting
+CLIFSO	Fan Setting Override
+CLIHCS	Heat/Cool State
+CLIHUM	Humidity
+CLIMD	Thermostat Mode
+CLISMD	Schedule Mode
+CLISPC	Cool Setpoint
+CLISPH	Heat Setpoint
+CLITEMP	Current Temperature
+    '''
