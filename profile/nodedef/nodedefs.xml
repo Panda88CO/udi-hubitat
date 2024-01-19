@@ -419,6 +419,7 @@
             <st id="GV7" editor="REMOTE_BTN" />
             <st id="GV8" editor="REMOTE_BTN" />
             <st id="GV9" editor="REMOTE_BTN" />
+            <st id="BATLVL" editor="BATLVL" />
         </sts>
         <cmds>
             <sends />
