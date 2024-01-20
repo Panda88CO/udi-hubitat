@@ -591,7 +591,7 @@ class EcobeeSensor(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
-        #{'driver': 'BATLVL', 'value': 0, 'uom': 51},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
         ]
     id = 'ECO_SENSOR'
     commands = {  'QUERY': query   }

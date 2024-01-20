@@ -432,4 +432,38 @@
         </cmds>
     </nodeDef>
 
+    <nodeDef id="ECO_SENSOR" nls="ECO_SENSOR">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS"/>
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="BATLVL" editor="BATLVL" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <!--<cmd id="DIM" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="ECO_THERMOSTAT" nls="ECO_THERMOSTAT">
+        <editors />
+        <sts>
+            <st id="ST" editor="bool" hide="True" />
+            <st id="GV7" editor="REMOTE_BTN" />
+            <st id="GV8" editor="REMOTE_BTN" />
+            <st id="GV9" editor="REMOTE_BTN" />
+            <st id="BATLVL" editor="BATLVL" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="PUSH_BTN" />
+                <cmd id="HOLD_BTN" />
+                <cmd id="RELEASE_BTN" />
+                <!--<cmd id="DIM" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
 </nodeDefs>
