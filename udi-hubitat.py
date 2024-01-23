@@ -397,7 +397,7 @@ class Controller(udi_interface.Node):
                             elif h_name == 'energyDuration':
                                 _h_value = h_value.split(' ')[0]
                                 m_node.setDriver('GV6', _h_value)
-                                # Lutron Pico buttons ## and remobe botton
+                                # Lutron Pico buttons ## and remote botton
                             elif h_name == 'pushed':
                                 if h_value.isdigit():
                                     tmp = int(h_value)
@@ -476,8 +476,47 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('ST', 100)
                                     m_node.reportCmd('DOF', 2)
 
+                            elif h_name== 'DeviceWatch-DeviceStatus':
+                                if h_value == 'online':
+                                    m_node.setDriver('ONLINE', 1)
+                                else:
+                                    m_node.setDriver('ONLINE', 0)
+                            elif h_name== 'deviceAlive':
+                                if h_value == 'online':
+                                    m_node.setDriver('ST', 1)
+                                else:
+                                    m_node.setDriver('ST', 0)
                             #Htemostat        
                             elif h_name == 'thermostatMode':
+                                if h_value  == 'auto':
+                                    m_node.setDriver('CLIHCS', 0)
+                                elif h_value  == 'cool':
+                                    m_node.setDriver('CLIHCS', 1)
+                                elif h_value  == 'heat':                                    
+                                    m_node.setDriver('CLIHCS', 2)
+                                elif h_value  == 'idle':
+                                    m_node.setDriver('CLIHCS', 3)                                        
+                                elif h_value  == 'off':
+                                    m_node.setDriver('CLIHCS', 4)
+
+                                elif h_value  == 'emergencyHeat':
+                                    m_node.setDriver('CLIHCS', 5)
+                                else:
+                                    m_node.setDriver('CLIMD', 99)
+                                    logging.debug('Unknown value for {} {}'.format(h_name, h_value))
+                            elif h_name== 'coolingSetpoint':
+                                    m_node.setDriver('CLISPC', round(h_value))
+                            elif h_name== 'heatingSetpoint':
+                                    m_node.setDriver('CLISPH', round(h_value))
+                            elif h_name == 'thermostatFanMode':
+                                if h_value  == 'auto':
+                                    m_node.setDriver('CLIFRS', 0)
+                                elif h_value  == 'on':
+                                    m_node.setDriver('CLIFRS', 1)
+                                else:
+                                    m_node.setDriver('CLIMD', 99)
+                                    logging.debug('Unknown value for {} {}'.format(h_name, h_value))
+                            elif h_name == 'thermostatOperatingState':
                                 if h_value  == 'auto':
                                     m_node.setDriver('CLIMD', 0)
                                 elif h_value  == 'cool':
@@ -485,15 +524,24 @@ class Controller(udi_interface.Node):
                                 elif h_value  == 'heat':                                    
                                     m_node.setDriver('CLIMD', 2)
                                 elif h_value  == 'off':
-                                    m_node.setDriver('CLIMD', 3)
-                                elif h_value  == 'emergencyHeat':
                                     m_node.setDriver('CLIMD', 4)
+                                elif h_value  == 'idle':
+                                    m_node.setDriver('CLIMD', 3)                             
+                                elif h_value  == 'emergencyHeat':
+                                    m_node.setDriver('CLIMD', 5)
                                 else:
                                     m_node.setDriver('CLIMD', 99)
-
-
-
-
+                                    logging.debug('Unknown value for {} {}'.format(h_name, h_value))
+                            elif h_name == 'thermostatFanOperatingState':
+                                if h_value  == 'auto':
+                                    m_node.setDriver('CLIFS', 0)
+                                if h_value  == 'on':
+                                    m_node.setDriver('CLIFS', 1)
+                                if h_value  == 'idle':
+                                    m_node.setDriver('CLIFS', 2)
+                                else:
+                                    m_node.setDriver('CLIFS', 99)
+                                    logging.debug('Unknown value for {} {}'.format(h_name, h_value))                                                                           
                             #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
                             #elif h_name in ['resumeProgram', 'SetAway']:
@@ -503,7 +551,7 @@ class Controller(udi_interface.Node):
                             #elif h_name in ['setHeatingSetpoint']: 
 
                             else:
-                                print('Driver not implemented')
+                                print('Driver not implemented for {} {} {}')
                         except KeyError:
                             print('Device not found in ISY')
 

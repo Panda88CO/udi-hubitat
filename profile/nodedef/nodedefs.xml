@@ -442,7 +442,10 @@
             <st id="ONLINE" editor="ONLINE" />
         </sts>
         <cmds>
-            <sends />
+            <sends >
+                <cmd id = "DON" />
+                <cmd id = "DOF" />
+            </sends>
             <accepts>
                 <cmd id="QUERY" />
             </accepts>
@@ -456,6 +459,7 @@
             <st id="CLITEMP" editor="CLITEMP" />
             <st id="CLIHUM" editor="CLIHUM" />
             <st id="CLIMD" editor="CLIMD" />
+            <st id="CLIFS" editor="CLIFS" />
             <st id="CLISPC" editor="CLISPC" />
             <st id="CLISPH" editor="CLISPH" />
             <st id="CLIHCS" editor="CLIHCS" />
