@@ -479,28 +479,28 @@ class Controller(udi_interface.Node):
                             #Htemostat        
                             elif h_name == 'thermostatMode':
                                 if h_value  == 'auto':
-
+                                    m_node.setDriver('CLIMD', 0)
                                 elif h_value  == 'cool':
-
+                                    m_node.setDriver('CLIMD', 1)
                                 elif h_value  == 'heat':                                    
-
+                                    m_node.setDriver('CLIMD', 2)
                                 elif h_value  == 'off':
-
+                                    m_node.setDriver('CLIMD', 3)
                                 elif h_value  == 'emergencyHeat':
-
+                                    m_node.setDriver('CLIMD', 4)
                                 else:
-                                    
+                                    m_node.setDriver('CLIMD', 99)
 
 
 
 
-                            elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
+                            #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
-                            elif h_name in ['resumeProgram', 'SetAway']:
+                            #elif h_name in ['resumeProgram', 'SetAway']:
 
-                            elif h_name in ['setCoolingSetpoint']:
+                            #elif h_name in ['setCoolingSetpoint']:
 
-                            elif h_name in ['setHeatingSetpoint']: 
+                            #elif h_name in ['setHeatingSetpoint']: 
 
                             else:
                                 print('Driver not implemented')
