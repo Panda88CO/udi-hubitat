@@ -503,7 +503,7 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIHCS', 5)
                                 else:
                                     m_node.setDriver('CLIMD', 99)
-                                    logging.debug('Unknown value for {} {}'.format(h_name, h_value))
+                                    logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name== 'coolingSetpoint':
                                     m_node.setDriver('CLISPC', round(h_value))
                             elif h_name== 'heatingSetpoint':
@@ -515,7 +515,7 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIFRS', 1)
                                 else:
                                     m_node.setDriver('CLIMD', 99)
-                                    logging.debug('Unknown value for {} {}'.format(h_name, h_value))
+                                    logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name == 'thermostatOperatingState':
                                 if h_value  == 'auto':
                                     m_node.setDriver('CLIMD', 0)
@@ -531,8 +531,8 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIMD', 5)
                                 else:
                                     m_node.setDriver('CLIMD', 99)
-                                    logging.debug('Unknown value for {} {}'.format(h_name, h_value))
-                            elif h_name == 'thermostatFanOperatingState':
+                                    logging.error('Unknown value for {} {}'.format(h_name, h_value))
+                            elif h_name == 'thermostatFanOperatingState':  # Not found this one yet so guessing name
                                 if h_value  == 'auto':
                                     m_node.setDriver('CLIFS', 0)
                                 if h_value  == 'on':
@@ -541,7 +541,9 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIFS', 2)
                                 else:
                                     m_node.setDriver('CLIFS', 99)
-                                    logging.debug('Unknown value for {} {}'.format(h_name, h_value))                                                                           
+                                    logging.error('Unknown value for {} {}'.format(h_name, h_value))       
+
+
                             #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
                             #elif h_name in ['resumeProgram', 'SetAway']:

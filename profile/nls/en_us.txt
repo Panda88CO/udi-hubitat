@@ -225,7 +225,7 @@ CMD-ECO_THERMOSTAT-COOLPOINT-NAME = Heat point
 CLIHCS-0 = Auto
 CLIHCS-1 = Cool
 CLIHCS-2 = Heat
-CLIHCS-3 =  Idle
+CLIHCS-3 = Idle
 CLIHCS-4 = Off
 CLIHCS-5 = Emergency Heat
 CLIHCS-99 = Unknown
@@ -237,7 +237,8 @@ CLIMD-99 = Unknown
 
 CLIHCS-0 = On
 CLIHCS-1 = Auto
-CLIHCS-99 = UnknownAuto
+CLIHCS-2 = Circulate
+CLIHCS-99 = Unknown
 
 CLISMD-0 = Normal
 CLISMD-1 = Away

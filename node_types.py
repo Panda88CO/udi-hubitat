@@ -152,7 +152,23 @@ class HubitatBase(udi_interface.Node):
             logging.error('Hubitat not responding - waiting for good response')
             r = requests.get(cmd_uri)
 
+    def hubitatDirectCtrl(self, command, h_cmd):
+        h_cmd = h_cmd
+        cmd = command.get('cmd')
+        val = command.get('value')
+        device_id = command.get('address')
+        _raw_uri = self.maker_uri.split('?')
+        _raw_http = _raw_uri[0].replace('all', device_id)
+        cmd_ok = True
 
+        cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
+        logging.debug('hubitatDirectCtrl URI: {}'.format(cmd_uri ))
+        if cmd_ok:
+            r = requests.get(cmd_uri)
+            while r.status_code!= self.RESPONSE_OK:
+                time.sleep(1)
+                logging.error('Hubitat not responding - waiting for good response')
+                r = requests.get(cmd_uri)
 """
 New Class definitions for generalization
 """
@@ -606,9 +622,24 @@ class EcobeeThermostat(HubitatBase):
 
 
     def setOperationMode(self, command):
+        
+        '''
+        CLIHCS-0 = Auto
+        CLIHCS-1 = Cool
+        CLIHCS-2 = Heat
+        CLIHCS-3 = Idle
+        CLIHCS-4 = Off
+        ----
+        CLIHCS-5 = Emergency Heat
+        CLIHCS-99 = Unknown
+        '''
         logging.debug('setOperationMode')
+        cmd = command:
+        if command.get('value') == 0:
+            cmd['value'] = 'Auto'
+            HubitatBase.hubitatDirectCtrl(cmd, 'setThermostatMode')
 
-
+        
 
     def setThermostatMode(self, command):
         logging.debug('setTHermostantMode')
@@ -619,19 +650,26 @@ class EcobeeThermostat(HubitatBase):
 
 
     def setHeatPoint(self, command):
-        logging.debug('setHeatPoint')
-
+        logging.debug('setHeatPoint : {}'.format(command))
+        HubitatBase.hubitatDirectCtrl(command, 'setHeatingSetpoint')
 
     def setCoolPoint(self, command):
-        logging.debug('setCoolPoint')        
+        logging.debug('setCoolPoint : {}'.format(command))      
+        HubitatBase.hubitatDirectCtrl(command, 'setHeatingSetpoint')
 
     def setTempUnit(self, t_unit):
-        logging.debug('setTempUnit')        
+        logging.debug('setTempUnit')
+        if t_unit.lower()  == 'c':
+            self.t_unit = 'C'
+        elif t_unit.lower()  == 'f':
+            self.t_unit = 'F'
+        else:
+            logging.error('Unknow temp unit: {}'.format(t_unit))
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78}, #'DeviceWatch-DeviceStatus'
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 17},    # 'humidity'    
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
         {'driver': 'CLIFS', 'value': 0, 'uom': 25},      # fan setting   'supportedThermostatFanModes'
         {'driver': 'CLIMD', 'value': 0, 'uom': 25},  # heat/cool state: 'thermostat'
         {'driver': 'CLISPC', 'value': 0, 'uom': 25},  # cool setpoint
