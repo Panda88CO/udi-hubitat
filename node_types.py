@@ -154,7 +154,7 @@ class HubitatBase(udi_interface.Node):
 
     def hubitatDirectCtrl(self, command, h_cmd):
         h_cmd = h_cmd
-        cmd = command.get('cmd')
+        #cmd = command.get('cmd')
         val = command.get('value')
         device_id = command.get('address')
         _raw_uri = self.maker_uri.split('?')
@@ -623,16 +623,7 @@ class EcobeeThermostat(HubitatBase):
 
     def setOperationMode(self, command):
         
-        '''
-        CLIHCS-0 = Auto
-        CLIHCS-1 = Cool
-        CLIHCS-2 = Heat
-        CLIHCS-3 = Idle
-        CLIHCS-4 = Off
-        ----
-        CLIHCS-5 = Emergency Heat
-        CLIHCS-99 = Unknown
-        '''
+
         logging.debug('setOperationMode')
         cmd = command:
         if command.get('value') == 0:
@@ -642,12 +633,54 @@ class EcobeeThermostat(HubitatBase):
         
 
     def setThermostatMode(self, command):
-        logging.debug('setTHermostantMode')
+        logging.debug('setTHermostatMode')
+        '''
+        CLIHCS-0 = Auto
+        CLIHCS-1 = Cool
+        CLIHCS-2 = Heat
+        ---
+        CLIHCS-3 = Idle
+        ----
+        CLIHCS-4 = Off
+        ----
+        CLIHCS-5 = Emergency Heat
+        CLIHCS-99 = Unknown
+        '''
+
+        cmd = command
+        if command.get('value') == 0:
+            cmd['value'] = 'auto'
+            HubitatBase.hubitatDirectCtrl(cmd, 'setThermostatMode')
+            #HubitatBase.hubitatDirectCtrl(cmd, 'auto')
+
+        elif command.get('value') == 1:
+            cmd['value'] = 'cool'
+        elif command.get('value') == 2:
+            cmd['value'] = 'heat'
+        elif command.get('value') == 4:
+            cmd['value'] = 'off' 
+        else:
+            logging.error('setThermostatMode unexpected command: {}'.format(command.get('value') ))           
+        
 
 
     def setFanMode(self, command):
         logging.debug('setFanMode')
-
+        '''
+        CLIHCS-0 = On
+        CLIHCS-1 = Auto
+        CLIHCS-2 = Circulate
+        '''
+        cmd = command
+        if command.get('value') == 0:
+            cmd['value'] = 'on'            
+        elif command.get('value') == 1:
+            cmd['value'] = 'auto'
+        elif command.get('value') == 2:
+            cmd['value'] = 'circulate'
+        else:
+            logging.error('setFanMode unexpected command: {}'.format(command.get('value') ))           
+        HubitatBase.hubitatDirectCtrl(cmd, 'setThermostatMode')
 
     def setHeatPoint(self, command):
         logging.debug('setHeatPoint : {}'.format(command))
