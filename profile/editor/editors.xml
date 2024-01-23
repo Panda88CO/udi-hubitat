@@ -137,5 +137,38 @@
         <range uom="25" subset="0-4,99" nls="CLIHCS" />
     </editor>
 
+    <editor id="setCLIMD">
+        <range uom="25" subset="0-3" nls="CLIHCS" />
+    </editor>
+
+
+    <editor id="CLIMD">
+        <range uom="25" subset="0-2,99" nls="CLIMD" />
+    </editor>
+
+
+    <editor id="CLIMD">
+        <range uom="25" subset="0-2,99" nls="CLIHCS" />
+    </editor>
+
+
+    <editor id="CLIFRS">
+        <range uom="25" subset="0-1,99" nls="CLIFRS" />
+    </editor>    
+
+    <editor id="CLIFS">
+        <range uom="25" subset="0-1" nls="CLIFRS" />
+    </editor>    
+
+    <editor id="CLISMD">
+        <range uom="25" subset="0-1,99" nls="CLISMD" />        
+    </editor>    
+    <editor id="setCLISMD">
+        <range uom="25" subset="0-1" nls="CLISMD" />        
+    </editor>    
+    <editor id="THERMOTEMP">
+        <range uom="17" min="45" max="92" prec="0" step="1" />
+    </editor>
+
 
 </editors>

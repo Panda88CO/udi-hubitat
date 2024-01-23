@@ -605,14 +605,12 @@ class EcobeeThermostat(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
 
-    def selectFanMode(self, command):
-        logging.debug('selectFanMode')
-
-    def selectThermostatMode(self, command):
-        logging.debug('selectThermostatMode')
+    def setOperationMode(self, command):
+        logging.debug('setOperationMode')
 
 
-    def setTHermostantMode(self, command):
+
+    def setThermostatMode(self, command):
         logging.debug('setTHermostantMode')
 
 
@@ -640,16 +638,16 @@ class EcobeeThermostat(HubitatBase):
         {'driver': 'CLISPH', 'value': 0, 'uom': 25}, # heat setpoint
         {'driver': 'CLIHCS', 'value': 0, 'uom': 25}, #"thermostatMode"
         {'driver': 'CLIFRS', 'value': 0, 'uom': 25}, #"thermostatFanMode"
-        {'driver': 'CLISPC', 'value': 0, 'uom': 25}, #"resumeProgram"
+        {'driver': 'CLISMD', 'value': 0, 'uom': 25}, #"resumeProgram"
         {'driver': 'ONLINE', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'   
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
     id = 'ECO_THERMOSTAT'
     commands = {    'QUERY'         : query,   
-                    'FANMODE'       : selectFanMode,
-                    'SETFANMODE'    : setFanMode,                    
-                    'THERMOSTATMODE': selectThermostatMode,
-                    'SETTHERMOSTAT' : setTHermostantMode,
+                    'FANMODE'       : setFanMode,
+            
+                    'THERMOSTATMODE': setThermostatMode,
+                    'OPERATIONMODE' : setOperationMode,
  
                     'HEATPOINT'     : setHeatPoint,  
                     'COOLPOINT'     : setCoolPoint

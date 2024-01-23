@@ -460,7 +460,8 @@
             <st id="CLISPH" editor="CLISPH" />
             <st id="CLIHCS" editor="CLIHCS" />
             <st id="CLIFRS" editor="CLIFRS" />
-            <st id="CLISPC" editor="CLISPC" />
+            <st id="CLIFS" editor="CLIFS" />
+            <st id="CLISMD" editor="CLISMD" />
             <st id="ONLINE" editor="ONLINE" />
             <!--<st id="GV10" editor="SET_POINT" /> -->
 
@@ -469,11 +470,24 @@
             <sends />
             <accepts>
                 <cmd id="QUERY" />
-                <cmd id="FANMODE" />
-                <cmd id="SETFANMODE" />
-                <cmd id="THERMOSTATMODE" />
-                <cmd id="SETTHERMOSTAT" />
-                <cmd id="HEATPOINT" />
+                <cmd  id="FANMODE" >
+                        <p id="" editor="setCLIMD" />
+                </cmd>
+
+                <cmd id="THERMOSTATMODE" >
+                        <p id="" editor="CLIFS" />
+                </cmd>
+                <cmd id="OPERATINGMODE" >
+                        <p id="" editor="setCLISMD" />
+                </cmd>
+                <cmd id="HEATPOINT" >
+                        <p id="" editor="THERMOTEMP" />
+                </cmd>
+                 </cmd>
+                <cmd id="COOLPOINT" >
+                        <p id="" editor="THERMOTEMP" />
+                </cmd>
+                               
                 <cmd id="COOLPOINT" />
 
 
