@@ -156,17 +156,6 @@ ST-fastpico-GV7-NAME = Pushed
 ST-fastpico-GV8-NAME = Released
 ST-remotebtn-GV9-NAME = Held
 
-# Generic Remote button Xiaomi/Aqara/Opple
-ND-remotebtnnnode-NAME = Pico Remote
-ND-remotebtnnnode-ICON = Switch
-ST-remotebtn-ST-NAME = Status
-ST-remotebtn-GV7-NAME = Pushed 
-ST-remotebtn-GV8-NAME = Released
-ST-remotebtn-GV9-NAME = Held
-CMD-remotebtn-PUSH_BTN-NAME = Push Button
-CMD-remotebtn-HOLD_BTN-NAME = Hold Button
-CMD-remotebtn-RELEASE_BTN-NAME = Release Button
-
 # Lutron Pico Buttons
 PICO_BUTTON-0 = N/A
 PICO_BUTTON-1 = 1
@@ -180,3 +169,50 @@ COLOR_MODE-0 = N/A
 COLOR_MODE-1 = CT
 COLOR_MODE-2 = RGB
 
+# Newly added   
+ONLINE-0 = Offline
+ONLINE-1 = Online
+ONLINE-99 = Unknow/Not supported
+
+MOTION-0 = Idle
+MOTION-1 = motion
+MOTION-99 = Unknow
+
+BATLVL-0 = Idle
+BATLVL-1 = motion
+BATLVL-99 = Unknow/No support
+
+# Generic Remote button Xiaomi/Aqara/Opple
+ND-remotebtnnnode-NAME = Pico Remote
+ND-remotebtnnnode-ICON = Switch
+ST-remotebtn-ST-NAME = Status
+ST-remotebtn-GV7-NAME = Pushed 
+ST-remotebtn-GV8-NAME = Released
+ST-remotebtn-GV9-NAME = Held
+CMD-remotebtn-PUSH_BTN-NAME = Push Button
+CMD-remotebtn-HOLD_BTN-NAME = Hold Button
+CMD-remotebtn-RELEASE_BTN-NAME = Release Button
+
+
+ND-ECO_SENSOR-NAME = Ecobee Sensor
+ND-ECO_SENSOR-ICON = MotionSensor
+ST-ECO_SENSOR-ST-NAME = Motion Detction
+ST-ECO_SENSOR-CLITEMP-NAME = Temperature
+ST-ECO_SENSOR-BATLVL-NAME = Battery Level
+
+
+
+ND-ECO_THERMOSTAT-NAME = Ecobee EcobeeThermostat
+ND-ECO_THERMOSTAT-ICON = setThermostatMode
+ST-ECO_THERMOSTAT-ST-NAME = Satate
+ST-ECO_THERMOSTAT-CLITEMP-NAME = Temperature
+ST-ECO_THERMOSTAT-BATLVL-NAME = Battery Level
+
+
+
+CLIHCS-0 = Auto
+CLIHCS-1 = Cool
+CLIHCS-2 = Heat
+CLIHCS-3 = Off
+CLIHCS-4 = Emergency Heat
+CLIHCS-99 = Unknown

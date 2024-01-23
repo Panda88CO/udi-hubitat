@@ -267,6 +267,12 @@ class Controller(udi_interface.Node):
             if 'PushableButton' in dev['capabilities']:
                 node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
 
+            if dev['type'] == 'Ecobee Thermostat':
+                node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )
+            
+            if dev['type'] == 'Ecobee Sensor':
+                node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+            
         # Build node list
         self.nodes = self.poly.getNodes()
         for node in self.nodes:
@@ -469,15 +475,32 @@ class Controller(udi_interface.Node):
                                 elif h_value == 'closed':
                                     m_node.setDriver('ST', 100)
                                     m_node.reportCmd('DOF', 2)
-                            elif h_name in ['auto', 'cool', 'heat', 'off', 'emergencyHeat']:
 
-                            elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off', 'emergencyHeat']:
+                            #Htemostat        
+                            elif h_name == 'thermostatMode':
+                                if h_value  == 'auto':
+
+                                elif h_value  == 'cool':
+
+                                elif h_value  == 'heat':                                    
+
+                                elif h_value  == 'off':
+
+                                elif h_value  == 'emergencyHeat':
+
+                                else:
+                                    
+
+
+
+
+                            elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
                             elif h_name in ['resumeProgram', 'SetAway']:
 
                             elif h_name in ['setCoolingSetpoint']:
 
-                            elif h_name in ['setHea tingSetpoint']: 
+                            elif h_name in ['setHeatingSetpoint']: 
 
                             else:
                                 print('Driver not implemented')

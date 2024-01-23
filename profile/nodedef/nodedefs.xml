@@ -420,6 +420,7 @@
             <st id="GV8" editor="REMOTE_BTN" />
             <st id="GV9" editor="REMOTE_BTN" />
             <st id="BATLVL" editor="BATLVL" />
+            <st id="ONLINE" editor="ONLINE" />
         </sts>
         <cmds>
             <sends />
@@ -435,14 +436,15 @@
     <nodeDef id="ECO_SENSOR" nls="ECO_SENSOR">
         <editors />
         <sts>
-            <st id="ST" editor="STATUS"/>
+            <st id="ST" editor="MOTION"/>
             <st id="CLITEMP" editor="CLITEMP" />
             <st id="BATLVL" editor="BATLVL" />
+            <st id="ONLINE" editor="ONLINE" />
         </sts>
         <cmds>
             <sends />
             <accepts>
-                <!--<cmd id="DIM" />-->
+                <cmd id="QUERY" />
             </accepts>
         </cmds>
     </nodeDef>
@@ -451,17 +453,30 @@
         <editors />
         <sts>
             <st id="ST" editor="bool" hide="True" />
-            <st id="GV7" editor="REMOTE_BTN" />
-            <st id="GV8" editor="REMOTE_BTN" />
-            <st id="GV9" editor="REMOTE_BTN" />
-            <st id="BATLVL" editor="BATLVL" />
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="CLIHUM" editor="CLIHUM" />
+            <st id="CLIMD" editor="CLIMD" />
+            <st id="CLISPC" editor="CLISPC" />
+            <st id="CLISPH" editor="CLISPH" />
+            <st id="CLIHCS" editor="CLIHCS" />
+            <st id="CLIFRS" editor="CLIFRS" />
+            <st id="CLISPC" editor="CLISPC" />
+            <st id="ONLINE" editor="ONLINE" />
+            <!--<st id="GV10" editor="SET_POINT" /> -->
+
         </sts>
         <cmds>
             <sends />
             <accepts>
-                <cmd id="PUSH_BTN" />
-                <cmd id="HOLD_BTN" />
-                <cmd id="RELEASE_BTN" />
+                <cmd id="QUERY" />
+                <cmd id="FANMODE" />
+                <cmd id="SETFANMODE" />
+                <cmd id="THERMOSTATMODE" />
+                <cmd id="SETTHERMOSTAT" />
+                <cmd id="HEATPOINT" />
+                <cmd id="COOLPOINT" />
+
+
                 <!--<cmd id="DIM" />-->
             </accepts>
         </cmds>

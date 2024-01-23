@@ -573,7 +573,7 @@ class SimpleRemoteNode(HubitatBase):
                 {'driver': 'GV7', 'value': 0, 'uom': 25},
                 {'driver': 'GV8', 'value': 0, 'uom': 25},
                 {'driver': 'GV9', 'value': 0, 'uom': 25},
-                {'driver': 'BATLVL', 'value': 0, 'uom': 51},
+                {'driver': 'BATLVL', 'value': 99, 'uom': 51},
                 ]
     id = 'remotebtnnnode'
     commands = {
@@ -591,7 +591,7 @@ class EcobeeSensor(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51},
         ]
     id = 'ECO_SENSOR'
     commands = {  'QUERY': query   }
@@ -604,24 +604,59 @@ class EcobeeThermostat(HubitatBase):
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
+
+    def selectFanMode(self, command):
+        logging.debug('selectFanMode')
+
+    def selectThermostatMode(self, command):
+        logging.debug('selectThermostatMode')
+
+
+    def setTHermostantMode(self, command):
+        logging.debug('setTHermostantMode')
+
+
+    def setFanMode(self, command):
+        logging.debug('setFanMode')
+
+
+    def setHeatPoint(self, command):
+        logging.debug('setHeatPoint')
+
+
+    def setCoolPoint(self, command):
+        logging.debug('setCoolPoint')        
+
+    def setTempUnit(self, t_unit):
+        logging.debug('setTempUnit')        
+
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},      
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 17},        
-        #{'driver': 'BATLVL', 'value': 0, 'uom': 51},
+        {'driver': 'ST', 'value': 0, 'uom': 78}, #'DeviceWatch-DeviceStatus'
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 17},    # 'humidity'    
+        #{'driver': 'CLIFS', 'value': 0, 'uom': 25},      # fan setting   'supportedThermostatFanModes'
+        {'driver': 'CLIMD', 'value': 0, 'uom': 25},  # heat/cool state: 'thermostat'
+        {'driver': 'CLISPC', 'value': 0, 'uom': 25},  # cool setpoint
+        {'driver': 'CLISPH', 'value': 0, 'uom': 25}, # heat setpoint
+        {'driver': 'CLIHCS', 'value': 0, 'uom': 25}, #"thermostatMode"
+        {'driver': 'CLIFRS', 'value': 0, 'uom': 25}, #"thermostatFanMode"
+        {'driver': 'CLISPC', 'value': 0, 'uom': 25}, #"resumeProgram"
+        {'driver': 'ONLINE', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'   
+        #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
     id = 'ECO_THERMOSTAT'
-    commands = {  'QUERY': query   }
-    '''
-    CLIEMD	Energy Mode
-CLIFRS	Fan Running State
-CLIFS	Fan Setting
-CLIFSO	Fan Setting Override
-CLIHCS	Heat/Cool State
-CLIHUM	Humidity
-CLIMD	Thermostat Mode
-CLISMD	Schedule Mode
-CLISPC	Cool Setpoint
-CLISPH	Heat Setpoint
-CLITEMP	Current Temperature
-    '''
+    commands = {    'QUERY'         : query,   
+                    'FANMODE'       : selectFanMode,
+                    'SETFANMODE'    : setFanMode,                    
+                    'THERMOSTATMODE': selectThermostatMode,
+                    'SETTHERMOSTAT' : setTHermostantMode,
+ 
+                    'HEATPOINT'     : setHeatPoint,  
+                    'COOLPOINT'     : setCoolPoint
+
+
+
+                
+                
+                
+                }
