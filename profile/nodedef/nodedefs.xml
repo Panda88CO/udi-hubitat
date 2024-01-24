@@ -487,7 +487,6 @@
                 <cmd id="HEATPOINT" >
                         <p id="" editor="THERMOTEMP" />
                 </cmd>
-                 </cmd>
                 <cmd id="COOLPOINT" >
                         <p id="" editor="THERMOTEMP" />
                 </cmd>
