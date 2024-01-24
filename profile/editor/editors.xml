@@ -22,7 +22,7 @@
     </editor>
 
     <editor id="CLITEMP">
-		<range uom="17" min="-40" max="149" step="1" prec="0" />
+		<range uom="17" min="-40" max="149" step="0.5" prec="1" />
 	</editor>
 
 	<editor id="CLIHUM">
@@ -171,8 +171,8 @@
         <range uom="25" subset="0-1" nls="CLISMD" />        
     </editor>    
 
-    <editor id="THERMOTEMP">
-        <range uom="17" min="45" max="92" prec="1" step="0.5" />
+    <editor id="TSTATTEMP">
+        <range uom="17" min="45" max="95" prec="1" step="0.5" />
     </editor>
 
 

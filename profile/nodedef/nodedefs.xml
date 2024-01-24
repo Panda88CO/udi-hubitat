@@ -438,8 +438,7 @@
         <editors />
         <sts>
             <st id="ST" editor="MOTION"/>
-
-            <st id="CLITEMP" editor="THERMOTEMP" />
+            <st id="CLITEMP" editor="CLITEMP" />
             <!--<st id="BATLVL" editor="BATLVL" /> -->
             <st id="GV20" editor="ONLINE" />
         </sts>
@@ -458,14 +457,14 @@
         <editors />
         <sts>
             <st id="ST"     editor="bool" hide="True"/>
-             <!--      
-            <st id="CLITEMP" editor="THERMOTEMP" />
+  
+            <st id="CLITEMP" editor="CLITEMP" />
             <st id="CLIHUM" editor="CLIHUM" />
      
             <st id="CLIMD"  editor="CLIMD" />
             <st id="CLIFS"  editor="CLIFS" />
             <st id="CLISPC" editor="CLISPC" />
- 11
+             <!--    
             <st id="CLISPH" editor="CLISPH" />
             <st id="CLIHCS" editor="CLIHCS" />
             <st id="CLIFRS" editor="CLIFRS" />
@@ -487,10 +486,10 @@
                         <p id="" editor="setCLISMD" init="CLIMD"/> 
                 </cmd>
                 <cmd id="HEATPOINT" >
-                        <p id="" editor="THERMOTEMP" init="70"/>
+                        <p id="" editor="TSTATTEMP" init="70"/>
                 </cmd>
                 <cmd id="COOLPOINT" >
-                        <p id="" editor="THERMOTEMP" init="90"/>
+                        <p id="" editor="TSTATTEMP" init="90"/>
                 </cmd> -->
             </accepts>
         </cmds>
