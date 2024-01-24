@@ -452,7 +452,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="ECO_THERMOSTAT" nls="ECO_THERMOSTAT">
+    <nodeDef id="ECO_TSTAT" nls="ECO_TSTAT">
         <editors />
         <sts>
             <st id="ST" editor="bool" hide="True" />
