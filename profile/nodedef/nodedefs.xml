@@ -438,7 +438,7 @@
         <sts>
             <st id="ST" editor="MOTION"/>
             <st id="CLITEMP" editor="CLITEMP" />
-            <st id="BATLVL" editor="BATLVL" />
+            <!--<st id="BATLVL" editor="BATLVL" /> -->
             <st id="ONLINE" editor="ONLINE" />
         </sts>
         <cmds>
