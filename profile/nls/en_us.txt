@@ -7,20 +7,20 @@ CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove Notices
 ST-ctl-ST-NAME = NodeServer Online
 
 #Generic for all Types
-CMD-DON-NAME = On
-CMD-DOF-NAME = Off
-CMD-DFON-NAME = Fast On
-CMD-DFOF-NAME = Fast Off
-CMD-BRT-NAME = Brighten
-CMD-DIM-NAME = Dim
-CMD-FDUP-NAME = Fade Up
-CMD-FDDOWN-NAME = Fade Down
-CMD-FDSTOP-NAME = Fade Stop
-CMD-QUERY-NAME = Query
-CMD-SETLVL-NAME = Set Level
-CMD-SET_HUE-NAME = Set Hue
-CMD-SET_SAT-NAME = Set Saturation
-CMD-SET_KELVIN-NAME = Set Color Temperature
+#CMD-DON-NAME = On
+#CMD-DOF-NAME = Off
+#CMD-DFON-NAME = Fast On
+#CMD-DFOF-NAME = Fast Off
+#CMD-BRT-NAME = Brighten
+#CMD-DIM-NAME = Dim
+#CMD-FDUP-NAME = Fade Up
+#CMD-FDDOWN-NAME = Fade Down
+#CMD-FDSTOP-NAME = Fade Stop
+#CMD-QUERY-NAME = Query
+#CMD-SETLVL-NAME = Set Level
+#CMD-SET_HUE-NAME = Set Hue
+#CMD-SET_SAT-NAME = Set Saturation
+#CMD-SET_KELVIN-NAME = Set Color Temperature
 
 #### New Generalized Entries
 # Generic Bulb Node
