@@ -472,7 +472,7 @@
             <sends />
             <accepts>
                 <cmd id="QUERY" />
-                <cmd  id="FANMODE" >
+                <!-- <cmd  id="FANMODE" >
                         <p id="" editor="setCLIMD" init="setCLIMD"/> 
                 </cmd>
                 <cmd id="TSTATMODE" >
@@ -486,7 +486,7 @@
                 </cmd>
                 <cmd id="COOLPOINT" >
                         <p id="" editor="THERMOTEMP" init="90"/>
-                </cmd> 
+                </cmd> --> 
             </accepts>
         </cmds>
     </nodeDef>
