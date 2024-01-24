@@ -464,7 +464,6 @@
             <st id="CLISPH" editor="CLISPH" />
             <st id="CLIHCS" editor="CLIHCS" />
             <st id="CLIFRS" editor="CLIFRS" />
-            <st id="CLIFS" editor="CLIFS" />
             <st id="CLISMD" editor="CLISMD" />
             <st id="GV20" editor="ONLINE" />
             <!--<st id="GV10" editor="SET_POINT" /> -->
@@ -489,11 +488,7 @@
                 <cmd id="COOLPOINT" >
                         <p id="" editor="THERMOTEMP" />
                 </cmd>
-                               
-                <cmd id="COOLPOINT" />
 
-
-                <!--<cmd id="DIM" />-->
             </accepts>
         </cmds>
     </nodeDef>
