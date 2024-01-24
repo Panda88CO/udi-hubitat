@@ -590,6 +590,7 @@ class SimpleRemoteNode(HubitatBase):
                 {'driver': 'GV8', 'value': 0, 'uom': 25},
                 {'driver': 'GV9', 'value': 0, 'uom': 25},
                 {'driver': 'BATLVL', 'value': 99, 'uom': 51},
+                {'driver': 'GV20', 'value': 99, 'uom': 25},
                 ]
     id = 'remotebtnnnode'
     commands = {
