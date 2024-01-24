@@ -412,6 +412,7 @@
             </accepts>
         </cmds>
     </nodeDef>
+
     <nodeDef id="remotebtnnnode" nls="remotebtn">
         <editors />
         <sts>
@@ -458,6 +459,7 @@
             <st id="ST"     editor="bool" hide="True"/>
             <st id="CLITEMP" editor="CLITEMP" />
             <st id="CLIHUM" editor="CLIHUM" />
+            <!--            
             <st id="CLIMD"  editor="CLIMD" />
             <st id="CLIFS"  editor="CLIFS" />
             <st id="CLISPC" editor="CLISPC" />

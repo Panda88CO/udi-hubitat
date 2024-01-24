@@ -605,7 +605,7 @@ class EcobeeSensor(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
+        {'driver': 'ST', 'value': 99, 'uom': 25 },
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
         {'driver': 'GV20', 'value': 99, 'uom': 25},
         ]
