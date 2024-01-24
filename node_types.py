@@ -700,7 +700,7 @@ class EcobeeThermostat(HubitatBase):
             logging.error('Unknow temp unit: {}'.format(t_unit))
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78}, #'DeviceWatch-DeviceStatus'
+        {'driver': 'ST', 'value': 0, 'uom': 2}, #'DeviceWatch-DeviceStatus'
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
         {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
         {'driver': 'CLIFS', 'value': 99, 'uom': 25},      # fan setting   'supportedThermostatFanModes'
