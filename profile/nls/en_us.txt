@@ -194,8 +194,8 @@ CMD-remotebtn-HOLD_BTN-NAME = Hold Button
 CMD-remotebtn-RELEASE_BTN-NAME = Release Button
 
 
-ND-ECOB_SENS-NAME = Ecobee Sensor
-ND-ECOB_SENS-ICON = MotionSensor
+ND-ECOBSENSOR-NAME = Ecobee Sensor
+ND-ECOBSENSOR-ICON = MotionSensor
 ST-ECOB_SENSOR-ST-NAME = Motion Detction
 ST-ECOB_SENSOR-CLITEMP-NAME = Temperature
 ST-ECOB_SENSOR-GV20-NAME = Online
@@ -203,8 +203,8 @@ ST--BATLVL-NAME = Battery Level
 CMD-ECOB_SENSOR-QUERY-NAME = Update
 
 
-ND-ECOB_TSTAT-NAME = Ecobee EcobeeThermostat
-ND-ECOB_TSTAT-ICON = setThermostatMode
+ND-ECOBTSTAT-NAME = Ecobee EcobeeThermostat
+ND-ECOBTSTAT-ICON = setThermostatMode
 ST-ECO_TSTAT-ST-NAME = Satate
 ST-ECO_TSTAT-CLITEMP-NAME = Temperature
 ST-ECO_TSTAT-CLIHUM-NAME = Humidity
