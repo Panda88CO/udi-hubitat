@@ -28,6 +28,8 @@ ND-STD_LAMP-NAME = Standard Light
 ND-STD_LAMP-ICON = Lamp
 ST-STDL-ST-NAME = Status
 ST-STDL-OL-NAME = On Level
+CMD-STDL-SETLVL-NAME = Set On Level
+CMD-STDL-QUERY-NAME = Update
 
 # Generic RGBW Bulb Node
 ND-COLOR_LIGHT-NAME = Color Light
@@ -175,12 +177,12 @@ ONLINE-1 = Online
 ONLINE-99 = Unknow/Not supported
 
 MOTION-0 = Idle
-MOTION-1 = motion
-MOTION-99 = Unknow
+MOTION-1 = Motion
+MOTION-99 = Unknown
 
-BATLVL-0 = Idle
-BATLVL-1 = motion
-BATLVL-99 = Unknow/No support
+#BATLVL-0 = Idle
+#BATLVL-1 = motion
+#BATLVL-99 = Unknow/No support
 
 # Generic Remote button Xiaomi/Aqara/Opple
 ND-remotebtnnnode-NAME = Pico Remote
