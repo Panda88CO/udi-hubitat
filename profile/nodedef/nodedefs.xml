@@ -455,7 +455,7 @@
     <nodeDef id="ECOB_TSTAT" nls="ECO_TSTAT">
         <editors />
         <sts>
-            <st id="ST"     editor="bool" hide="True" />
+            <st id="ST"     editor="bool" />
             <st id="CLITEMP" editor="CLITEMP" />
             <st id="CLIHUM" editor="CLIHUM" />
             <st id="CLIMD"  editor="CLIMD" />
