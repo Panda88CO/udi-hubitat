@@ -439,7 +439,7 @@
             <st id="ST" editor="MOTION"/>
             <st id="CLITEMP" editor="CLITEMP" />
             <!--<st id="BATLVL" editor="BATLVL" /> -->
-            <st id="ONLINE" editor="ONLINE" />
+            <st id="" editor="ONLINE" />
         </sts>
         <cmds>
             <sends >
@@ -477,7 +477,6 @@
                 <cmd  id="FANMODE" >
                         <p id="" editor="setCLIMD" />
                 </cmd>
-
                 <cmd id="THERMOSTATMODE" >
                         <p id="" editor="CLIFS" />
                 </cmd>
