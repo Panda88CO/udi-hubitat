@@ -467,7 +467,6 @@
             <st id="CLISMD" editor="CLISMD" />
             <st id="GV20" editor="ONLINE" />
             <!--<st id="GV10" editor="SET_POINT" /> -->
-
         </sts>
         <cmds>
             <sends />
@@ -476,10 +475,10 @@
                 <cmd  id="FANMODE" >
                         <p id="" editor="setCLIMD" />
                 </cmd>
-                <cmd id="THERMOSTATMODE" >
+                <cmd id="TSTATMODE" >
                         <p id="" editor="CLIFS" />
                 </cmd>
-                <cmd id="OPERATINGMODE" >
+                <cmd id="OPMODE" >
                         <p id="" editor="setCLISMD" />
                 </cmd>
                 <cmd id="HEATPOINT" >
@@ -487,7 +486,7 @@
                 </cmd>
                 <cmd id="COOLPOINT" >
                         <p id="" editor="THERMOTEMP" />
-                </cmd>
+                </cmd> 
 
             </accepts>
         </cmds>

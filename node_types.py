@@ -716,16 +716,9 @@ class EcobeeThermostat(HubitatBase):
     id = 'ECOB_TSTAT'
     commands = {    'QUERY'         : query,   
                     'FANMODE'       : setFanMode,
-            
-                    'THERMOSTATMODE': setThermostatMode,
-                    'OPERATIONMODE' : setOperationMode,
- 
+                    'TSTATMODE'     : setThermostatMode,
+                    'OPMODE'        : setOperationMode,
                     'HEATPOINT'     : setHeatPoint,  
                     'COOLPOINT'     : setCoolPoint
 
-
-
-                
-                
-                
                 }
