@@ -433,13 +433,13 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="ECOB_SENS" nls="ECOB_SENSOR">
+    <nodeDef id="ECOBSENSOR" nls="ECOB_SENSOR">
         <editors />
         <sts>
             <st id="ST" editor="MOTION"/>
             <st id="CLITEMP" editor="CLITEMP" />
             <!--<st id="BATLVL" editor="BATLVL" /> -->
-            <st id="" editor="ONLINE" />
+            <st id="GV20" editor="ONLINE" />
         </sts>
         <cmds>
             <sends >
@@ -452,10 +452,10 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="ECOB_TSTAT" nls="ECO_TSTAT">
+    <nodeDef id="ECOBTSTAT" nls="ECO_TSTAT">
         <editors />
         <sts>
-            <st id="ST"     editor="bool" />
+            <st id="ST"     editor="bool" hide="True"/>
             <st id="CLITEMP" editor="CLITEMP" />
             <st id="CLIHUM" editor="CLIHUM" />
             <st id="CLIMD"  editor="CLIMD" />

@@ -609,7 +609,7 @@ class EcobeeSensor(HubitatBase):
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
         {'driver': 'GV20', 'value': 99, 'uom': 25},
         ]
-    id = 'ECOB_SENSOR'
+    id = 'ECOBSENSOR'
     commands = {  'QUERY': query   }
 
 
@@ -713,7 +713,7 @@ class EcobeeThermostat(HubitatBase):
         {'driver': 'GV20', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
-    id = 'ECOB_TSTAT'
+    id = 'ECOBTSTAT'
     commands = {    'QUERY'         : query,   
                     'FANMODE'       : setFanMode,
                     'TSTATMODE'     : setThermostatMode,
