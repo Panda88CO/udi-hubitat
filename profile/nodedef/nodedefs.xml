@@ -433,7 +433,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="ECO_SENSOR" nls="ECO_SENSOR">
+    <nodeDef id="ECOB_SENS" nls="ECOB_SENSOR">
         <editors />
         <sts>
             <st id="ST" editor="MOTION"/>
@@ -452,7 +452,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="ECO_TSTAT" nls="ECO_TSTAT">
+    <nodeDef id="ECOB_TSTAT" nls="ECO_TSTAT">
         <editors />
         <sts>
             <st id="ST" editor="bool" hide="True" />
