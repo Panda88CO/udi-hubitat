@@ -473,19 +473,19 @@
             <accepts>
                 <cmd id="QUERY" />
                 <cmd  id="FANMODE" >
-                        <p id="" editor="setCLIMD" init="setCLIMD"/> />
+                        <p id="" editor="setCLIMD" init="setCLIMD"/> 
                 </cmd>
                 <cmd id="TSTATMODE" >
-                        <p id="" editor="CLIFS" init="CLIFS"/> />
+                        <p id="" editor="CLIFS" init="CLIFS"/> 
                 </cmd>
                 <cmd id="OPMODE" >
-                        <p id="" editor="setCLISMD" init="CLIMD"/> />
+                        <p id="" editor="setCLISMD" init="CLIMD"/> 
                 </cmd>
                 <cmd id="HEATPOINT" >
-                        <p id="" editor="THERMOTEMP" init="70"/>/>
+                        <p id="" editor="THERMOTEMP" init="70"/>
                 </cmd>
                 <cmd id="COOLPOINT" >
-                        <p id="" editor="THERMOTEMP" init="90"/>/>
+                        <p id="" editor="THERMOTEMP" init="90"/>
                 </cmd> 
             </accepts>
         </cmds>
