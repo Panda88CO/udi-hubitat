@@ -478,9 +478,9 @@ class Controller(udi_interface.Node):
 
                             elif h_name== 'DeviceWatch-DeviceStatus':
                                 if h_value == 'online':
-                                    m_node.setDriver('ONLINE', 1)
+                                    m_node.setDriver('GV20', 1)
                                 else:
-                                    m_node.setDriver('ONLINE', 0)
+                                    m_node.setDriver('GV20', 0)
                             elif h_name== 'deviceAlive':
                                 if h_value == 'online':
                                     m_node.setDriver('ST', 1)

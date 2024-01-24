@@ -420,7 +420,7 @@
             <st id="GV8" editor="REMOTE_BTN" />
             <st id="GV9" editor="REMOTE_BTN" />
             <st id="BATLVL" editor="BATLVL" />
-            <st id="ONLINE" editor="ONLINE" />
+            <st id="GV20" editor="ONLINE" />
         </sts>
         <cmds>
             <sends />
@@ -466,7 +466,7 @@
             <st id="CLIFRS" editor="CLIFRS" />
             <st id="CLIFS" editor="CLIFS" />
             <st id="CLISMD" editor="CLISMD" />
-            <st id="ONLINE" editor="ONLINE" />
+            <st id="GV20" editor="ONLINE" />
             <!--<st id="GV10" editor="SET_POINT" /> -->
 
         </sts>
