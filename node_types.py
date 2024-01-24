@@ -710,7 +710,7 @@ class EcobeeThermostat(HubitatBase):
         {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
         {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
         {'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
-        {'driver': 'GV20', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'   
+        {'driver': 'GV20', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
     id = 'ECOB_TSTAT'
