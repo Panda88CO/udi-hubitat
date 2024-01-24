@@ -452,7 +452,7 @@ class Controller(udi_interface.Node):
                                     if tmp <= 0:
                                         tmp = 0
                                     if tmp >= 5:
-                                        tmp = 5        
+                                        tmp = 5
                                     m_node.setDriver('GV9',tmp)
                                 else:
                                     logging.error ('Unexpected value: {}'.format(h_value))
@@ -505,9 +505,9 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIMD', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name== 'coolingSetpoint':
-                                    m_node.setDriver('CLISPC', round(int(h_value*2.0)/2, 1))
+                                    m_node.setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1))
                             elif h_name== 'heatingSetpoint':
-                                    m_node.setDriver('CLISPH', round(int(h_value*2.0)/2, 1))
+                                    m_node.setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1))
                             elif h_name == 'thermostatFanMode':
                                 if h_value  == 'auto':
                                     m_node.setDriver('CLIFRS', 0)
