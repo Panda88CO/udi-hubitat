@@ -625,10 +625,10 @@ class EcobeeThermostat(HubitatBase):
         
 
         logging.debug('setOperationMode')
-        cmd = command:
+        cmd = command
         if command.get('value') == 0:
             cmd['value'] = 'Auto'
-            HubitatBase.hubitatDirectCtrl(cmd, 'setThermostatMode')
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
 
         
 
@@ -650,7 +650,7 @@ class EcobeeThermostat(HubitatBase):
         cmd = command
         if command.get('value') == 0:
             cmd['value'] = 'auto'
-            HubitatBase.hubitatDirectCtrl(cmd, 'setThermostatMode')
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
             #HubitatBase.hubitatDirectCtrl(cmd, 'auto')
 
         elif command.get('value') == 1:
@@ -680,15 +680,15 @@ class EcobeeThermostat(HubitatBase):
             cmd['value'] = 'circulate'
         else:
             logging.error('setFanMode unexpected command: {}'.format(command.get('value') ))           
-        HubitatBase.hubitatDirectCtrl(cmd, 'setThermostatMode')
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
 
     def setHeatPoint(self, command):
         logging.debug('setHeatPoint : {}'.format(command))
-        HubitatBase.hubitatDirectCtrl(command, 'setHeatingSetpoint')
+        HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
 
     def setCoolPoint(self, command):
         logging.debug('setCoolPoint : {}'.format(command))      
-        HubitatBase.hubitatDirectCtrl(command, 'setHeatingSetpoint')
+        HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
 
     def setTempUnit(self, t_unit):
         logging.debug('setTempUnit')
