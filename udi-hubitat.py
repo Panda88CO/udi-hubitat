@@ -202,18 +202,18 @@ class Controller(udi_interface.Node):
             #     self.addNode(node_types.FibaroZW5Node(self.poly,  self.address, _id, _label, self.maker_uri ))
             if dev['type'] == 'Lutron Pico':
                 node_types.LutronPicoNode(self.poly, self.address, _id, _label, self.maker_uri )
-            if dev['type'] == 'Lutron Fast Pico':
+            elif dev['type'] == 'Lutron Fast Pico':
                 node_types.LutronFastPicoNode( self.poly, self.address, _id, _label, self.maker_uri )
-            if dev['type'] == 'Virtual Switch':
+            elif dev['type'] == 'Virtual Switch':
                 node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
-            if dev['type'] == 'Virtual Dimmer':
+            elif dev['type'] == 'Virtual Dimmer':
                 node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
-            if dev['type'] == 'Ecobee Sensor':
+            elif dev['type'] == 'Ecobee Sensor':
                 node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
-            if dev['type'] == 'Ecobee Thermostat':
+            elif dev['type'] == 'Ecobee Thermostat':
                 node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
                 pass
-            if 'Light' in dev['capabilities'] and 'Switch' not in dev['capabilities']  : # changed 
+            elif 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
                     if 'ColorControl' in dev['capabilities']:
                         node_types.RgbLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
@@ -222,13 +222,13 @@ class Controller(udi_interface.Node):
                 else:
                     node_types.StdLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
-            if 'Outlet' in dev['capabilities']:
+            elif 'Outlet' in dev['capabilities']:
                 if 'EnergyMeter' in dev['capabilities']:
                     node_types.EnergyOutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
                     node_types.OutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
-            if 'Switch' in dev['capabilities']:
+            elif 'Switch' in dev['capabilities']:
                 if 'Virtual' not in dev['type']:
                     if 'Outlet' not in dev['capabilities']:
                         if 'Light' not in dev['capabilities']:
@@ -240,7 +240,7 @@ class Controller(udi_interface.Node):
                             else:
                                 node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
-            if 'MotionSensor' in dev['capabilities']:
+            elif 'MotionSensor' in dev['capabilities']:
                 if 'TemperatureMeasurement' in dev['capabilities'] and 'IlluminanceMeasurement' in dev['capabilities']:
                     if 'AccelerationSensor' in dev['capabilities']:
                         node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label, self.maker_uri )
@@ -258,20 +258,16 @@ class Controller(udi_interface.Node):
                 else:
                     node_types.MotionSensor(self.poly,  self.address, _id, _label, self.maker_uri )
 
-            if dev['type'] == 'Sonoff Zigbee Temperature/Humidity Sensor':
+            elif dev['type'] == 'Sonoff Zigbee Temperature/Humidity Sensor':
                 node_types.THSensor(self.poly,  self.address, _id, _label, self.maker_uri )
 
-            if 'ContactSensor' in dev['capabilities']:
+            elif 'ContactSensor' in dev['capabilities']:
                 node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
             # newly added
-            if 'PushableButton' in dev['capabilities']:
+            elif 'PushableButton' in dev['capabilities']:
                 node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
 
-            if dev['type'] == 'Ecobee Thermostat':
-                node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )
-            
-            if dev['type'] == 'Ecobee Sensor':
-                node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+
             
         # Build node list
         self.nodes = self.poly.getNodes()
