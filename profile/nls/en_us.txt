@@ -1,10 +1,11 @@
 # controller
 ND-controller-NAME = Hubitat Elevation
 ND-controller-ICON = GenericCtl
+ST-ctl-ST-NAME = NodeServer Online
 CMD-ctl-DISCOVER-NAME = Re-Discover
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove Notices
-ST-ctl-ST-NAME = NodeServer Online
+
 
 #Generic for all Types
 #CMD-DON-NAME = On
