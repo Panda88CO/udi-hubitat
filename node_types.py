@@ -188,6 +188,12 @@ class StdLampNode(HubitatBase):
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
+    def set_level (self, command):
+        logging.debug('StdLampNode set_level : {}'.format(command.get('value')))
+        cmd = command
+        cmd['value'] = str(command.get('value'))
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'setLevel')
+
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'OL', 'value': 0, 'uom': 51}
@@ -195,7 +201,7 @@ class StdLampNode(HubitatBase):
     id = 'STD_LAMP'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
-        'SETLVL': HubitatBase.hubitatCtl
+        'SETLVL': set_level
     }
 
 

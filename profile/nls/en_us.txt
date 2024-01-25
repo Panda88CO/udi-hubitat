@@ -191,6 +191,7 @@ ST-remotebtn-ST-NAME = Status
 ST-remotebtn-GV7-NAME = Pushed 
 ST-remotebtn-GV8-NAME = Released
 ST-remotebtn-GV9-NAME = Held
+ST-remotebtn-GV20-NAME = Online
 CMD-remotebtn-PUSH_BTN-NAME = Push Button
 CMD-remotebtn-HOLD_BTN-NAME = Hold Button
 CMD-remotebtn-RELEASE_BTN-NAME = Release Button
