@@ -213,7 +213,7 @@ class Controller(udi_interface.Node):
             if dev['type'] == 'Ecobee Thermostat':
                 node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
                 pass
-            if 'Light' in dev['capabilities']:
+            if 'Light' in dev['capabilities'] and 'Switch' not in dev['capabilities']  : # changed 
                 if 'ColorTemperature' in dev['capabilities']:
                     if 'ColorControl' in dev['capabilities']:
                         node_types.RgbLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
