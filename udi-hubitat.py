@@ -406,6 +406,7 @@ class Controller(udi_interface.Node):
                                     if tmp >= 5:
                                         tmp = 5        
                                     m_node.setDriver('GV8',tmp)
+                                    m_node.reportCmd('DON', 2)
                                 else:
                                     logging.error ('Unexpected value: {}'.format(h_value))
                                 '''                                
@@ -430,6 +431,7 @@ class Controller(udi_interface.Node):
                                     if tmp >= 5:
                                         tmp = 5        
                                     m_node.setDriver('GV8',tmp)
+                                    m_node.reportCmd('DOF', 2)
                                 else:
                                     logging.error ('Unexpected value: {}'.format(h_value))
                                 '''

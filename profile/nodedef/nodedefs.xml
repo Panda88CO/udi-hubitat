@@ -34,7 +34,6 @@
             <accepts>
                 <cmd id="DON" />
                 <cmd id="DOF" />
-                <cmd id="OL" />
                 <cmd id="QUERY" />
                 <cmd id="SETLVL">
                     <p id="" editor="OL"  init="100"/>
@@ -416,20 +415,23 @@
     <nodeDef id="remotebtnnnode" nls="remotebtn">
         <editors />
         <sts>
-            <st id="ST" editor="bool" hide="True" />
-            <st id="GV7" editor="REMOTE_BTN" />
-            <st id="GV8" editor="REMOTE_BTN" />
-            <st id="GV9" editor="REMOTE_BTN" />
+            <st id="ST"     editor="bool" hide="True" />
+            <st id="GV7"    editor="REMOTE_BTN" />
+            <st id="GV8"    editor="REMOTE_BTN" />
+            <st id="GV9"    editor="REMOTE_BTN" />
             <st id="BATLVL" editor="BATLVL" />
-            <st id="GV20" editor="ONLINE" />
+            <st id="GV20"   editor="ONLINE" />
         </sts>
         <cmds>
-            <sends />
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
             <accepts>
                 <cmd id="PUSH_BTN" />
                 <cmd id="HOLD_BTN" />
                 <cmd id="RELEASE_BTN" />
-                <!--<cmd id="DIM" />-->
+                <cmd id="QUERY" />
             </accepts>
         </cmds>
     </nodeDef>

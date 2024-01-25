@@ -193,7 +193,8 @@ class StdLampNode(HubitatBase):
         cmd = command
         cmd['value'] = str(command.get('value'))
         HubitatBase.hubitatDirectCtrl(self, cmd, 'setLevel')
-
+        self.node.reportCmd('OL', command.get('value'))
+        
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'OL', 'value': 0, 'uom': 51}
