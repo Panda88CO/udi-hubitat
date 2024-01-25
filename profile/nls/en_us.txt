@@ -172,9 +172,6 @@ COLOR_MODE-1 = CT
 COLOR_MODE-2 = RGB
 
 # Newly added   
-ONLINE-0 = Offline
-ONLINE-1 = Online
-ONLINE-99 = Unknow/Not supported
 
 MOTION-0 = Idle
 MOTION-1 = Motion
@@ -185,16 +182,22 @@ MOTION-99 = Unknown
 #BATLVL-99 = Unknow/No support
 
 # Generic Remote button Xiaomi/Aqara/Opple
-ND-remotebtnnnode-NAME = Pico Remote
-ND-remotebtnnnode-ICON = Switch
+ND-remotebtnnode-NAME = Pico Remote
+ND-remotebtnnode-ICON = Switch
 ST-remotebtn-ST-NAME = Status
 ST-remotebtn-GV7-NAME = Pushed 
 ST-remotebtn-GV8-NAME = Released
 ST-remotebtn-GV9-NAME = Held
+ST-remotebtn-BATLVL-NAME = Battery Level
 ST-remotebtn-GV20-NAME = Online
 CMD-remotebtn-PUSH_BTN-NAME = Push Button
 CMD-remotebtn-HOLD_BTN-NAME = Hold Button
 CMD-remotebtn-RELEASE_BTN-NAME = Release Button
+CMD-remotebtn-QUERY-NAME = Update
+
+ONLINE-0 = Offline
+ONLINE-1 = Online
+ONLINE-99 = Unknow/Not supported
 
 
 ND-ECOBSENSOR-NAME = Ecobee Sensor

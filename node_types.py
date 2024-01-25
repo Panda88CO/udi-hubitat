@@ -194,7 +194,7 @@ class StdLampNode(HubitatBase):
         cmd['value'] = str(command.get('value'))
         HubitatBase.hubitatDirectCtrl(self, cmd, 'setLevel')
         self.node.reportCmd('OL', command.get('value'))
-        
+
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'OL', 'value': 0, 'uom': 51}
@@ -599,7 +599,7 @@ class SimpleRemoteNode(HubitatBase):
                 {'driver': 'BATLVL', 'value': 99, 'uom': 51},
                 {'driver': 'GV20', 'value': 99, 'uom': 25},
                 ]
-    id = 'remotebtnnnode'
+    id = 'remotebtnnode'
     commands = {
         'PUSH_BTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl, 'QUERY': query
     }

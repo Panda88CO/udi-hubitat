@@ -411,7 +411,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="remotebtnnnode" nls="remotebtn">
+    <nodeDef id="remotebtnnode" nls="remotebtn">
         <editors />
         <sts>
             <st id="ST"     editor="bool" hide="True" />
