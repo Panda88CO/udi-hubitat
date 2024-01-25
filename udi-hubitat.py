@@ -202,6 +202,7 @@ class Controller(udi_interface.Node):
             #     self.addNode(node_types.FibaroZW5Node(self.poly,  self.address, _id, _label, self.maker_uri ))
             if dev['type'] == 'Lutron Pico':
                 node_types.LutronPicoNode(self.poly, self.address, _id, _label, self.maker_uri )
+                '''
             elif dev['type'] == 'Lutron Fast Pico':
                 node_types.LutronFastPicoNode( self.poly, self.address, _id, _label, self.maker_uri )
             elif dev['type'] == 'Virtual Switch':
@@ -212,7 +213,7 @@ class Controller(udi_interface.Node):
                 node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
             elif dev['type'] == 'Ecobee Thermostat':
                 node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
-                pass
+            '''
             elif 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
                     if 'ColorControl' in dev['capabilities']:
@@ -221,7 +222,7 @@ class Controller(udi_interface.Node):
                         node_types.CtLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
                     node_types.StdLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
-
+            '''
             elif 'Outlet' in dev['capabilities']:
                 if 'EnergyMeter' in dev['capabilities']:
                     node_types.EnergyOutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
@@ -266,7 +267,7 @@ class Controller(udi_interface.Node):
             # newly added
             elif 'PushableButton' in dev['capabilities']:
                 node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
-
+            '''
 
             
         # Build node list
