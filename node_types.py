@@ -204,7 +204,7 @@ class StdLampNode(HubitatBase):
     id = 'STDLAMP'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
-        'SETLVL': set_level
+        'SET_LVL': set_level
     }
 
 

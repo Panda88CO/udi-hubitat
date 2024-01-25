@@ -88,6 +88,7 @@
     <editor id="PICO_BUTTON">
         <range uom="25" subset="0-5" nls="PICO_BUTTON" />
     </editor> -->
+    
     <editor id="PICO_BUTTON">
         <range uom="57" min="0" max="5" step="1" prec="0"  />
     </editor>
@@ -121,8 +122,6 @@
     </editor>
 
     <!--Newly added-->
-
-   
     <editor id="ONLINE">
         <range uom="25" subset="0-1,99" nls="ONLINE" />
     </editor>
@@ -130,7 +129,6 @@
     <editor id="MOTION">
         <range uom="25" subset="0-1,99" nls="MOTION" />
     </editor>
-
 
     <!--Thermostat mode -->
     <editor id="CLIHCS">
@@ -141,11 +139,9 @@
         <range uom="25" subset="0-4" nls="CLIHCS" />
     </editor>
 
-
     <editor id="CLIMD">
         <range uom="25" subset="0-2,99" nls="CLIMD" />
     </editor>
-
 
     <editor id="CLIHCS">
         <range uom="25" subset="0-2,99" nls="CLIHCS" />
@@ -156,17 +152,20 @@
 
     <editor id="CLIFRS">
         <range uom="25" subset="0-2,99" nls="CLIFRS" />
-    </editor>    
+    </editor> 
+
     <editor id="CLIFS">
         <range uom="25" subset="0-2,99" nls="CLIFRS" />
-    </editor>    
+    </editor> 
+
     <editor id="CLIFS">
         <range uom="25" subset="0-1" nls="CLIFRS" />
     </editor>    
 
     <editor id="CLISMD">
         <range uom="25" subset="1-3,5,99" nls="CLISMD" />        
-    </editor>    
+    </editor>
+
     <editor id="setCLISMD">
         <range uom="25" subset="0-1" nls="CLISMD" />        
     </editor>    
