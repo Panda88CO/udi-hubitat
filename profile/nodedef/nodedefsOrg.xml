@@ -1,0 +1,501 @@
+<nodeDefs>
+    <!-- NODE DEF from 5.0 document http://wiki.universal-devices.com/index.php?title=V50_MAIN -->
+    <!-- controller -->
+    <nodeDef id="controller" nls="ctl">
+        <editors />
+        <sts>
+			<st id="ST" editor="bool" />
+		</sts>
+        <cmds>
+            <sends />
+            <accepts>
+              <cmd id="DISCOVER" />
+              <cmd id="REMOVE_NOTICES_ALL" />
+              <cmd id="UPDATE_PROFILE" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <!--New Generalized definitions -->
+
+    <!--Generic Lamp/Bulb -->
+     <nodeDef id="STDLAMP" nls="STDL">
+        <editors />
+        <sts>
+            <st id="ST" editor="ONOFF" />
+            <st id="OL" editor="OL"/>
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="OL" />
+            </sends>
+            <accepts>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="QUERY" />
+                <cmd id="SETLVL">
+                    <p id="" editor="OL"  init="75"/>
+                </cmd>
+            </accepts>
+        </cmds>
+    </nodeDef>
+    
+    <!-- Color Lamp/Bulb/Light -->
+    
+    <nodeDef id="COLOR_LIGHT" nls="ZCL">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="OL" editor="OL"/> <!-- Brightness -->
+            <st id="GV3" editor="ZCLHUE" /> <!-- Hue -->
+            <st id="GV4" editor="ZCLSAT" /> <!-- Saturation -->
+            <st id="GV5" editor="COLOR_MODE"/> <!-- Color Mode -->
+            <st id="GV6" editor="KELVIN" /> <!-- Color Temperature -->
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="QUERY" />
+                <cmd id="SETLVL">
+                    <p id="" editor="OL"/>
+                </cmd>
+                <cmd id="SET_HUE">
+                    <p id="" editor="ZCLHUE" init="GV3"/>
+                </cmd>
+                <cmd id="SET_SAT">
+                    <p id="" editor="ZCLSAT" init="GV4"/>
+                </cmd>
+                <cmd id="SET_KELVIN">
+                    <p id="" editor="KELVIN" init="GV6"/>
+                </cmd>
+            </sends>
+            <accepts>
+	            <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="DFON" />
+                <cmd id="DFOF" />
+                <cmd id="QUERY" />
+                <cmd id="SETLVL">
+                    <p id="" editor="OL"/>
+                </cmd>
+                <cmd id="SET_HUE">
+                    <p id="" editor="ZCLHUE" init="GV3"/>
+                </cmd>
+                <cmd id="SET_SAT">
+                    <p id="" editor="ZCLSAT" init="GV4"/>
+                </cmd>
+                <cmd id="SET_KELVIN">
+                    <p id="" editor="KELVIN" init="GV6"/>
+                </cmd>
+                <!--
+                <cmd id="BRT" />
+                <cmd id="DIM" />
+                <cmd id="FDUP" />
+                <cmd id="FDDOWN" />
+                <cmd id="FDSTOP" />
+                <cmd id="QUERY" />
+                <cmd id="SET_COLOR_RGB">
+                    <p id="R" editor="ZCLRGB" />
+                    <p id="G" editor="ZCLRGB" />
+                    <p id="B" editor="ZCLRGB" />
+                    <p id="D" editor="HDURATION" init="RR" />
+                    <p id="BR" editor="ZCLBRI" init="GV5" />
+                </cmd>
+                <cmd id="SET_COLOR_XY">
+                    <p id="X" editor="ZCLXY" init="GV1" />
+                    <p id="Y" editor="ZCLXY" init="GV2" />
+                    <p id="D" editor="HDURATION" init="RR" />
+                    <p id="BR" editor="ZCLBRI" init="GV5" />
+                </cmd>
+                <cmd id="SET_COLOR">
+                    <p id="" editor="HCSEL" />
+                </cmd>
+                -->
+                <!--<cmd id="RR">
+                    <p id="" editor="HDURATION" init="RR" />
+                </cmd>
+                <cmd id="SET_HSB">
+                    <p id="H" editor="ZCLHUE" init="GV3" />
+                    <p id="S" editor="ZCLSAT" init="GV4" />
+                    <p id="BR" editor="ZCLBRI" init="GV5" />
+                </cmd>-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+    -->
+
+    <nodeDef id="ENERGY_OUTLET" nls="EOUTLET">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="CC" editor="CC" />
+            <st id="CPW" editor="CPW" />
+            <st id="CV" editor="CV" />
+            <st id="TPW" editor="TPW" />
+            <st id="GV0" editor="CURRENT_H" />
+            <st id="GV1" editor="CURRENT_L" />
+            <st id="GV2" editor="POWER_H" />
+            <st id="GV3" editor="POWER_L" />
+            <st id="GV4" editor="VOLTAGE_H" />
+            <st id="GV5" editor="VOLTAGE_L" />
+            <st id="GV6" editor="ENERGY_DURATION" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="QUERY" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="OUTLET" nls="OUTLET">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="QUERY" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="SWITCH" nls="SWITCH">
+            <editors />
+            <sts>
+                <st id="ST" editor="STATUS" />
+            </sts>
+            <cmds>
+                <sends>
+                    <cmd id="DON" />
+                    <cmd id="DOF" />
+                </sends>
+                <accepts>
+                    <cmd id="DON" />
+                    <cmd id="DOF" />
+                    <cmd id="QUERY" />
+                </accepts>
+            </cmds>
+        </nodeDef>
+
+    <nodeDef id="DIMMER" nls="DIMMER">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="OL" editor="OL"/>
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="OL" />
+            </sends>
+            <accepts>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+                <cmd id="QUERY" />
+                <cmd id="SETLVL">
+                    <p id="" editor="OL"/>
+                </cmd>
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="MSTHLA_SENSOR" nls="MSTHLA">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="CLIHUM" editor="CLIHUM" />
+            <st id="LUMIN" editor="LUMIN" />
+            <st id="ALARM" editor="ALARM" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="MSTLAS_SENSOR" nls="MSTLAS">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="LUMIN" editor="LUMIN" />
+            <st id="ALARM" editor="ALARM" />
+            <st id="SPEED" editor="SPEED" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="MSTH_SENSOR" nls="MSTH">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="CLIHUM" editor="CLIHUM" />
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="MST_SENSOR" nls="MST">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="CLITEMP" editor="CLITEMP" />
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="MSTL_SENSOR" nls="MSTL">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="LUMIN" editor="LUMIN" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="MSL_SENSOR" nls="MSL">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="LUMIN" editor="LUMIN" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="MSSENSOR" nls="MS">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="BATLVL" editor="BATLVL" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="TH_SENSOR" nls="TH">
+        <editors />
+        <sts>
+            <st id="ST" editor="STATUS" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="CLIHUM" editor="CLIHUM" />
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="CONTACT_SENSOR" nls="CONTACT">
+        <editors />
+        <sts>
+            <st id="ST" editor="CONTACT" />
+            <st id="BATLVL" editor="BATLVL" />
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+
+    <!--Old Definitions -->
+
+    <nodeDef id="piconode" nls="pico">
+        <editors />
+        <sts>
+            <st id="ST" editor="bool" hide="True" />
+            <st id="GV7" editor="PICO_BUTTON" />
+            <st id="GV8" editor="PICO_BUTTON" />
+            <st id="GV9" editor="PICO_BUTTON" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+                <!--<cmd id="BRT" />-->
+                <!--<cmd id="DIM" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="fastpiconode" nls="fastpico">
+        <editors />
+        <sts>
+            <st id="ST" editor="bool" hide="True" />
+            <st id="GV7" editor="PICO_BUTTON" />
+            <st id="GV8" editor="PICO_BUTTON" />
+            <st id="GV9" editor="PICO_BUTTON" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <!--<cmd id="DON" />-->
+                <!--<cmd id="DOF" />-->
+                <!--<cmd id="BRT" />-->
+                <!--<cmd id="DIM" />-->
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="remotebtnnode" nls="remotebtn">
+        <editors />
+        <sts>
+            <st id="ST"     editor="bool" hide="True" />
+            <st id="GV7"    editor="REMOTE_BTN" />
+            <st id="GV8"    editor="REMOTE_BTN" />
+            <st id="GV9"    editor="REMOTE_BTN" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="GV20"   editor="ONLINE" />
+        </sts>
+        <cmds>
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
+            <accepts>
+                <cmd id="PUSH_BTN" />
+                <cmd id="HOLD_BTN" />
+                <cmd id="RELEASE_BTN" />
+                <cmd id="QUERY" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="ECOBSENSOR" nls="ecobeesens">
+        <editors />
+        <sts>
+            <st id="ST" editor="MOTION"/>
+            <st id="CLITEMP" editor="CLITEMP" />
+            <!--<st id="BATLVL" editor="BATLVL" /> -->
+            <st id="GV20" editor="ONLINE" />
+        </sts>
+        <cmds>
+            <sends >
+                <cmd id = "DON" />
+                <cmd id = "DOF" />
+            </sends>
+            <accepts>
+                <cmd id="QUERY" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="ECOBTSTAT" nls="ecobeetstat">
+        <editors />
+        <sts>
+            <st id="ST"     editor="bool" hide="True"/>
+  
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="CLIHUM" editor="CLIHUM" />
+     
+            <st id="CLIMD"  editor="CLIMD" />
+            <st id="CLIFS"  editor="CLIFS" />
+            <st id="CLISPC" editor="CLISPC" />
+ 
+            <st id="CLISPH" editor="CLISPH" />
+            <st id="CLIHCS" editor="CLIHCS" />
+            <st id="CLIFRS" editor="CLIFRS" />
+            <st id="CLISMD" editor="CLISMD" />
+            <st id="GV20"   editor="ONLINE" /> 
+            <!--<st id="GV10" editor="SET_POINT" /> -->
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="QUERY" />
+                <cmd  id="FANMODE" >
+                        <p id="" editor="setCLIMD" init="setCLIMD"/> 
+                </cmd>
+                <cmd id="TSTATMODE" >
+                        <p id="" editor="CLIFS" init="CLIFS"/> 
+                </cmd>
+                <cmd id="OPMODE" >
+                        <p id="" editor="setCLISMD" init="CLIMD"/> 
+                </cmd>
+                <cmd id="HEATPOINT" >
+                        <p id="" editor="TSTATTEMP" init="70"/>
+                </cmd>
+                <cmd id="COOLPOINT" >
+                        <p id="" editor="TSTATTEMP" init="90"/>
+                </cmd>
+            </accepts>
+        </cmds>
+    </nodeDef>
+    
+</nodeDefs>
