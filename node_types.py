@@ -201,7 +201,7 @@ class StdLampNode(HubitatBase):
         {'driver': 'ST', 'value': 99, 'uom': 25},
         {'driver': 'OL', 'value': 0, 'uom': 51}
     ]
-    id = 'STD_LAMP'
+    id = 'STDLAMP'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
         'SETLVL': set_level
