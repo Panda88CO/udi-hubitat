@@ -22,7 +22,7 @@
      <nodeDef id="STD_LAMP" nls="STDL">
         <editors />
         <sts>
-            <st id="ST" editor="STATUS" />
+            <st id="ST" editor="ONOFF" />
             <st id="OL" editor="OL"/>
         </sts>
         <cmds>

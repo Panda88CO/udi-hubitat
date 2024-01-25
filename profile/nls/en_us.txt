@@ -30,6 +30,8 @@ ST-STDL-ST-NAME = Status
 ST-STDL-OL-NAME = On Level
 CMD-STDL-SETLVL-NAME = Set On Level
 CMD-STDL-QUERY-NAME = Update
+CMD-STDL-DON-NAME = On
+CMD-STDL-DOF-NAME = Off
 
 # Generic RGBW Bulb Node
 ND-COLOR_LIGHT-NAME = Color Light
@@ -249,4 +251,7 @@ CLIHCS-99 = Unknown
 CLISMD-0 = Normal
 CLISMD-1 = Away
 CLISMD-99 = Unknow
-
+ 
+ONOFF-0 = Off
+ONOFF-1 = On
+ONOFF_99 = Unknown

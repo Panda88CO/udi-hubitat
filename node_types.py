@@ -180,10 +180,12 @@ class StdLampNode(HubitatBase):
         pass
 
     def setOn(self, command):
-        self.node.setDriver('ST', 100)
+        self.node.setDriver('ST', 1)
+        self.node.reportCmd('DON')
 
     def setOff(self, command):
         self.node.setDriver('ST', 0)
+        self.node.reportCmd('DOF')
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -196,7 +198,7 @@ class StdLampNode(HubitatBase):
         self.node.reportCmd('OL', command.get('value'))
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
+        {'driver': 'ST', 'value': 99, 'uom': 25},
         {'driver': 'OL', 'value': 0, 'uom': 51}
     ]
     id = 'STD_LAMP'
