@@ -295,7 +295,7 @@ class Controller(udi_interface.Node):
 
     def update_profile(self,command):
         logging.info('update_profile:')
-        st = self.poly.installprofile()
+        st = self.poly.updateProfile()
         return st
 
     def hubitat_events(self):

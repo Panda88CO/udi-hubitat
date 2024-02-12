@@ -179,11 +179,11 @@ class StdLampNode(HubitatBase):
     def start(self):
         pass
 
-    def setOn(self, command):
+    def setOn(self, command = None):
         self.node.setDriver('ST', 1)
         self.node.reportCmd('DON')
 
-    def setOff(self, command):
+    def setOff(self, command = None ):
         self.node.setDriver('ST', 0)
         self.node.reportCmd('DOF')
 
