@@ -206,7 +206,7 @@ class StdLampNode(HubitatBase):
         'DON': HubitatBase.hubitatCtl, 
         'DOF': HubitatBase.hubitatCtl, 
         'QUERY': query,
-        'SET_LVL': set_level
+        'SETLVL': set_level
     }
 
 
