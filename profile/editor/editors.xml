@@ -15,6 +15,10 @@
     <editor id="OL">
         <range uom="51" min="0" max="100" step="1" prec="0" />
     </editor>
+    
+    <editor id="OUTL">
+        <range uom="51" min="0" max="100" step="1" prec="0" />
+    </editor>
 
     <editor id="BATLVL">
         <range uom="51" min="0" max="100" step="1" prec="0"   />
