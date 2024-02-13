@@ -199,7 +199,7 @@ class StdLampNode(HubitatBase):
 
     drivers = [
         {'driver': 'ST', 'value': 99, 'uom': 25},
-        {'driver': 'OL', 'value': 0, 'uom': 51}
+        {'driver': 'OL', 'value': 75, 'uom': 51}
     ]
     id = 'STDLAMP'
     commands = {
@@ -359,7 +359,7 @@ class DimmerNode(HubitatBase):
 
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'OL', 'value': 0, 'uom': 51}
+        {'driver': 'OL', 'value': 75, 'uom': 51}
     ]
     id = 'DIMMER'
     commands = {
