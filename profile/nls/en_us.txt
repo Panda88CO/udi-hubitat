@@ -255,4 +255,5 @@ CLISMD-99 = Unknow
  
 ONOFF-0 = Off
 ONOFF-1 = On
+ONOFF-100 = On
 ONOFF-99 = Unknown

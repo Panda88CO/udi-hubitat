@@ -175,6 +175,6 @@
     </editor>
 
     <editor id="ONOFF">
-        <range uom="25" subset="0-1,99" nls="ONOFF" />        
+        <range uom="25" subset="0,1,99,100" nls="ONOFF" />        
     </editor> 
 </editors>
