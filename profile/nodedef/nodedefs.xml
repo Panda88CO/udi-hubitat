@@ -125,7 +125,7 @@
             </accepts>
         </cmds>
     </nodeDef>
-    -->
+
 
     <nodeDef id="ENERGY_OUTLET" nls="EOUTLET">
         <editors />
