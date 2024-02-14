@@ -17,7 +17,7 @@ import requests
 import traceback
 from lomond import WebSocket
 import node_types
-version = '0.1.5'
+version = '0.1.6'
 #LOGGER = polyinterface.LOGGER
 
 class Controller(udi_interface.Node):
