@@ -210,10 +210,10 @@ class Controller(udi_interface.Node):
                 node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
             elif dev['type'] == 'Virtual Dimmer':
                 node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
-            elif dev['type'] == 'Ecobee Sensor':
-                node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
-            elif dev['type'] == 'Ecobee Thermostat':
-                node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
+            #elif dev['type'] == 'Ecobee Sensor':
+            #    node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+            #elif dev['type'] == 'Ecobee Thermostat':
+            #    node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
             
             elif 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
@@ -266,8 +266,8 @@ class Controller(udi_interface.Node):
             elif 'ContactSensor' in dev['capabilities']:
                 node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
             # newly added
-            elif 'PushableButton' in dev['capabilities']:
-                node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
+            #elif 'PushableButton' in dev['capabilities']:
+            #    node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
             
 
             

@@ -612,7 +612,7 @@ class SimpleRemoteNode(HubitatBase):
 class EcobeeSensor(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('EcobeeSensor Init')
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
@@ -628,6 +628,7 @@ class EcobeeSensor(HubitatBase):
 class EcobeeThermostat(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
+        logging.debug('EcobeeThermostat Init')
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
