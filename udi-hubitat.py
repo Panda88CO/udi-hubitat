@@ -203,18 +203,18 @@ class Controller(udi_interface.Node):
             
             if dev['type'] == 'Lutron Pico':
                 node_types.LutronPicoNode(self.poly, self.address, _id, _label, self.maker_uri )
-            '''    
-            elif dev['type'] == 'Lutron Fast Pico':
-                node_types.LutronFastPicoNode( self.poly, self.address, _id, _label, self.maker_uri )
-            elif dev['type'] == 'Virtual Switch':
-                node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
-            elif dev['type'] == 'Virtual Dimmer':
-                node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
-            #elif dev['type'] == 'Ecobee Sensor':
-            #    node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
-            #elif dev['type'] == 'Ecobee Thermostat':
-            #    node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
-            '''
+                '''    
+                elif dev['type'] == 'Lutron Fast Pico':
+                    node_types.LutronFastPicoNode( self.poly, self.address, _id, _label, self.maker_uri )
+                elif dev['type'] == 'Virtual Switch':
+                    node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
+                elif dev['type'] == 'Virtual Dimmer':
+                    node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
+                #elif dev['type'] == 'Ecobee Sensor':
+                #    node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+                #elif dev['type'] == 'Ecobee Thermostat':
+                #    node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
+                '''
             elif 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
                     if 'ColorControl' in dev['capabilities']:
@@ -275,6 +275,8 @@ class Controller(udi_interface.Node):
         self.nodes = self.poly.getNodes()
         for node in self.nodes:
             self.node_list.append(self.nodes[node].address)
+
+        # remove unused nodes still to be added
 
     def delete(self):
         """
