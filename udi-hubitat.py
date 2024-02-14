@@ -214,7 +214,7 @@ class Controller(udi_interface.Node):
                 #    node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
                 #elif dev['type'] == 'Ecobee Thermostat':
                 #    node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
-                '''
+                
             elif 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
                     if 'ColorControl' in dev['capabilities']:
@@ -223,13 +223,13 @@ class Controller(udi_interface.Node):
                         node_types.CtLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
                     node_types.StdLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
-            
+                '''
             elif 'Outlet' in dev['capabilities']:
                 if 'EnergyMeter' in dev['capabilities']:
                     node_types.EnergyOutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 else:
                     node_types.OutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
-
+            '''
             elif 'Switch' in dev['capabilities']:
                 if 'Virtual' not in dev['type']:
                     if 'Outlet' not in dev['capabilities']:
@@ -242,7 +242,7 @@ class Controller(udi_interface.Node):
                             else:
                                 node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
 
-            '''elif 'MotionSensor' in dev['capabilities']:
+            elif 'MotionSensor' in dev['capabilities']:
                 if 'TemperatureMeasurement' in dev['capabilities'] and 'IlluminanceMeasurement' in dev['capabilities']:
                     if 'AccelerationSensor' in dev['capabilities']:
                         node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label, self.maker_uri )
