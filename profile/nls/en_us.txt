@@ -261,10 +261,9 @@ CLIFRS-1 = Auto
 CLIFRS-2 = Off
 CLIFRS-99 = Unknown
 
-CLIHCS-0 = On
-CLIHCS-1 = Auto
-CLIHCS-2 = Circulate
-CLIHCS-99 = Unknown
+CLIFS-0 = On
+CLIFS-1 = Auto
+CLIFS-99 = Unknown
 
 CLISMD-0 = Normal
 CLISMD-1 = Away
@@ -274,3 +273,5 @@ ONOFF-0 = Off
 ONOFF-1 = On
 ONOFF-100 = On
 ONOFF-99 = Unknown
+
+UNKNOWN-99 = Unknown

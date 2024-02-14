@@ -22,11 +22,13 @@
 
     <editor id="BATLVL">
         <range uom="51" min="0" max="100" step="1" prec="0"   />
-        <range uom="25" subset="0-5,99" editor="BATLVL" />
+        <range uom="25" subset="0-5,99" nls="BATLVL" />
     </editor>
 
     <editor id="CLITEMP">
 		<range uom="17" min="-40" max="149" step="0.5" prec="1" />
+        <range uom="4" min="-40" max="65" step="0.5" prec="1" />
+        <range uom="25" subset="99" nls="UNKNOWN" />
 	</editor>
 
 	<editor id="CLIHUM">
@@ -156,14 +158,17 @@
     </editor> 
 
     <editor id="CLIFRS">
-        <range uom="25" subset="0-2,99" nls="CLIFRS" />
+        <range uom="25" subset="0-1,99" nls="CLIFRS" />
     </editor> 
 
     <editor id="CLIFS">
-        <range uom="25" subset="0-2,99" nls="CLIFRS" />
+        <range uom="25" subset="0-1" nls="CLIFRS" />
     </editor> 
 
     <editor id="CLIFS">
+        <range uom="25" subset="0-1,99" nls="CLIFRS" />
+    </editor>    
+   <editor id="setCLIFS">
         <range uom="25" subset="0-1" nls="CLIFRS" />
     </editor>    
 
@@ -180,5 +185,7 @@
 
     <editor id="TSTATTEMP">
         <range uom="17" min="45" max="95" prec="1" step="0.5" />
+        <range uom="4" min="7" max="9535" prec="1" step="0.5" />
+        <range uom="25" subset="99" nls="UNKNOWN" />
     </editor>
 </editors>

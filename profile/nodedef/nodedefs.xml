@@ -469,9 +469,8 @@
      
             <st id="CLIMD"  editor="CLIMD" />
             <st id="CLIFS"  editor="CLIFS" />
-            <st id="CLISPC" editor="CLISPC" />
- 
-            <st id="CLISPH" editor="CLISPH" />
+            <st id="CLISPC" editor="TSTATTEMP" />
+            <st id="CLISPH" editor="TSTATTEMP" />
             <st id="CLIHCS" editor="CLIHCS" />
             <st id="CLIFRS" editor="CLIFRS" />
             <st id="CLISMD" editor="CLISMD" />
@@ -483,10 +482,10 @@
             <accepts>
                 <cmd id="QUERY" />
                 <cmd  id="FANMODE" >
-                        <p id="" editor="setCLIMD" init="setCLIMD"/> 
+                        <p id="" editor="setCLIFS" init="CLIFS"/> 
                 </cmd>
                 <cmd id="TSTATMODE" >
-                        <p id="" editor="CLIFS" init="CLIFS"/> 
+                        <p id="" editor="CLIHCS" init="CLIHCS"/> 
                 </cmd>
                 <cmd id="OPMODE" >
                         <p id="" editor="setCLISMD" init="CLIMD"/> 
