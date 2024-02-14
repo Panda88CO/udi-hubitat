@@ -238,9 +238,10 @@ ST-ecobeetstat-CLISMD-NAME = Operating State
 ST-ecobeetstat-GV20-NAME = Online
 CMD-ecobeetstat-QUERY-NAME = Update
 CMD-ecobeetstat-FANMODE-NAME = Set Fan Mode
-CMD-ecobeetstat-THERMOSTATMODE-NAME = Set Thermostat  Mode
+CMD-ecobeetstat-TSTATMODE-NAME = Set Thermostat  Mode
+CMD-ecobeetstat-OPMODE-NAME = Operating Mode
 CMD-ecobeetstat-HEATPOINT-NAME = Heat point
-CMD-ecobeetstat-COOLPOINT-NAME = Heat point
+CMD-ecobeetstat-COOLPOINT-NAME = Cool point
 
 CLIHCS-0 = Auto
 CLIHCS-1 = Cool
@@ -255,6 +256,11 @@ CLIMD-1 = Cooling
 CLIMD-2 = Heating
 CLIMD-99 = Unknown
 
+CLIFRS-0 = On
+CLIFRS-1 = Auto
+CLIFRS-2 = Off
+CLIFRS-99 = Unknown
+
 CLIHCS-0 = On
 CLIHCS-1 = Auto
 CLIHCS-2 = Circulate
@@ -262,7 +268,7 @@ CLIHCS-99 = Unknown
 
 CLISMD-0 = Normal
 CLISMD-1 = Away
-CLISMD-99 = Unknow
+CLISMD-99 = Unknown
  
 ONOFF-0 = Off
 ONOFF-1 = On

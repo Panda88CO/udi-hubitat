@@ -148,11 +148,11 @@
     </editor>
 
     <editor id="CLIHCS">
-        <range uom="25" subset="0-2,99" nls="CLIHCS" />
+        <range uom="25" subset="0-5,99" nls="CLIHCS" />
     </editor>
     
     <editor id="setCLIHCS">
-        <range uom="25" subset="0-1" nls="CLIHCS" />    
+        <range uom="25" subset="0-5" nls="CLIHCS" />    
     </editor> 
 
     <editor id="CLIFRS">

@@ -492,10 +492,10 @@
                         <p id="" editor="setCLISMD" init="CLIMD"/> 
                 </cmd>
                 <cmd id="HEATPOINT" >
-                        <p id="" editor="TSTATTEMP" init="70"/>
+                        <p id="" editor="TSTATTEMP" init="CLISPH"/>
                 </cmd>
                 <cmd id="COOLPOINT" >
-                        <p id="" editor="TSTATTEMP" init="90"/>
+                        <p id="" editor="TSTATTEMP" init="CLISPC"/>
                 </cmd>
             </accepts>
         </cmds>
