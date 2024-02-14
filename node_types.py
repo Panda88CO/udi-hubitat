@@ -146,7 +146,9 @@ class HubitatBase(udi_interface.Node):
 
         h_cmd = 'refresh'
         cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
+
         r = requests.get(cmd_uri)
+        logging.debug('hubitatRefresh {} => {}'.format(cmd_uri, r))
         while r.status_code != self.RESPONSE_OK:
             time.sleep(1)
             logging.error('Hubitat not responding - waiting for good response')
