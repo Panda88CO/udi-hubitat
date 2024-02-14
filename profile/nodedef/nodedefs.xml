@@ -153,10 +153,10 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="OUTLET" nls="OUTLET">
+    <nodeDef id="OUTLET" nls="NLSOUTLET">
         <editors />
         <sts>
-            <st id="ST" editor="STATUS" />
+            <st id="ST" editor="ONOFF" />
         </sts>
         <cmds>
             <sends />
@@ -168,10 +168,10 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="SWITCH" nls="SWITCH">
+    <nodeDef id="SWITCH" nls="NLSSWITCH">
             <editors />
             <sts>
-                <st id="ST" editor="STATUS" />
+                <st id="ST" editor="ONOFF" />
             </sts>
             <cmds>
                 <sends>
@@ -186,10 +186,10 @@
             </cmds>
         </nodeDef>
 
-    <nodeDef id="DIMMER" nls="DIMMER">
+    <nodeDef id="DIMMER" nls="NLSDIMMER">
         <editors />
         <sts>
-            <st id="ST" editor="STATUS" />
+            <st id="ST" editor="ONOFF" />
             <st id="OL" editor="OL"/>
         </sts>
         <cmds>

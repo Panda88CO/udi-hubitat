@@ -5,7 +5,7 @@
     </editor>
 
     <editor id="STATUS">
-        <range uom="78" subset="0,100" />
+        <range uom="78" subset="0,100,101" />
     </editor>
 
     <editor id="CONTACT">

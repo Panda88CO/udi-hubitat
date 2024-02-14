@@ -8,20 +8,20 @@ CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove Notices
 
 
 #Generic for all Types
-#CMD-DON-NAME = On
-#CMD-DOF-NAME = Off
-#CMD-DFON-NAME = Fast On
-#CMD-DFOF-NAME = Fast Off
-#CMD-BRT-NAME = Brighten
-#CMD-DIM-NAME = Dim
-#CMD-FDUP-NAME = Fade Up
-#CMD-FDDOWN-NAME = Fade Down
-#CMD-FDSTOP-NAME = Fade Stop
-#CMD-QUERY-NAME = Query
-#CMD-SETLVL-NAME = Set Level
-#CMD-SET_HUE-NAME = Set Hue
-#CMD-SET_SAT-NAME = Set Saturation
-#CMD-SET_KELVIN-NAME = Set Color Temperature
+CMD-DON-NAME = On
+CMD-DOF-NAME = Off
+CMD-DFON-NAME = Fast On
+CMD-DFOF-NAME = Fast Off
+CMD-BRT-NAME = Brighten
+CMD-DIM-NAME = Dim
+CMD-FDUP-NAME = Fade Up
+CMD-FDDOWN-NAME = Fade Down
+CMD-FDSTOP-NAME = Fade Stop
+CMD-QUERY-NAME = Query
+CMD-SETLVL-NAME = Set Level
+CMD-SET_HUE-NAME = Set Hue
+CMD-SET_SAT-NAME = Set Saturation
+CMD-SET_KELVIN-NAME = Set Color Temperature
 
 #### New Generalized Entries
 # Generic Bulb Node
@@ -63,18 +63,29 @@ ST-EOUTLET-GV6-NAME = Duration
 # Generic Outlet
 ND-OUTLET-NAME = Generic Outlet
 ND-OUTLET-ICON = Switch
-ST-OUTLET-ST-NAME = Status
+ST-NLSOUTLET-ST-NAME = Status
+CMD-NLSOUTLET-DON-NAME = On
+CMD-NLSOUTLET-DOF-NAME = Off
+CMD-NLSOUTLET-QUERY-NAME = Query
 
 # Generic Switch Node
 ND-SWITCH-NAME = Generic Switch
 ND-SWITCH-ICON = Switch
-ST-SWITCH-ST-NAME = Status
+ST-NLSSWITCH-ST-NAME = Status
+CMD-NLSSWITCH-DON-NAME = On
+CMD-NLSSWITCH-DOF-NAME = Off
+CMD-NLSSWITCH-QUERY-NAME = Query
+
 
 # Generic Dimmer Node
 ND-DIMMER-NAME = Generic Dimmer
 ND-DIMMER-ICON = Switch
-ST-DIMMER-ST-NAME = Status
-ST-DIMMER-OL-NAME = On Level
+ST-NLSDIMMER-ST-NAME = Status
+ST-NLSDIMMER-OL-NAME = On Level
+CMD-NLSDIMMER-DON-NAME = On
+CMD-NLSDIMMER-DOF-NAME = Off
+CMD-NLSDIMMER-QUERY-NAME = Query
+CMD-NLSDIMMER-SETLVL-NAME = Set On Level
 
 # Generic Multi Sensor - Temp/Humi/Lux/Alarm (Zooz 4-n-1)
 ND-MSTHLA_SENSOR-NAME = Generic Multi-Sensor

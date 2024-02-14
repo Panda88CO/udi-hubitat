@@ -303,11 +303,12 @@ class OutletNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('OutletNode Init')
+
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},  # Status
+        {'driver': 'ST', 'value': 99, 'uom': 25},  # Status
     ]
     id = 'OUTLET'
     commands = {
@@ -332,7 +333,7 @@ class SwitchNode(HubitatBase):
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 78}]
+    drivers = [{'driver': 'ST', 'value': 99, 'uom': 25}]
     id = 'SWITCH'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
@@ -358,7 +359,7 @@ class DimmerNode(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
+        {'driver': 'ST', 'value': 99, 'uom': 25},
         {'driver': 'OL', 'value': 75, 'uom': 51}
     ]
     id = 'DIMMER'
