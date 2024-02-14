@@ -203,15 +203,16 @@ class Controller(udi_interface.Node):
             
             if dev['type'] == 'Lutron Pico':
                 node_types.LutronPicoNode(self.poly, self.address, _id, _label, self.maker_uri )
-                '''    
+                '''
                 elif dev['type'] == 'Lutron Fast Pico':
                     node_types.LutronFastPicoNode( self.poly, self.address, _id, _label, self.maker_uri )
                 elif dev['type'] == 'Virtual Switch':
                     node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
                 elif dev['type'] == 'Virtual Dimmer':
                     node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                #elif dev['type'] == 'Ecobee Sensor':
-                #    node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+                '''
+            elif dev['type'] == 'Ecobee Sensor':
+                node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri )
                 #elif dev['type'] == 'Ecobee Thermostat':
                 #    node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri )                                
                 '''
