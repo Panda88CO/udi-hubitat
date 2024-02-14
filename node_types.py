@@ -175,7 +175,7 @@ New Class definitions for generalization
 class StdLampNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('StdLampNode Init')
     def start(self):
         pass
 
@@ -213,7 +213,7 @@ class StdLampNode(HubitatBase):
 class RgbLampNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('RgbLampNode Init')
     def start(self):
         pass
 
@@ -246,7 +246,7 @@ class RgbLampNode(HubitatBase):
 class CtLampNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('CtLampNode Init')
     def start(self):
         pass
 
@@ -275,7 +275,7 @@ class CtLampNode(HubitatBase):
 class EnergyOutletNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('EnergyOutletNode Init')
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
@@ -302,7 +302,7 @@ class EnergyOutletNode(HubitatBase):
 class OutletNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('OutletNode Init')
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
@@ -318,7 +318,7 @@ class OutletNode(HubitatBase):
 class SwitchNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('SwitchNode Init')
     def start(self):
         pass
     #     self.node.setDriver('ST', 0)
@@ -343,7 +343,7 @@ class SwitchNode(HubitatBase):
 class DimmerNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('DimmerNode Init')
     def start(self):
         pass
     #     self.node.setDriver('ST', 0)
@@ -373,7 +373,7 @@ class MultiSensorTHLA(HubitatBase):
 
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('MultiSensorTHLA Init')
 
 
     drivers = [
@@ -394,7 +394,7 @@ class MultiSensorTHLA(HubitatBase):
 class MultiSensorTLAS (HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('MultiSensorTLAS Init')
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
@@ -413,7 +413,7 @@ class MultiSensorTLAS (HubitatBase):
 class MultiSensorTH(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('MultiSensorTH Init')
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
@@ -430,7 +430,7 @@ class MultiSensorTH(HubitatBase):
 class MultiSensorT(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('MultiSensorT Init')
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
@@ -446,7 +446,7 @@ class MultiSensorT(HubitatBase):
 class MultiSensorTL(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('MultiSensorTL Init')
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
@@ -463,7 +463,7 @@ class MultiSensorTL(HubitatBase):
 class MultiSensorL(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('MultiSensorL Init')
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
@@ -479,7 +479,7 @@ class MultiSensorL(HubitatBase):
 class MotionSensor(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('MotionSensor Init')
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
@@ -493,7 +493,7 @@ class MotionSensor(HubitatBase):
 class LutronPicoNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('LutronPicoNode Init')
     def start(self):
         pass
     #     self.node.setDriver('ST', 0)
@@ -521,7 +521,7 @@ class LutronPicoNode(HubitatBase):
 class LutronFastPicoNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('LutronFastPicoNode Init')
     def start(self):
         pass
 
@@ -547,7 +547,7 @@ class LutronFastPicoNode(HubitatBase):
 class THSensor(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('THSensor Init')
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
@@ -562,7 +562,7 @@ class THSensor(HubitatBase):
 class ContactNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('ContactNode Init')
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
@@ -582,7 +582,7 @@ class ContactNode(HubitatBase):
 class SimpleRemoteNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
-
+        logging.debug('SimpleRemoteNode Init')
     def start(self):
         pass
     #     self.node.setDriver('ST', 0)
