@@ -26,8 +26,6 @@ class HubitatBase(udi_interface.Node):
         self.maker_uri = marker_uri
         self.n_queue = []
         self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-
-
         self.poly.ready()
         self.poly.addNode(self)
         self.wait_for_node_done()
@@ -36,6 +34,7 @@ class HubitatBase(udi_interface.Node):
         # self.st = None
         #self.maker_uri = polyglot.Parameters['maker_uri']
         #logging.debug('maker_uri: {}'.format(self.maker_uri))
+        self.hubitatRefresh()
 
     def getValidName(self, name):
         name = bytes(name, 'utf-8').decode('utf-8','ignore')
@@ -616,6 +615,11 @@ class EcobeeSensor(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('EcobeeSensor Init')
+        time.sleep(1)
+
+
+
+
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
