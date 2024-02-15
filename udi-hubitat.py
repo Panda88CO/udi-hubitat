@@ -242,34 +242,37 @@ class Controller(udi_interface.Node):
                                     node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
                             else:
                                 node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
-            '''
-            elif 'MotionSensor' in dev['capabilities']:
-                if 'TemperatureMeasurement' in dev['capabilities'] and 'IlluminanceMeasurement' in dev['capabilities']:
-                    if 'AccelerationSensor' in dev['capabilities']:
-                        node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label, self.maker_uri )
-                    elif 'RelativeHumidityMeasurement' in dev['capabilities']:
-                        node_types.MultiSensorTHLA(self.poly,  self.address, _id, _label, self.maker_uri )
+
+                '''
+                elif 'MotionSensor' in dev['capabilities']:
+                    if 'TemperatureMeasurement' in dev['capabilities'] and 'IlluminanceMeasurement' in dev['capabilities']:
+                        if 'AccelerationSensor' in dev['capabilities']:
+                            node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label, self.maker_uri )
+                        elif 'RelativeHumidityMeasurement' in dev['capabilities']:
+                            node_types.MultiSensorTHLA(self.poly,  self.address, _id, _label, self.maker_uri )
+                        else:
+                            node_types.MultiSensorTL(self.poly,  self.address, _id, _label, self.maker_uri )
+                    elif 'TemperatureMeasurement' in dev['capabilities'] and 'RelativeHumidityMeasurement' in dev['capabilities']:
+                        if 'IlluminanceMeasurement' not in dev['capabilities']:
+                            node_types.MultiSensorTH(self.poly,  self.address, _id, _label, self.maker_uri )
+                    elif 'IlluminanceMeasurement' in dev['capabilities']:
+                        node_types.MultiSensorL(self.poly,  self.address, _id, _label, self.maker_uri )
+                    elif 'TemperatureMeasurement' in dev['capabilities']:
+                        node_types.MultiSensorT(self.poly,  self.address, _id, _label, self.maker_uri )
                     else:
-                        node_types.MultiSensorTL(self.poly,  self.address, _id, _label, self.maker_uri )
-                elif 'TemperatureMeasurement' in dev['capabilities'] and 'RelativeHumidityMeasurement' in dev['capabilities']:
-                    if 'IlluminanceMeasurement' not in dev['capabilities']:
-                        node_types.MultiSensorTH(self.poly,  self.address, _id, _label, self.maker_uri )
-                elif 'IlluminanceMeasurement' in dev['capabilities']:
-                    node_types.MultiSensorL(self.poly,  self.address, _id, _label, self.maker_uri )
-                elif 'TemperatureMeasurement' in dev['capabilities']:
-                    node_types.MultiSensorT(self.poly,  self.address, _id, _label, self.maker_uri )
-                else:
-                    node_types.MotionSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+                        node_types.MotionSensor(self.poly,  self.address, _id, _label, self.maker_uri )
 
-            elif dev['type'] == 'Sonoff Zigbee Temperature/Humidity Sensor':
-                node_types.THSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+                elif dev['type'] == 'Sonoff Zigbee Temperature/Humidity Sensor':
+                    node_types.THSensor(self.poly,  self.address, _id, _label, self.maker_uri )
 
-            elif 'ContactSensor' in dev['capabilities']:
-                node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
-            # newly added
-            #elif 'PushableButton' in dev['capabilities']:
-            #    node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
-            '''
+                elif 'ContactSensor' in dev['capabilities']:
+                    node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
+                # newly added
+                '''
+            
+            elif 'PushableButton' in dev['capabilities']:
+                node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
+
 
             
         # Build node list
@@ -519,17 +522,17 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIMD', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name == 'thermostatOperatingState':
-                                if h_value  == 'auto':
+                                if -1 != h_value.find('auto'):
                                     m_node.setDriver('CLIHCS', 0)
-                                elif h_value  == 'cool':
+                                elif -1 != h_value.find('cool'):
                                     m_node.setDriver('CLIHCS', 1)
-                                elif h_value  == 'heat':                                    
+                                elif -1 != h_value.find('heat'):                        
                                     m_node.setDriver('CLIHCS', 2)
-                                elif h_value  == 'off':
+                                elif -1 != h_value.find('off'):
                                     m_node.setDriver('CLIHCS', 3)
-                                elif h_value  == 'idle':
+                                elif -1 != h_value.find('idle'):
                                     m_node.setDriver('CLIHCS', 4)                             
-                                elif h_value  == 'emergencyHeat':
+                                elif -1 != h_value.find('emergencyHeat'):
                                     m_node.setDriver('CLIHCS', 5)
                                 else:
                                     m_node.setDriver('CLIHCS', 99)
