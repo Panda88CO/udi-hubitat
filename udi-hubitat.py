@@ -497,8 +497,8 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIMD', 1)
                                 elif h_value  == 'heat':                                    
                                     m_node.setDriver('CLIMD', 2)
-                                #elif h_value  == 'idle':
-                                #    m_node.setDriver('CLIMD', 3)                                        
+                                elif h_value  == 'off':
+                                    m_node.setDriver('CLIMD', 3)                                        
                                 #elif h_value  == 'off':
                                 #    m_node.setDriver('CLIMD', 4)
                                 #elif h_value  == 'emergencyHeat':
@@ -526,9 +526,9 @@ class Controller(udi_interface.Node):
                                 elif h_value  == 'heat':                                    
                                     m_node.setDriver('CLIHCS', 2)
                                 elif h_value  == 'off':
-                                    m_node.setDriver('CLIHCS', 4)
+                                    m_node.setDriver('CLIHCS', 3)
                                 elif h_value  == 'idle':
-                                    m_node.setDriver('CLIHCS', 3)                             
+                                    m_node.setDriver('CLIHCS', 4)                             
                                 elif h_value  == 'emergencyHeat':
                                     m_node.setDriver('CLIHCS', 5)
                                 else:

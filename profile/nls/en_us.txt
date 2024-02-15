@@ -246,8 +246,8 @@ CMD-ecobeetstat-COOLPOINT-NAME = Cool point
 CLIHCS-0 = Auto
 CLIHCS-1 = Cool
 CLIHCS-2 = Heat
-CLIHCS-3 = Idle
-CLIHCS-4 = Off
+CLIHCS-3 = Off
+CLIHCS-4 = Idle
 CLIHCS-5 = Emergency Heat
 CLIHCS-99 = Unknown
 
