@@ -492,18 +492,17 @@ class Controller(udi_interface.Node):
                             #Htemostat        
                             elif h_name == 'thermostatMode':
                                 if h_value  == 'auto':
-                                    m_node.setDriver('CLIHCS', 0)
+                                    m_node.setDriver('CLIMD', 0)
                                 elif h_value  == 'cool':
-                                    m_node.setDriver('CLIHCS', 1)
+                                    m_node.setDriver('CLIMD', 1)
                                 elif h_value  == 'heat':                                    
-                                    m_node.setDriver('CLIHCS', 2)
-                                elif h_value  == 'idle':
-                                    m_node.setDriver('CLIHCS', 3)                                        
-                                elif h_value  == 'off':
-                                    m_node.setDriver('CLIHCS', 4)
-
-                                elif h_value  == 'emergencyHeat':
-                                    m_node.setDriver('CLIHCS', 5)
+                                    m_node.setDriver('CLIMD', 2)
+                                #elif h_value  == 'idle':
+                                #    m_node.setDriver('CLIMD', 3)                                        
+                                #elif h_value  == 'off':
+                                #    m_node.setDriver('CLIMD', 4)
+                                #elif h_value  == 'emergencyHeat':
+                                #    m_node.setDriver('CLIMD', 5)
                                 else:
                                     m_node.setDriver('CLIMD', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
@@ -521,19 +520,19 @@ class Controller(udi_interface.Node):
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name == 'thermostatOperatingState':
                                 if h_value  == 'auto':
-                                    m_node.setDriver('CLIMD', 0)
+                                    m_node.setDriver('CLIHCS', 0)
                                 elif h_value  == 'cool':
-                                    m_node.setDriver('CLIMD', 1)
+                                    m_node.setDriver('CLIHCS', 1)
                                 elif h_value  == 'heat':                                    
-                                    m_node.setDriver('CLIMD', 2)
+                                    m_node.setDriver('CLIHCS', 2)
                                 elif h_value  == 'off':
-                                    m_node.setDriver('CLIMD', 4)
+                                    m_node.setDriver('CLIHCS', 4)
                                 elif h_value  == 'idle':
-                                    m_node.setDriver('CLIMD', 3)                             
+                                    m_node.setDriver('CLIHCS', 3)                             
                                 elif h_value  == 'emergencyHeat':
-                                    m_node.setDriver('CLIMD', 5)
+                                    m_node.setDriver('CLIHCS', 5)
                                 else:
-                                    m_node.setDriver('CLIMD', 99)
+                                    m_node.setDriver('CLIHCS', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name == 'thermostatFanOperatingState':  # Not found this one yet so guessing name
                                 if h_value  == 'auto':

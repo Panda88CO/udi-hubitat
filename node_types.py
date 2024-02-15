@@ -725,8 +725,8 @@ class EcobeeThermostat(HubitatBase):
         {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
         {'driver': 'CLIFS', 'value': 99, 'uom': 25},  # fan setting   'supportedThermostatFanModes'
         {'driver': 'CLIMD', 'value': 99, 'uom': 25},  # heat/cool state: 'thermostat'
-        {'driver': 'CLISPC', 'value': 90, 'uom': 17},  # cool setpoint
-        {'driver': 'CLISPH', 'value': 45, 'uom': 17}, # heat setpoint
+        {'driver': 'CLISPC', 'value': 90, 'uom': 17}, # cool setpoint
+        {'driver': 'CLISPH', 'value': 50, 'uom': 17}, # heat setpoint
         {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
         {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
         {'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"

@@ -251,9 +251,10 @@ CLIHCS-4 = Off
 CLIHCS-5 = Emergency Heat
 CLIHCS-99 = Unknown
 
-CLIMD-0 = Off
+CLIMD-0 = Auto
 CLIMD-1 = Cooling
 CLIMD-2 = Heating
+CLIMD-3 = Off
 CLIMD-99 = Unknown
 
 CLIFRS-0 = On
