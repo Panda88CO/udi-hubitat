@@ -185,7 +185,7 @@
 
     <editor id="TSTATTEMP">
         <range uom="17" min="45" max="95" prec="1" step="0.5" />
-        <range uom="4" min="7" max="9535" prec="1" step="0.5" />
+        <range uom="4" min="7" max="35" prec="1" step="0.5" />
         <range uom="25" subset="99" nls="UNKNOWN" />
     </editor>
 </editors>
