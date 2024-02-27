@@ -619,7 +619,8 @@ class EcobeeSensor(HubitatBase):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('EcobeeSensor Init')
         time.sleep(1)
-
+        self.dev_info = dev
+        logging.debug('EcobeeSensor dev info: {}'.format(dev))
 
 
 
@@ -643,6 +644,10 @@ class EcobeeThermostat(HubitatBase):
         logging.debug('EcobeeThermostat Init')
         self.dev_info = dev
         logging.debug('EcobeeThermostat dev info: {}'.format(dev))
+        try:
+            self.t_unit = dev['attributes']['deviceTemperatureUnit']
+        except:
+            self.t_unit = self.temp_unit
 
     def query(self):
         HubitatBase.hubitatRefresh(self)

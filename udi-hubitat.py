@@ -128,7 +128,13 @@ class Controller(udi_interface.Node):
 
         if self.maker_uri == default_maker_uri:
             self.poly.Notices['maker_uri'] = 'Please set proper Hubitat and Maker API URI, and restart this NodeServer'
- 
+
+        if 'temp_unit' in userParams:
+            temp_unit = userParams['temp_unit']
+            if temp_unit[0] == "C" or temp_unit[0] == "c":
+                 self.temp_unit= 'C'
+            else:
+                self.temp_unit= 'F'
     '''
     def check_params(self):
         default_maker_uri = 'http://<IP_ADDRESS>/apps/api/<APP_ID>/devices/all?access_token=<TOKEN>'
