@@ -172,7 +172,7 @@ class Controller(udi_interface.Node):
             logging.error('Hubitat not responding - waiting for good response')
             r = requests.get(self.maker_uri)
         data = r.json()
-
+        logging.debug('discover data :{}'.format(data))
         for dev in data:
             logging.debug('device id: {}'.format(dev))
             _name = dev['name']
@@ -548,7 +548,7 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIFS', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))       
 
-
+                            elif h_name == 'deviceTemperatureUnit':
                             #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
                             #elif h_name in ['resumeProgram', 'SetAway']:

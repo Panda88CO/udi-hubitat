@@ -239,7 +239,7 @@ ST-ecobeetstat-GV20-NAME = Online
 CMD-ecobeetstat-QUERY-NAME = Update
 CMD-ecobeetstat-FANMODE-NAME = Set Fan Mode
 CMD-ecobeetstat-TSTATMODE-NAME = Set Thermostat  Mode
-CMD-ecobeetstat-OPMODE-NAME = Operating Mode
+CMD-ecobeetstat-OPMODE-NAME = Here/Away
 CMD-ecobeetstat-HEATPOINT-NAME = Heat point
 CMD-ecobeetstat-COOLPOINT-NAME = Cool point
 
@@ -266,7 +266,7 @@ CLIFS-0 = On
 CLIFS-1 = Auto
 CLIFS-99 = Unknown
 
-CLISMD-0 = Normal
+CLISMD-0 = Here
 CLISMD-1 = Away
 CLISMD-99 = Unknown
  

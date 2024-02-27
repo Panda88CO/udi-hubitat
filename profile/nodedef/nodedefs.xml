@@ -485,7 +485,7 @@
                         <p id="" editor="setCLIFS" init="CLIFS"/> 
                 </cmd>
                 <cmd id="TSTATMODE" >
-                        <p id="" editor="CLIHCS" init="CLIHCS"/> 
+                        <p id="" editor="CLIHCSset" init="CLIHCS"/> 
                 </cmd>
                 <cmd id="OPMODE" >
                         <p id="" editor="setCLISMD" init="CLIMD"/> 

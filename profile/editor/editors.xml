@@ -154,7 +154,7 @@
     </editor>
     
     <editor id="setCLIHCS">
-        <range uom="25" subset="0-5" nls="CLIHCS" />    
+        <range uom="25" subset="0-3" nls="CLIHCS" />    
     </editor> 
 
     <editor id="CLIFRS">

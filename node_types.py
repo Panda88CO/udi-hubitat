@@ -704,11 +704,17 @@ class EcobeeThermostat(HubitatBase):
 
     def setHeatPoint(self, command):
         logging.debug('setHeatPoint : {}'.format(command))
+        
+        #query = command.get("query")
+        unit = command.get('uom')
+        set_temp = command.get('value')
         HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
+        tsettemp = 
 
     def setCoolPoint(self, command):
         logging.debug('setCoolPoint : {}'.format(command))      
         HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
+
 
     def setTempUnit(self, t_unit):
         logging.debug('setTempUnit')
