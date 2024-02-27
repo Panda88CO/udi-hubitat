@@ -612,7 +612,10 @@ class SimpleRemoteNode(HubitatBase):
 
 
 class EcobeeSensor(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
+    def __init__(self, polyglot, primary,marker_uri, dev):
+        #def __init__(self, polyglot, primary, marker_uri, dev):
+        address = dev['id']
+        name = dev['label']
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('EcobeeSensor Init')
         time.sleep(1)
@@ -633,9 +636,13 @@ class EcobeeSensor(HubitatBase):
 
 
 class EcobeeThermostat(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
+    def __init__(self, polyglot, primary, marker_uri, dev):
+        address = dev['id']
+        name = dev['label']
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('EcobeeThermostat Init')
+        self.dev_info = dev
+        logging.debug('EcobeeThermostat dev info: {}'.format(dev))
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
