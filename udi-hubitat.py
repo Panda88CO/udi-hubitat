@@ -549,6 +549,7 @@ class Controller(udi_interface.Node):
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))       
 
                             elif h_name == 'deviceTemperatureUnit':
+                                logging.debug('testing Temp Unit')
                             #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
                             #elif h_name in ['resumeProgram', 'SetAway']:
