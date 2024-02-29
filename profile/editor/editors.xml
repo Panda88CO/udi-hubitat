@@ -149,10 +149,7 @@
         <range uom="25" subset="0-2,99" nls="CLIMD" />
     </editor>
 
-    <editor id="CLIHCS">
-        <range uom="25" subset="0-5,99" nls="CLIHCS" />
-    </editor>
-    
+   
     <editor id="setCLIHCS">
         <range uom="25" subset="0-3" nls="CLIHCS" />    
     </editor> 
