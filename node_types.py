@@ -655,7 +655,6 @@ class EcobeeThermostat(HubitatBase):
 
     def setOperationMode(self, command):
         
-
         logging.debug('setOperationMode')
         cmd = command
         if command.get('value') == 0:
@@ -724,7 +723,8 @@ class EcobeeThermostat(HubitatBase):
         #tsettemp = #
 
     def setCoolPoint(self, command):
-        logging.debug('setCoolPoint : {}'.format(command))      
+        logging.debug('setCoolPoint : {}'.format(command))
+        #if command.get('uom') == 17
         HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
 
 

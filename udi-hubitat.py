@@ -184,7 +184,7 @@ class Controller(udi_interface.Node):
             _name = dev['name']
             _label = dev['label']
             _type = dev['type']
-            _id = dev['id']
+            _id = 'hubitat'+ dev['id']
 
             # if dev['type'] == 'Virtual Switch':
             #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
@@ -325,12 +325,8 @@ class Controller(udi_interface.Node):
                     _deviceId = str(event.json['deviceId'])
                     h_value = event.json['value']
                     h_name = event.json['name']
-
-                    if self.debug_enabled:
-                        logging.debug('---------------- Hubitat Device Info ----------------')
-                        logging.debug(event.json)
-                        logging.debug('Device Property: ' + h_name + " " + h_value)
-                        logging.debug('-----------------------------------------------------')
+                    logging.debug(event.json)
+                    logging.debug('Device Property: ' + h_name + " " + h_value)
 
                     if _deviceId in self.node_list:
                         m_node = self.nodes[_deviceId]
