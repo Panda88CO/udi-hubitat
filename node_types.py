@@ -621,19 +621,20 @@ class EcobeeSensor(HubitatBase):
         time.sleep(1)
         self.dev_info = dev
         logging.debug('EcobeeSensor dev info: {}'.format(dev))
-
-
+        self.drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25 },
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
+        {'driver': 'GV20', 'value': 99, 'uom': 25},
+        ] 
+        self.id = 'ECOBSENSOR'
+        self.commands = {  'QUERY': self.query   }
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
-    drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25 },
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
-        {'driver': 'GV20', 'value': 99, 'uom': 25},
-        ]
-    id = 'ECOBSENSOR'
-    commands = {  'QUERY': query   }
+
+    
+    
 
 
 class EcobeeThermostat(HubitatBase):
@@ -641,6 +642,30 @@ class EcobeeThermostat(HubitatBase):
         address = dev['id']
         name = dev['label']
         super().__init__(polyglot, primary, address, name, marker_uri)
+        self.drivers = [
+        {'driver': 'ST', 'value': 0, 'uom': 2}, #'DeviceWatch-DeviceStatus'
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
+        {'driver': 'CLIFS', 'value': 99, 'uom': 25},  # fan setting   'supportedThermostatFanModes'
+        {'driver': 'CLIMD', 'value': 99, 'uom': 25},  # heat/cool state: 'thermostat'
+        {'driver': 'CLISPC', 'value': 90, 'uom': 17}, # cool setpoint
+        {'driver': 'CLISPH', 'value': 50, 'uom': 17}, # heat setpoint
+        {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
+        {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
+        {'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
+        {'driver': 'GV20', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'
+        #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
+        ]
+
+        self.id = 'ECOBTSTAT'
+        self.commands = {'QUERY'    : self.query,
+                    'FANMODE'       : self.setFanMode,
+                    'TSTATMODE'     : self.setThermostatMode,
+                    'OPMODE'        : self.setOperationMode,
+                    'HEATPOINT'     : self.setHeatPoint,  
+                    'COOLPOINT'     : self.setCoolPoint
+                }
+
         logging.debug('EcobeeThermostat Init')
         self.dev_info = dev
         logging.debug('EcobeeThermostat dev info: {}'.format(dev))
@@ -737,25 +762,6 @@ class EcobeeThermostat(HubitatBase):
         else:
             logging.error('Unknow temp unit: {}'.format(t_unit))
 
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 2}, #'DeviceWatch-DeviceStatus'
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
-        {'driver': 'CLIFS', 'value': 99, 'uom': 25},  # fan setting   'supportedThermostatFanModes'
-        {'driver': 'CLIMD', 'value': 99, 'uom': 25},  # heat/cool state: 'thermostat'
-        {'driver': 'CLISPC', 'value': 90, 'uom': 17}, # cool setpoint
-        {'driver': 'CLISPH', 'value': 50, 'uom': 17}, # heat setpoint
-        {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
-        {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
-        {'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
-        {'driver': 'GV20', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'
-        #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
-        ]
-    id = 'ECOBTSTAT'
-    commands = {    'QUERY'         : query,
-                    'FANMODE'       : setFanMode,
-                    'TSTATMODE'     : setThermostatMode,
-                    'OPMODE'        : setOperationMode,
-                    'HEATPOINT'     : setHeatPoint,  
-                    'COOLPOINT'     : setCoolPoint
-                }
+
+    
+
