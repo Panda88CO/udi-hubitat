@@ -154,6 +154,7 @@ class HubitatBase(udi_interface.Node):
             r = requests.get(cmd_uri)
 
     def hubitatDirectCtrl(self, command, h_cmd):
+        logging.debug('hubitatDirectCtrl: {} , {}'.format(command, h_cmd))
         h_cmd = h_cmd
         #cmd = command.get('cmd')
         val = command.get('value')
@@ -683,12 +684,19 @@ class EcobeeThermostat(HubitatBase):
 
         logging.debug('setOperationMode')
         cmd = command
-        if command.get('value') == 0:
-            cmd['value'] = 'Auto'
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
-
+        if int(command.get('value')) == 0:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'auto')
+        elif int(command.get('value')) == 1:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'cool')
+        elif int(command.get('value')) == 2:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'heat')
+        elif int(command.get('value')) == 3:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'off')   
         
-
     def setThermostatMode(self, command):
         logging.debug('setTHermostatMode')
         '''
@@ -696,26 +704,29 @@ class EcobeeThermostat(HubitatBase):
         CLIHCS-1 = Cool
         CLIHCS-2 = Heat
         ---
-        CLIHCS-3 = Idle
+        CLIHCS-3 = Off
         ----
-        CLIHCS-4 = Off
+        CLIHCS-4 = Idle
         ----
         CLIHCS-5 = Emergency Heat
         CLIHCS-99 = Unknown
         '''
 
         cmd = command
-        if command.get('value') == 0:
+        if int(command.get('value')) == 0:
             cmd['value'] = 'auto'
             HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
             #HubitatBase.hubitatDirectCtrl(cmd, 'auto')
 
-        elif command.get('value') == 1:
+        elif int(command.get('value')) == 1:
             cmd['value'] = 'cool'
-        elif command.get('value') == 2:
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
+        elif int(command.get('value')) == 2:
             cmd['value'] = 'heat'
-        elif command.get('value') == 4:
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
+        elif int(command.get('value')) == 3:
             cmd['value'] = 'off' 
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
         else:
             logging.error('setThermostatMode unexpected command: {}'.format(command.get('value') ))           
         
@@ -742,15 +753,34 @@ class EcobeeThermostat(HubitatBase):
     def setHeatPoint(self, command):
         logging.debug('setHeatPoint : {}'.format(command))
         
-        #query = command.get("query")
+        cmd = command#query = command.get("query")
         unit = command.get('uom')
         set_temp = command.get('value')
-        HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
+        cmd['value'] = str(set_temp)
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'setHeatingSetpoint')
         #tsettemp = #
 
+    def setHereAway(self, command):
+        
+
+        logging.debug('setHereAway')
+        cmd = command
+        if int(command.get('value')) == 0:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setAway')
+        elif int(command.get('value')) == 1:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'resumeProgram')
+  
+
+
     def setCoolPoint(self, command):
-        logging.debug('setCoolPoint : {}'.format(command))      
-        HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
+        logging.debug('setCoolPoint : {}'.format(command)) 
+        cmd = command
+        unit = command.get('uom')
+        set_temp = str(command.get('value'))
+        cmd['value'] = set_temp     
+        HubitatBase.hubitatDirectCtrl(self, command, 'setCoolingSetpoint')
 
 
     def setTempUnit(self, t_unit):
@@ -765,7 +795,8 @@ class EcobeeThermostat(HubitatBase):
     commands = {'QUERY'     : query,
                 'FANMODE'   : setFanMode,
                 'TSTATMODE' : setThermostatMode,
-                'OPMODE'    : setOperationMode,
+                'OPMODE'    : setHereAway,
+                'HEREAWAY'   : setOperationMode,
                 'HEATPOINT' : setHeatPoint,  
                 'COOLPOINT' : setCoolPoint
                 }

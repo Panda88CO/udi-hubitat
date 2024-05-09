@@ -488,6 +488,9 @@
                         <p id="" editor="setCLIHCS" init="CLIHCS"/> 
                 </cmd>
                 <cmd id="OPMODE" >
+                        <p id="" editor="setCLIHCS" init="CLIHCS"/> 
+                </cmd>
+                <cmd id="HEREAWAY" >
                         <p id="" editor="setCLISMD" init="CLIMD"/> 
                 </cmd>
                 <cmd id="HEATPOINT" >
