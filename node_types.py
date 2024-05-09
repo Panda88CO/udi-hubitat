@@ -612,37 +612,39 @@ class SimpleRemoteNode(HubitatBase):
 
 
 class EcobeeSensor(HubitatBase):
-    def __init__(self, polyglot, primary,marker_uri, dev):
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25 },
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
+        {'driver': 'GV20', 'value': 99, 'uom': 25},
+        ] 
+    id = 'ECOBSENSOR'
+
+    def __init__(self, polyglot, primary, address, name, marker_uri, dev):
         #def __init__(self, polyglot, primary, marker_uri, dev):
-        address = dev['id']
-        name = dev['label']
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('EcobeeSensor Init')
         time.sleep(1)
         self.dev_info = dev
         logging.debug('EcobeeSensor dev info: {}'.format(dev))
-        self.drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25 },
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
-        {'driver': 'GV20', 'value': 99, 'uom': 25},
-        ] 
-        self.id = 'ECOBSENSOR'
-        self.commands = {  'QUERY': self.query   }
+
+ 
+        
+        try:
+            self.t_unit = dev['attributes']['deviceTemperatureUnit']
+        except:
+            self.t_unit = 1
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
+    commands = {  'QUERY': query   }
 
     
     
 
 
 class EcobeeThermostat(HubitatBase):
-    def __init__(self, polyglot, primary, marker_uri, dev):
-        address = dev['id']
-        name = dev['label']
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        self.drivers = [
+    drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 2}, #'DeviceWatch-DeviceStatus'
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
         {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
@@ -657,22 +659,20 @@ class EcobeeThermostat(HubitatBase):
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
 
-        self.id = 'ECOBTSTAT'
-        self.commands = {'QUERY'    : self.query,
-                    'FANMODE'       : self.setFanMode,
-                    'TSTATMODE'     : self.setThermostatMode,
-                    'OPMODE'        : self.setOperationMode,
-                    'HEATPOINT'     : self.setHeatPoint,  
-                    'COOLPOINT'     : self.setCoolPoint
-                }
-
+    id = 'ECOBTSTAT'
+    
+    def __init__(self, polyglot, primary,address, name, marker_uri, dev):
+        super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('EcobeeThermostat Init')
+
+
+
         self.dev_info = dev
         logging.debug('EcobeeThermostat dev info: {}'.format(dev))
         try:
             self.t_unit = dev['attributes']['deviceTemperatureUnit']
         except:
-            self.t_unit = self.temp_unit
+            self.t_unit = 1
 
     def query(self):
         HubitatBase.hubitatRefresh(self)
@@ -762,6 +762,12 @@ class EcobeeThermostat(HubitatBase):
         else:
             logging.error('Unknow temp unit: {}'.format(t_unit))
 
-
+    commands = {'QUERY'     : query,
+                'FANMODE'   : setFanMode,
+                'TSTATMODE' : setThermostatMode,
+                'OPMODE'    : setOperationMode,
+                'HEATPOINT' : setHeatPoint,  
+                'COOLPOINT' : setCoolPoint
+                }
     
 

@@ -182,7 +182,8 @@ class Controller(udi_interface.Node):
         for dev in data:
             logging.debug('device id: {}'.format(dev))
             _name = dev['name']
-            _label = dev['label']
+
+            _label = self.poly.getValidName(dev['label'])
             _type = dev['type']
             _id = dev['id']
 
@@ -218,9 +219,11 @@ class Controller(udi_interface.Node):
                     node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 '''
             elif dev['type'] == 'Ecobee Sensor':
-                node_types.EcobeeSensor(self.poly,  self.address, self.maker_uri, dev )
+                nodeAdr = 'eb_sens'+str(_id)
+                node_types.EcobeeSensor(self.poly,  self.address, nodeAdr, _label, self.maker_uri, dev )
             elif dev['type'] == 'Ecobee Thermostat':
-                node_types.EcobeeThermostat(self.poly,  self.address, self.maker_uri, dev )                                
+                nodeAdr = 'eb_therm'+str(_id)
+                node_types.EcobeeThermostat(self.poly,  self.address, nodeAdr, _label, self.maker_uri, dev )                                
                 
             elif 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
