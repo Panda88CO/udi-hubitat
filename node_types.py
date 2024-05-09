@@ -768,8 +768,7 @@ class EcobeeThermostat(HubitatBase):
         #tsettemp = #
 
     def setHereAway(self, command):
-        
-        self.
+
         logging.debug('setHereAway')
         cmd = command
         if int(command.get('value')) == 0:
