@@ -742,15 +742,18 @@ class EcobeeThermostat(HubitatBase):
         CLIHCS-2 = Circulate
         '''
         cmd = command
-        if command.get('value') == 0:
-            cmd['value'] = 'on'            
-        elif command.get('value') == 1:
+        if int(command.get('value')) == 0:
+            cmd['value'] = 'on'   
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')         
+        elif int(command.get('value')) == 1:
             cmd['value'] = 'auto'
-        elif command.get('value') == 2:
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')
+        elif int(command.get('value')) == 2:
             cmd['value'] = 'circulate'
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')
         else:
             logging.error('setFanMode unexpected command: {}'.format(command.get('value') ))           
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
+        
 
     def setHeatPoint(self, command):
         logging.debug('setHeatPoint : {}'.format(command))
@@ -767,10 +770,10 @@ class EcobeeThermostat(HubitatBase):
 
         logging.debug('setHereAway')
         cmd = command
-        if int(command.get('value')) == 0:
+        if int(command.get('value')) == 1:
             cmd['value'] = ''
             HubitatBase.hubitatDirectCtrl(self, cmd, 'setAway')
-        elif int(command.get('value')) == 1:
+        elif int(command.get('value')) == 0:
             cmd['value'] = ''
             HubitatBase.hubitatDirectCtrl(self, cmd, 'resumeProgram')
   
@@ -782,7 +785,7 @@ class EcobeeThermostat(HubitatBase):
         unit = command.get('uom')
         set_temp = str(command.get('value'))
         cmd['value'] = set_temp     
-        HubitatBase.hubitatDirectCtrl(self, command, 'setCoolingSetpoint')
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'setCoolingSetpoint')
 
 
     def setTempUnit(self, t_unit):
@@ -794,7 +797,12 @@ class EcobeeThermostat(HubitatBase):
         else:
             logging.error('Unknow temp unit: {}'.format(t_unit))
 
-    commands = {'QUERY'     : query,
+    def updateThermostat(self, command):
+        cmd = command
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
+
+    commands = {'QUERY'     : updateThermostat,
                 'FANMODE'   : setFanMode,
                 'TSTATMODE' : setThermostatMode,
                 'OPMODE'    : setHereAway,
