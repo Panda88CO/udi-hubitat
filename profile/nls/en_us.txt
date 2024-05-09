@@ -266,8 +266,8 @@ CLIFS-0 = On
 CLIFS-1 = Auto
 CLIFS-99 = Unknown
 
-CLISMD-0 = Here
-CLISMD-1 = Away
+CLISMD-1 = Here
+CLISMD-0 = Away
 CLISMD-99 = Unknown
  
 ONOFF-0 = Off

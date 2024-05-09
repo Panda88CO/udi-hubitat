@@ -671,6 +671,8 @@ class EcobeeThermostat(HubitatBase):
 
 
         self.dev_info = dev
+        self.hereawayState = 99
+        self.poly.setDriver('CLISMD', self.hereawayState  )
         logging.debug('EcobeeThermostat dev info: {}'.format(dev))
         try:
             self.t_unit = dev['attributes']['deviceTemperatureUnit']
@@ -767,16 +769,18 @@ class EcobeeThermostat(HubitatBase):
 
     def setHereAway(self, command):
         
-
+        self.
         logging.debug('setHereAway')
         cmd = command
-        if int(command.get('value')) == 1:
+        if int(command.get('value')) == 0:
             cmd['value'] = ''
+            self.hereawayState = 0
             HubitatBase.hubitatDirectCtrl(self, cmd, 'setAway')
-        elif int(command.get('value')) == 0:
+        elif int(command.get('value')) == 1:
             cmd['value'] = ''
+            self.hereawayState = 1
             HubitatBase.hubitatDirectCtrl(self, cmd, 'resumeProgram')
-  
+        self.poly.setDriver('CLISMD', self.hereawayState )
 
 
     def setCoolPoint(self, command):
