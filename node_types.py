@@ -162,8 +162,10 @@ class HubitatBase(udi_interface.Node):
         _raw_uri = self.maker_uri.split('?')
         _raw_http = _raw_uri[0].replace('all', device_id)
         cmd_ok = True
-
-        cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
+        if val != None and val != '':
+            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
+        else:
+            cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
         logging.debug('hubitatDirectCtrl URI: {}'.format(cmd_uri ))
         if cmd_ok:
             r = requests.get(cmd_uri)
