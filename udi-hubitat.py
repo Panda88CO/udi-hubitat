@@ -219,10 +219,10 @@ class Controller(udi_interface.Node):
                     node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 '''
             elif dev['type'] == 'Ecobee Sensor':
-                nodeAdr = 'eb_sens'+str(_id)
+                nodeAdr = str(_id)
                 node_types.EcobeeSensor(self.poly,  self.address, nodeAdr, _label, self.maker_uri, dev )
             elif dev['type'] == 'Ecobee Thermostat':
-                nodeAdr = 'eb_therm'+str(_id)
+                nodeAdr = str(_id)
                 node_types.EcobeeThermostat(self.poly,  self.address, nodeAdr, _label, self.maker_uri, dev )                                
                 
             elif 'Light' in dev['capabilities']:
