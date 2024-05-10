@@ -52,6 +52,7 @@ class Controller(udi_interface.Node):
         self.debug_enabled = True
         self.poly.updateProfile()
         self.poly.ready()
+        self.temp_unit= 'F'
         self.EcoBee_t_unit = 'F'
         self.device_list = {}
 
