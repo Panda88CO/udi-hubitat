@@ -680,9 +680,16 @@ class EcobeeThermostat(HubitatBase):
         try:
             thmode = str(dev['attributes']['supportedThermostatModes'])
             logging.debug('thmode : {}'.format(thmode))
-            thmodes = json.load(thmode)
-            logging.debug('thmodes : {}'.format(thmodes))
             
+            thmodes = ['off']
+            if 'heat' in thmode:
+                thmodes.append('heat')
+            if 'cool' in thmode:
+                thmodes.append('heat')
+            if 'auto' in thmode:
+                thmodes.append('auto')
+            logging.debug('thmodes : {}'.format(thmodes))
+
             if len(thmode) == 2:
                 if 'heat' in thmode:
                     thtype = 0
