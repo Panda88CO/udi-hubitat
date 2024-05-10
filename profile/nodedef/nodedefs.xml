@@ -462,26 +462,26 @@
     <nodeDef id="ECOBTSTAT" nls="ecobeetstat">
         <editors />
         <sts>
-            <st id="ST"     editor="bool" hide="True"/>
-  
+            <st id="ST"     editor="ONLINE" />
             <st id="CLITEMP" editor="CLITEMP" />
             <st id="CLIHUM" editor="CLIHUM" />
-     
             <st id="CLIMD"  editor="CLIMD" />
             <st id="CLIFS"  editor="CLIFS" />
             <st id="CLISPC" editor="TSTATTEMP" />
             <st id="CLISPH" editor="TSTATTEMP" />
             <st id="CLIHCS" editor="CLIHCS" />
             <st id="CLIFRS" editor="CLIFRS" />
-            <st id="CLISMD" editor="CLISMD" />
+            <!--<st id="CLISMD" editor="CLISMD" />-->
             <st id="GV19"   editor="THMODE" /> 
-            <st id="GV20"   editor="ONLINE" />
+            <!--<st id="GV20"   editor="ONLINE" />-->
             <!--<st id="GV10" editor="SET_POINT" /> -->
         </sts>
         <cmds>
             <sends />
             <accepts>
                 <cmd id="QUERY" />
+                <cmd id="AWAY"/ >
+                <cmd id="RESUME"/ >                
                 <cmd  id="FANMODE" >
                         <p id="" editor="setCLIFS" init="CLIFS"/> 
                 </cmd>
@@ -491,9 +491,7 @@
                 <!--<cmd id="OPMODE" >
                         <p id="" editor="setCLIHCS" init="CLIHCS"/> 
                 </cmd>-->
-                <cmd id="HEREAWAY" >
-                        <p id="" editor="setCLISMD" init="CLIMD"/> 
-                </cmd>
+
                 <cmd id="HEATPOINT" >
                         <p id="" editor="TSTATTEMP" init="CLISPH"/>
                 </cmd>

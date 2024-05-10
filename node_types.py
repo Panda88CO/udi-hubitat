@@ -650,7 +650,7 @@ class EcobeeSensor(HubitatBase):
 
 class EcobeeThermostat(HubitatBase):
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 2}, #'DeviceWatch-DeviceStatus'
+        {'driver': 'ST', 'value': 0, 'uom': 25}, #'DeviceWatch-DeviceStatus'
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
         {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
         {'driver': 'CLIFS', 'value': 99, 'uom': 25},  # fan setting   'supportedThermostatFanModes'
@@ -659,7 +659,7 @@ class EcobeeThermostat(HubitatBase):
         {'driver': 'CLISPH', 'value': 50, 'uom': 17}, # heat setpoint
         {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
         {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
-        {'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
+        #{'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
         {'driver': 'GV19', 'value': 99, 'uom': 25},   # 'thermostat type'
         {'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
@@ -801,19 +801,19 @@ class EcobeeThermostat(HubitatBase):
         HubitatBase.hubitatDirectCtrl(self, cmd, 'setHeatingSetpoint')
         #tsettemp = #
 
-    def setHereAway(self, command):
+    def setResume(self, command):
 
-        logging.debug('setHereAway')
+        logging.debug('setResume')
         cmd = command
-        if int(command.get('value')) == 0:
-            cmd['value'] = ''
-            self.hereawayState = 0
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setAway')
-        elif int(command.get('value')) == 1:
-            cmd['value'] = ''
-            self.hereawayState = 1
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'resumeProgram')
-        self.node.setDriver('CLISMD', self.hereawayState )
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'resumeProgram')
+
+
+    def setAway(self, command):
+
+        logging.debug('setAway')
+        cmd = command
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'setAway')
 
 
     def setCoolPoint(self, command):
@@ -839,11 +839,12 @@ class EcobeeThermostat(HubitatBase):
         cmd['value'] = ''
         HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
 
+
     commands = {'QUERY'     : updateThermostat,
                 'FANMODE'   : setFanMode,
                 'TSTATMODE' : setThermostatMode,
-                #'OPMODE'    : ,
-                'HEREAWAY'   : setHereAway,
+                'AWAY'      : setAway,
+                'RESUME'    : setResume,
                 'HEATPOINT' : setHeatPoint,  
                 'COOLPOINT' : setCoolPoint
                 }

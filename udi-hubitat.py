@@ -561,14 +561,17 @@ class Controller(udi_interface.Node):
                                 logging.debug('testing Temp Unit')
                             #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
-                            #elif h_name in ['resumeProgram', 'SetAway']:
-
-                            #elif h_name in ['setCoolingSetpoint']:
-
-                            #elif h_name in ['setHeatingSetpoint']: 
-
+                            #elif h_name in ['resumeProgram']:
+                            #    m_node.setDriver(
+                                    
+                            elif h_name == 'deviceAlive':
+                                logging.debug('deviceAlive')
+                                if h_value  == 'true':
+                                    m_node.setDriver('ST', 1, True, True, 25)
+                                else:
+                                    m_node.setDriver('ST', 0, True, True, 25)
                             else:
-                                print('Driver not implemented for {} {} {}')
+                                print('Driver not implemented for {} {} {}'.format(h_name, h_value, event.json))
                         except KeyError:
                             print('Device not found in ISY')
 
