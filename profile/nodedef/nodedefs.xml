@@ -480,8 +480,8 @@
             <sends />
             <accepts>
                 <cmd id="QUERY" />
-                <cmd id="AWAY"/ >
-                <cmd id="RESUME"/ >                
+                <cmd id="AWAY" />
+                <cmd id="RESUME" />                
                 <cmd  id="FANMODE" >
                         <p id="" editor="setCLIFS" init="CLIFS"/> 
                 </cmd>
