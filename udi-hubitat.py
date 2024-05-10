@@ -36,7 +36,7 @@ class Controller(udi_interface.Node):
         logging.setLevel(10)
         self.drivers = [{'driver': 'ST', 'value': 1, 'uom': 2}]
         self.node_list = []
-
+        self.hb = 0
         self.Parameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(self.poly, 'notices')
         self.configDone = False
@@ -71,7 +71,15 @@ class Controller(udi_interface.Node):
 
     #def longPoll(self):
     #    pass
-
+    def heartbeat(self):
+        logging.debug('heartbeat: ' + str(self.hb))
+        
+        if self.hb == 0:
+            self.reportCmd('DON',2)
+            self.hb = 1
+        else:
+            self.reportCmd('DOF',2)
+            self.hb = 0
 
     def start(self):
         logging.info('Started Hubitat')
@@ -173,6 +181,7 @@ class Controller(udi_interface.Node):
     '''
 
     def discover(self, *args, **kwargs):
+        assigned_addresses =['controller']    
         r = requests.get(self.maker_uri)
         logging.debug('respose code {}'.format(r.status_code))
         while r.status_code!= self.RESPONSE_OK:
@@ -285,16 +294,23 @@ class Controller(udi_interface.Node):
             elif 'PushableButton' in dev['capabilities']:
                 node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
 
-
+            assigned_addresses.append(_id)    
             
         # Build node list
         self.nodes = self.poly.getNodes()
         for node in self.nodes:
             self.node_list.append(self.nodes[node].address)
         # remove unused nodes still to be added
-
-
-
+        
+        self.nodes_in_db = self.poly.getNodesFromDb()
+        logging.debug('Scanning db for extra nodes : {}'.format(assigned_addresses))
+        for nde in range(0, len(self.nodes_in_db)):
+            node = self.nodes_in_db[nde]
+            logging.debug('Scanning db for node : {}'.format(node))
+            if node['address'] not in assigned_addresses:
+                logging.debug('Removing node : {} {}'.format(node['name'], node))
+                self.poly.delNode(node['address'])
+        
 
 
     def delete(self):
