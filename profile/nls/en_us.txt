@@ -189,7 +189,7 @@ COLOR_MODE-2 = RGB
 
 MOTION-0 = Idle
 MOTION-1 = Motion
-MOTION-99 = Unknown
+MOTION-99 = No data
 
 #BATLVL-0 = Idle
 #BATLVL-1 = motion
@@ -240,7 +240,8 @@ ST-ecobeetstat-GV20-NAME = Online
 CMD-ecobeetstat-QUERY-NAME = Update
 CMD-ecobeetstat-FANMODE-NAME = Set Fan Mode
 CMD-ecobeetstat-TSTATMODE-NAME = Set Thermostat  Mode
-CMD-ecobeetstat-HEREAWAY-NAME = Here(resume)/Away
+CMD-ecobeetstat-AWAY-NAME = set Away
+CMD-ecobeetstat-AWAY-NAME = Resume Schedule
 CMD-ecobeetstat-HEATPOINT-NAME = Heat point
 CMD-ecobeetstat-COOLPOINT-NAME = Cool point
 
@@ -250,31 +251,31 @@ CLIHCS-2 = Heat
 CLIHCS-3 = Off
 CLIHCS-4 = Idle
 CLIHCS-5 = Emergency Heat
-CLIHCS-99 = Unknown
+CLIHCS-99 = No data
 
 CLIMD-0 = Auto
 CLIMD-1 = Cooling
 CLIMD-2 = Heating
 CLIMD-3 = Off
-CLIMD-99 = Unknown
+CLIMD-99 = No data
 
-CLIFRS-0 = On
-CLIFRS-1 = Auto
+CLIFRS-0 = Auto
+CLIFRS-1 = On
 CLIFRS-2 = Off
-CLIFRS-99 = Unknown
+CLIFRS-99 = No data
 
 CLIFS-0 = On
 CLIFS-1 = Auto
-CLIFS-99 = Unknown
+CLIFS-99 = No data
 
 CLISMD-1 = Here/Resume
 CLISMD-0 = Away
-CLISMD-99 = Unknown
+CLISMD-99 = No data
  
 ONOFF-0 = Off
 ONOFF-1 = On
 ONOFF-100 = On
-ONOFF-99 = Unknown
+ONOFF-99 = No data
 
 UNKNOWN-99 = Unknown
 
