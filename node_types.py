@@ -686,11 +686,11 @@ class EcobeeThermostat(HubitatBase):
                 elif 'auto' in thmode:
                     thtype = 2
             elif len(thmode) == 3:
-                thmode = 3
+                thtype = 3
             elif len(thmode) == 4:
-                thmode = 4
+                thtype = 4
             else:
-                thmode = 99
+                thtype = 99
 
     
             self.t_unit = dev['attributes']['deviceTemperatureUnit']
@@ -699,7 +699,7 @@ class EcobeeThermostat(HubitatBase):
             self.t_unit = 1
             thmode = 99
 
-        self.node.setDriver('GV20', thmode  )
+        self.node.setDriver('GV20', thtype)
         
     def query(self):
         HubitatBase.hubitatRefresh(self)
