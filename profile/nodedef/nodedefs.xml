@@ -446,7 +446,7 @@
             <st id="ST" editor="MOTION"/>
             <st id="CLITEMP" editor="CLITEMP" />
             <!--<st id="BATLVL" editor="BATLVL" /> -->
-            <st id="GV20" editor="ONLINE" />
+            <!-- <st id="GV20" editor="ONLINE" />-->
         </sts>
         <cmds>
             <sends >

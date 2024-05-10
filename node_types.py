@@ -619,7 +619,7 @@ class EcobeeSensor(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 99, 'uom': 25 },
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
-        {'driver': 'GV20', 'value': 99, 'uom': 25},
+        #{'driver': 'GV20', 'value': 99, 'uom': 25},
         ] 
     id = 'ECOBSENSOR'
 
@@ -675,7 +675,7 @@ class EcobeeThermostat(HubitatBase):
         thtype = 99
         logging.debug('EcobeeThermostat dev info: {}'.format(dev))
         self.hereawayState = 99
-        self.node.setDriver('CLISMD', self.hereawayState  )
+        #self.node.setDriver('CLISMD', self.hereawayState  )
         try:
             thmode = str(dev['attributes']['supportedThermostatModes'])
             logging.debug('thmode : {}'.format(thmode))
