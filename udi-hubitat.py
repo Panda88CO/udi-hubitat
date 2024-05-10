@@ -188,6 +188,7 @@ class Controller(udi_interface.Node):
             _type = dev['type']
             #_id = 'hubitat'+ dev['id']
             _id =  dev['id']
+            self.device_list[_id] = dev
             # if dev['type'] == 'Virtual Switch':
             #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Z-Wave Switch':
@@ -378,7 +379,21 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('SPEED', 0)
                             elif h_name == 'battery':
                                 m_node.setDriver('BATLVL', h_value)
-                            elif h_name == 'temperature':  #Need to separate Ecobee
+                            elif h_name == 'temperature':
+                                    #Need to separate Ecobee
+                                if self.device_list[_deviceId] in ['Ecobee Sensor', 'Ecobee Thermostat']:
+                                    if self.temp_unit == 'F':
+                                        if self.EcoBee_t_unit == 'F':
+                                            m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                        else: #C
+                                            m_node.setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                    else:
+                                        if self.EcoBee_t_unit == 'F':
+                                            m_node.setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                        else:
+                                            m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)                                    
+    
+                                else:
                                     if self.temp_unit == 'F':           
                                         m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
                                     else:
@@ -502,7 +517,7 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('ST', 1)
                                 else:
                                     m_node.setDriver('ST', 0)
-                            #Htemostat        
+                            #Htemostat                                
                             elif h_name == 'thermostatMode':
                                 if h_value  == 'auto':
                                     m_node.setDriver('CLIMD', 0)
