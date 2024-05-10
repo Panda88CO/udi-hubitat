@@ -188,8 +188,9 @@ COLOR_MODE-2 = RGB
 # Newly added   
 
 MOTION-0 = Idle
-MOTION-1 = Motion
+MOTION-1 = Motion Detected
 MOTION-99 = No data
+MOTION-100 = Motion Detected
 
 #BATLVL-0 = Idle
 #BATLVL-1 = motion

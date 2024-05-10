@@ -133,7 +133,7 @@
     </editor>
    
     <editor id="MOTION">
-        <range uom="25" subset="0-1,99" nls="MOTION" />
+        <range uom="25" subset="0-1,99,100" nls="MOTION" />
     </editor>
 
     <!--Thermostat mode -->
