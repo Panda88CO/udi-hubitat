@@ -291,9 +291,11 @@ class Controller(udi_interface.Node):
         self.nodes = self.poly.getNodes()
         for node in self.nodes:
             self.node_list.append(self.nodes[node].address)
-
-        node_types.HubitatBase.hubitatRefresh(self)
         # remove unused nodes still to be added
+
+
+
+        
 
     def delete(self):
         """
