@@ -672,13 +672,17 @@ class EcobeeThermostat(HubitatBase):
         logging.debug('EcobeeThermostat Init')
         self.poly = polyglot
         self.dev_info = dev
+        thtype = 99
         logging.debug('EcobeeThermostat dev info: {}'.format(dev))
         self.hereawayState = 99
     
         self.node.setDriver('CLISMD', self.hereawayState  )
         try:
-            thmode = json.load(dev['attributes']['supportedThermostatModes'])
-            logging.debug('thmodes : {}'.format(thmode))
+            thmode = str(dev['attributes']['supportedThermostatModes'])
+            logging.debug('thmode : {}'.format(thmode))
+            thmodes = json.load(thmode)
+            logging.debug('thmodes : {}'.format(thmodes))
+            
             if len(thmode) == 2:
                 if 'heat' in thmode:
                     thtype = 0
@@ -698,7 +702,7 @@ class EcobeeThermostat(HubitatBase):
         except Exception as e:
             logging.error('not able to determine type {}'.format(e))
             self.t_unit = 1
-            thmode = 99
+            thtype = 99
 
         self.node.setDriver('GV19', thtype)
         
