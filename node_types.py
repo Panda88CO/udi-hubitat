@@ -660,6 +660,7 @@ class EcobeeThermostat(HubitatBase):
         {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
         {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
         {'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
+        {'driver': 'GV19', 'value': 99, 'uom': 25},   # 'thermostat type'
         {'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
@@ -699,7 +700,7 @@ class EcobeeThermostat(HubitatBase):
             self.t_unit = 1
             thmode = 99
 
-        self.node.setDriver('GV20', thtype)
+        self.node.setDriver('GV19', thtype)
         
     def query(self):
         HubitatBase.hubitatRefresh(self)
