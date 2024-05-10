@@ -17,7 +17,7 @@ import requests
 import traceback
 from lomond import WebSocket
 import node_types
-version = '0.1.7'
+version = '0.1.8'
 #LOGGER = polyinterface.LOGGER
 
 class Controller(udi_interface.Node):
@@ -182,7 +182,8 @@ class Controller(udi_interface.Node):
         for dev in data:
             logging.debug('device id: {}'.format(dev))
             _name = dev['name']
-            _label = dev['label']
+
+            _label = self.poly.getValidName(dev['label'])
             _type = dev['type']
             _id = 'hubitat'+ dev['id']
 
@@ -218,9 +219,11 @@ class Controller(udi_interface.Node):
                     node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 '''
             elif dev['type'] == 'Ecobee Sensor':
-                node_types.EcobeeSensor(self.poly,  self.address, self.maker_uri, dev )
+                #nodeAdr = str(_id)
+                node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri, dev )
             elif dev['type'] == 'Ecobee Thermostat':
-                node_types.EcobeeThermostat(self.poly,  self.address, self.maker_uri, dev )                                
+                #nodeAdr = str(_id)
+                node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri, dev )                                
                 
             elif 'Light' in dev['capabilities']:
                 if 'ColorTemperature' in dev['capabilities']:
@@ -554,14 +557,17 @@ class Controller(udi_interface.Node):
                                 logging.debug('testing Temp Unit')
                             #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
-                            #elif h_name in ['resumeProgram', 'SetAway']:
-
-                            #elif h_name in ['setCoolingSetpoint']:
-
-                            #elif h_name in ['setHeatingSetpoint']: 
-
+                            #elif h_name in ['resumeProgram']:
+                            #    m_node.setDriver(
+                                    
+                            elif h_name == 'deviceAlive':
+                                logging.debug('deviceAlive')
+                                if h_value  == 'true':
+                                    m_node.setDriver('ST', 1, True, True, 25)
+                                else:
+                                    m_node.setDriver('ST', 0, True, True, 25)
                             else:
-                                print('Driver not implemented for {} {} {}')
+                                print('Driver not implemented for {} {} {}'.format(h_name, h_value, event.json))
                         except KeyError:
                             print('Device not found in ISY')
 

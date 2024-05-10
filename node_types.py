@@ -2,6 +2,7 @@
 import requests
 import re
 import time 
+import json
 
 try:
     import udi_interface
@@ -154,6 +155,7 @@ class HubitatBase(udi_interface.Node):
             r = requests.get(cmd_uri)
 
     def hubitatDirectCtrl(self, command, h_cmd):
+        logging.debug('hubitatDirectCtrl: {} , {}'.format(command, h_cmd))
         h_cmd = h_cmd
         #cmd = command.get('cmd')
         val = command.get('value')
@@ -161,8 +163,10 @@ class HubitatBase(udi_interface.Node):
         _raw_uri = self.maker_uri.split('?')
         _raw_http = _raw_uri[0].replace('all', device_id)
         cmd_ok = True
-
-        cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
+        if val != None and val != '':
+            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
+        else:
+            cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
         logging.debug('hubitatDirectCtrl URI: {}'.format(cmd_uri ))
         if cmd_ok:
             r = requests.get(cmd_uri)
@@ -612,43 +616,103 @@ class SimpleRemoteNode(HubitatBase):
 
 
 class EcobeeSensor(HubitatBase):
-    def __init__(self, polyglot, primary,marker_uri, dev):
-        #def __init__(self, polyglot, primary, marker_uri, dev):
-        address = dev['id']
-        name = dev['label']
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('EcobeeSensor Init')
-        time.sleep(1)
-        self.dev_info = dev
-        logging.debug('EcobeeSensor dev info: {}'.format(dev))
-
-
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
     drivers = [
         {'driver': 'ST', 'value': 99, 'uom': 25 },
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
         {'driver': 'GV20', 'value': 99, 'uom': 25},
-        ]
+        ] 
     id = 'ECOBSENSOR'
-    commands = {  'QUERY': query   }
 
-
-class EcobeeThermostat(HubitatBase):
-    def __init__(self, polyglot, primary, marker_uri, dev):
-        address = dev['id']
-        name = dev['label']
+    def __init__(self, polyglot, primary, address, name, marker_uri, dev):
+        #def __init__(self, polyglot, primary, marker_uri, dev):
         super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('EcobeeThermostat Init')
+        logging.debug('EcobeeSensor Init')
+        self.poly = polyglot
+        time.sleep(1)
         self.dev_info = dev
-        logging.debug('EcobeeThermostat dev info: {}'.format(dev))
+        logging.debug('EcobeeSensor dev info: {}'.format(dev))
+
+ 
+        
         try:
             self.t_unit = dev['attributes']['deviceTemperatureUnit']
         except:
-            self.t_unit = self.temp_unit
+            self.t_unit = 1
 
+    def query(self):
+        HubitatBase.hubitatRefresh(self)
+
+    commands = {  'QUERY': query   }
+
+    
+    
+
+
+class EcobeeThermostat(HubitatBase):
+    drivers = [
+        {'driver': 'ST', 'value': 0, 'uom': 25}, #'DeviceWatch-DeviceStatus'
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
+        {'driver': 'CLIFS', 'value': 99, 'uom': 25},  # fan setting   'supportedThermostatFanModes'
+        {'driver': 'CLIMD', 'value': 99, 'uom': 25},  # heat/cool state: 'thermostat'
+        {'driver': 'CLISPC', 'value': 90, 'uom': 17}, # cool setpoint
+        {'driver': 'CLISPH', 'value': 50, 'uom': 17}, # heat setpoint
+        {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
+        {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
+        #{'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
+        {'driver': 'GV19', 'value': 99, 'uom': 25},   # 'thermostat type'
+        {'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
+        #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
+        ]
+
+    id = 'ECOBTSTAT'
+    
+    def __init__(self, polyglot, primary,address, name, marker_uri, dev):
+        super().__init__(polyglot, primary, address, name, marker_uri)
+        logging.debug('EcobeeThermostat Init')
+        self.poly = polyglot
+        self.dev_info = dev
+        thtype = 99
+        logging.debug('EcobeeThermostat dev info: {}'.format(dev))
+        self.hereawayState = 99
+    
+        self.node.setDriver('CLISMD', self.hereawayState  )
+        try:
+            thmode = str(dev['attributes']['supportedThermostatModes'])
+            logging.debug('thmode : {}'.format(thmode))
+            
+            thmodes = ['off']
+            if 'heat' in thmode:
+                thmodes.append('heat')
+            if 'cool' in thmode:
+                thmodes.append('cool')
+            if 'auto' in thmode:
+                thmodes.append('auto')
+            logging.debug('thmodes : {}'.format(thmodes))
+
+            if len(thmodes) == 2:
+                if 'heat' in thmodes:
+                    thtype = 0
+                elif 'cool' in thmodes:
+                    thtype = 1
+                elif 'auto' in thmodes:
+                    thtype = 2
+            elif len(thmodes) == 3:
+                thtype = 3
+            elif len(thmodes) == 4:
+                thtype = 4
+            else:
+                thtype = 99
+
+    
+            self.t_unit = dev['attributes']['deviceTemperatureUnit']
+        except Exception as e:
+            logging.error('not able to determine type {}'.format(e))
+            self.t_unit = 1
+            thtype = 99
+
+        self.node.setDriver('GV19', thtype)
+        
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
@@ -657,12 +721,19 @@ class EcobeeThermostat(HubitatBase):
         
         logging.debug('setOperationMode')
         cmd = command
-        if command.get('value') == 0:
-            cmd['value'] = 'Auto'
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
-
+        if int(command.get('value')) == 0:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'auto')
+        elif int(command.get('value')) == 1:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'cool')
+        elif int(command.get('value')) == 2:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'heat')
+        elif int(command.get('value')) == 3:
+            cmd['value'] = ''
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'off')   
         
-
     def setThermostatMode(self, command):
         logging.debug('setTHermostatMode')
         '''
@@ -670,26 +741,29 @@ class EcobeeThermostat(HubitatBase):
         CLIHCS-1 = Cool
         CLIHCS-2 = Heat
         ---
-        CLIHCS-3 = Idle
+        CLIHCS-3 = Off
         ----
-        CLIHCS-4 = Off
+        CLIHCS-4 = Idle
         ----
         CLIHCS-5 = Emergency Heat
         CLIHCS-99 = Unknown
         '''
 
         cmd = command
-        if command.get('value') == 0:
+        if int(command.get('value')) == 0:
             cmd['value'] = 'auto'
             HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
             #HubitatBase.hubitatDirectCtrl(cmd, 'auto')
 
-        elif command.get('value') == 1:
+        elif int(command.get('value')) == 1:
             cmd['value'] = 'cool'
-        elif command.get('value') == 2:
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
+        elif int(command.get('value')) == 2:
             cmd['value'] = 'heat'
-        elif command.get('value') == 4:
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
+        elif int(command.get('value')) == 3:
             cmd['value'] = 'off' 
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
         else:
             logging.error('setThermostatMode unexpected command: {}'.format(command.get('value') ))           
         
@@ -703,29 +777,51 @@ class EcobeeThermostat(HubitatBase):
         CLIHCS-2 = Circulate
         '''
         cmd = command
-        if command.get('value') == 0:
-            cmd['value'] = 'on'            
-        elif command.get('value') == 1:
+        if int(command.get('value')) == 0:
+            cmd['value'] = 'on'   
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')         
+        elif int(command.get('value')) == 1:
             cmd['value'] = 'auto'
-        elif command.get('value') == 2:
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')
+        elif int(command.get('value')) == 2:
             cmd['value'] = 'circulate'
+            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')
         else:
             logging.error('setFanMode unexpected command: {}'.format(command.get('value') ))           
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
+        
 
     def setHeatPoint(self, command):
         logging.debug('setHeatPoint : {}'.format(command))
         
-        #query = command.get("query")
+        cmd = command#query = command.get("query")
         unit = command.get('uom')
         set_temp = command.get('value')
-        HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
+        cmd['value'] = str(set_temp)
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'setHeatingSetpoint')
         #tsettemp = #
 
+    def setResume(self, command):
+
+        logging.debug('setResume')
+        cmd = command
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'resumeProgram')
+
+
+    def setAway(self, command):
+
+        logging.debug('setAway')
+        cmd = command
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'setAway')
+
+
     def setCoolPoint(self, command):
-        logging.debug('setCoolPoint : {}'.format(command))
-        #if command.get('uom') == 17
-        HubitatBase.hubitatDirectCtrl(self, command, 'setHeatingSetpoint')
+        logging.debug('setCoolPoint : {}'.format(command)) 
+        cmd = command
+        unit = command.get('uom')
+        set_temp = str(command.get('value'))
+        cmd['value'] = set_temp     
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'setCoolingSetpoint')
 
 
     def setTempUnit(self, t_unit):
@@ -737,25 +833,19 @@ class EcobeeThermostat(HubitatBase):
         else:
             logging.error('Unknow temp unit: {}'.format(t_unit))
 
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 2}, #'DeviceWatch-DeviceStatus'
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
-        {'driver': 'CLIFS', 'value': 99, 'uom': 25},  # fan setting   'supportedThermostatFanModes'
-        {'driver': 'CLIMD', 'value': 99, 'uom': 25},  # heat/cool state: 'thermostat'
-        {'driver': 'CLISPC', 'value': 90, 'uom': 17}, # cool setpoint
-        {'driver': 'CLISPH', 'value': 50, 'uom': 17}, # heat setpoint
-        {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
-        {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
-        {'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
-        {'driver': 'GV20', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'
-        #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
-        ]
-    id = 'ECOBTSTAT'
-    commands = {    'QUERY'         : query,
-                    'FANMODE'       : setFanMode,
-                    'TSTATMODE'     : setThermostatMode,
-                    'OPMODE'        : setOperationMode,
-                    'HEATPOINT'     : setHeatPoint,  
-                    'COOLPOINT'     : setCoolPoint
+    def updateThermostat(self, command):
+        cmd = command
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
+
+
+    commands = {'QUERY'     : updateThermostat,
+                'FANMODE'   : setFanMode,
+                'TSTATMODE' : setThermostatMode,
+                'AWAY'      : setAway,
+                'RESUME'    : setResume,
+                'HEATPOINT' : setHeatPoint,  
+                'COOLPOINT' : setCoolPoint
                 }
+    
+
