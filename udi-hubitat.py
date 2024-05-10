@@ -52,7 +52,7 @@ class Controller(udi_interface.Node):
         self.debug_enabled = True
         self.poly.updateProfile()
         self.poly.ready()
-       
+        self.EcoBee_t_unit = 'F'
 
     def node_queue(self, data):
         self.n_queue.append(data['address'])
@@ -328,8 +328,9 @@ class Controller(udi_interface.Node):
                     _deviceId = str(event.json['deviceId'])
                     h_value = event.json['value']
                     h_name = event.json['name']
+                    h_type = event.json['type']
                     logging.debug(event.json)
-                    logging.debug('Device Property: ' + h_name + " " + h_value)
+                    logging.debug('Device Property: ' + h_name + " " + h_value + " " + h_type)
 
                     if _deviceId in self.node_list:
                         m_node = self.nodes[_deviceId]
@@ -376,9 +377,12 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('SPEED', 0)
                             elif h_name == 'battery':
                                 m_node.setDriver('BATLVL', h_value)
-                            elif h_name == 'temperature':
-                                s_temp = str(int(float(h_value)))
-                                m_node.setDriver('CLITEMP', s_temp)  # need to update unit handling
+                            elif h_name == 'temperature':  #Need to separate Ecobee
+                                    if self.temp_unit == 'F':           
+                                        m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                    else:
+                                        m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
+
                             elif h_name == 'humidity':
                                 m_node.setDriver('CLIHUM', h_value)
                             elif h_name == 'illuminance':
@@ -515,9 +519,27 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('CLIMD', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name== 'coolingSetpoint':
-                                    m_node.setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1))
+                                    if self.temp_unit == 'F':
+                                        if self.EcoBee_t_unit == 'F':
+                                            m_node.setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                        else: #C
+                                            m_node.setDriver('CLISPC', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                    else:
+                                        if self.EcoBee_t_unit == 'F':
+                                             m_node.setDriver('CLISPC', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                        else:
+                                            m_node.setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
                             elif h_name== 'heatingSetpoint':
-                                    m_node.setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1))
+                                    if self.temp_unit == 'F':
+                                        if self.EcoBee_t_unit == 'F':
+                                            m_node.setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                        else: #C
+                                            m_node.setDriver('CLISPH', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                    else:
+                                        if self.EcoBee_t_unit == 'F':
+                                             m_node.setDriver('CLISPH', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                        else:
+                                            m_node.setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), True, True, 4)                                    
                             elif h_name == 'thermostatFanMode':
                                 if h_value  == 'auto':
                                     m_node.setDriver('CLIFRS', 0)
@@ -554,7 +576,9 @@ class Controller(udi_interface.Node):
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))       
 
                             elif h_name == 'deviceTemperatureUnit':
-                                logging.debug('testing Temp Unit')
+                                logging.debug('Temp Unit - no need to update')
+                                self.EcoBee_t_unit = h_value
+
                             #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
                             #elif h_name in ['resumeProgram']:
@@ -566,6 +590,29 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('ST', 1, True, True, 25)
                                 else:
                                     m_node.setDriver('ST', 0, True, True, 25)
+
+                            elif h_name == 'temperature':
+                                    if self.temp_unit == 'F':
+                                        if self.EcoBee_t_unit == 'F':
+                                            m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                        else: #C
+                                            m_node.setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                    else:
+                                        if self.EcoBee_t_unit == 'F':
+                                             m_node.setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                        else:
+                                            m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
+                    
+
+                            elif h_name == 'motion':
+                                if h_value  == 'inactive':
+                                    m_node.setDriver('ST', 0, True, True, 25)
+                                elif  h_value  == 'active':
+                                    m_node.setDriver('ST', 1, True, True, 25)
+                                else:
+                                    m_node.setDriver('ST', 99, True, True, 25)
+
+
                             else:
                                 print('Driver not implemented for {} {} {}'.format(h_name, h_value, event.json))
                         except KeyError:

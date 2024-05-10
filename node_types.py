@@ -675,7 +675,6 @@ class EcobeeThermostat(HubitatBase):
         thtype = 99
         logging.debug('EcobeeThermostat dev info: {}'.format(dev))
         self.hereawayState = 99
-    
         self.node.setDriver('CLISMD', self.hereawayState  )
         try:
             thmode = str(dev['attributes']['supportedThermostatModes'])
