@@ -235,6 +235,7 @@ ST-ecobeetstat-CLIMD-NAME = Thermostat Operating Mode
 ST-ecobeetstat-CLIFS-NAME = Fan Operating Mode
 ST-ecobeetstat-CLIFRS-NAME = Fan State
 ST-ecobeetstat-CLISMD-NAME = Operating State
+ST-ecobeetstat-GV19-NAME = Supported Modes
 ST-ecobeetstat-GV20-NAME = Online
 CMD-ecobeetstat-QUERY-NAME = Update
 CMD-ecobeetstat-FANMODE-NAME = Set Fan Mode
