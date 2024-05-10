@@ -306,7 +306,7 @@ class Controller(udi_interface.Node):
         logging.debug('Scanning db for extra nodes : {}'.format(assigned_addresses))
         for nde in range(0, len(self.nodes_in_db)):
             node = self.nodes_in_db[nde]
-            logging.debug('Scanning db for node : {}'.format(node))
+            #logging.debug('Scanning db for node : {}'.format(node))
             if node['address'] not in assigned_addresses:
                 logging.debug('Removing node : {} {}'.format(node['name'], node))
                 self.poly.delNode(node['address'])
