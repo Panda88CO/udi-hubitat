@@ -690,16 +690,16 @@ class EcobeeThermostat(HubitatBase):
                 thmodes.append('auto')
             logging.debug('thmodes : {}'.format(thmodes))
 
-            if len(thmode) == 2:
-                if 'heat' in thmode:
+            if len(thmodes) == 2:
+                if 'heat' in thmodes:
                     thtype = 0
-                elif 'cool' in thmode:
+                elif 'cool' in thmodes:
                     thtype = 1
-                elif 'auto' in thmode:
+                elif 'auto' in thmodes:
                     thtype = 2
-            elif len(thmode) == 3:
+            elif len(thmodes) == 3:
                 thtype = 3
-            elif len(thmode) == 4:
+            elif len(thmodes) == 4:
                 thtype = 4
             else:
                 thtype = 99
