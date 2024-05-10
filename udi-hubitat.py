@@ -522,14 +522,14 @@ class Controller(udi_interface.Node):
                             #EB thermostat     
                             elif h_name== 'DeviceWatch-DeviceStatus':
                                 if h_value == 'online':
-                                    m_node.setDriver('ST', 1)
+                                    m_node.setDriver('ST', 1, True, True, 25)
                                 else:
-                                    m_node.setDriver('ST', 0)
+                                    m_node.setDriver('ST', 0, True, True, 25)
                             elif h_name== 'deviceAlive':
                                 if h_value == 'online':
-                                    m_node.setDriver('ST', 1)
+                                    m_node.setDriver('ST', 1, True, True, 25)
                                 else:
-                                    m_node.setDriver('ST', 0)                                                       
+                                    m_node.setDriver('ST', 0, True, True, 25)                                                       
                             elif h_name == 'thermostatMode':
                                 if h_value  == 'auto':
                                     m_node.setDriver('CLIMD', 0)

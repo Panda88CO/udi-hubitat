@@ -241,7 +241,7 @@ CMD-ecobeetstat-QUERY-NAME = Update
 CMD-ecobeetstat-FANMODE-NAME = Set Fan Mode
 CMD-ecobeetstat-TSTATMODE-NAME = Set Thermostat  Mode
 CMD-ecobeetstat-AWAY-NAME = set Away
-CMD-ecobeetstat-AWAY-NAME = Resume Schedule
+CMD-ecobeetstat-RESUME-NAME = Resume Schedule
 CMD-ecobeetstat-HEATPOINT-NAME = Heat point
 CMD-ecobeetstat-COOLPOINT-NAME = Cool point
 

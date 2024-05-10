@@ -716,8 +716,7 @@ class EcobeeThermostat(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
 
-    def setOperationMode(self, command):
-        
+    def setOperationMode(self, command):        
         logging.debug('setOperationMode')
         cmd = command
         if int(command.get('value')) == 0:
@@ -732,7 +731,11 @@ class EcobeeThermostat(HubitatBase):
         elif int(command.get('value')) == 3:
             cmd['value'] = ''
             HubitatBase.hubitatDirectCtrl(self, cmd, 'off')   
-        
+        time.sleep(1)
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
+
+
     def setThermostatMode(self, command):
         logging.debug('setTHermostatMode')
         '''
@@ -765,7 +768,9 @@ class EcobeeThermostat(HubitatBase):
             HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
         else:
             logging.error('setThermostatMode unexpected command: {}'.format(command.get('value') ))           
-        
+        time.sleep(1)
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')        
 
 
     def setFanMode(self, command):
@@ -787,7 +792,9 @@ class EcobeeThermostat(HubitatBase):
             HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')
         else:
             logging.error('setFanMode unexpected command: {}'.format(command.get('value') ))           
-        
+        time.sleep(1)
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')        
 
     def setHeatPoint(self, command):
         logging.debug('setHeatPoint : {}'.format(command))
@@ -797,22 +804,27 @@ class EcobeeThermostat(HubitatBase):
         set_temp = command.get('value')
         cmd['value'] = str(set_temp)
         HubitatBase.hubitatDirectCtrl(self, cmd, 'setHeatingSetpoint')
-        #tsettemp = #
+        time.sleep(1)
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
 
     def setResume(self, command):
 
         logging.debug('setResume')
         cmd = command
         HubitatBase.hubitatDirectCtrl(self, cmd, 'resumeProgram')
-
+        time.sleep(1)
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
 
     def setAway(self, command):
-
         logging.debug('setAway')
         cmd = command
         cmd['value'] = ''
         HubitatBase.hubitatDirectCtrl(self, cmd, 'setAway')
-
+        time.sleep(1)
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
 
     def setCoolPoint(self, command):
         logging.debug('setCoolPoint : {}'.format(command)) 
@@ -821,7 +833,9 @@ class EcobeeThermostat(HubitatBase):
         set_temp = str(command.get('value'))
         cmd['value'] = set_temp     
         HubitatBase.hubitatDirectCtrl(self, cmd, 'setCoolingSetpoint')
-
+        time.sleep(1)
+        cmd['value'] = ''
+        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
 
     def setTempUnit(self, t_unit):
         logging.debug('setTempUnit')
