@@ -424,7 +424,7 @@
             <st id="GV8"    editor="REMOTE_BTN" />
             <st id="GV9"    editor="REMOTE_BTN" />
             <st id="BATLVL" editor="BATLVL" />
-            <st id="GV20"   editor="ONLINE" />
+            <!--<st id="GV20"   editor="ONLINE" />-->
         </sts>
         <cmds>
             <sends>
