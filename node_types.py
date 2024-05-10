@@ -640,7 +640,7 @@ class SimpleRemoteNode(HubitatBase):
                 {'driver': 'GV8', 'value': 0, 'uom': 25},
                 {'driver': 'GV9', 'value': 0, 'uom': 25},
                 {'driver': 'BATLVL', 'value': 99, 'uom': 51},
-                #{'driver': 'GV20', 'value': 99, 'uom': 25},
+                {'driver': 'GV20', 'value': 99, 'uom': 25},
                 ]
     id = 'remotebtnnode'
     commands = {
@@ -652,7 +652,7 @@ class EcobeeSensor(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 99, 'uom': 25 },
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
-        #{'driver': 'GV20', 'value': 99, 'uom': 25},
+        {'driver': 'GV20', 'value': 99, 'uom': 25},
         ] 
     id = 'ECOBSENSOR'
 
@@ -694,7 +694,7 @@ class EcobeeThermostat(HubitatBase):
         {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
         #{'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
         {'driver': 'GV19', 'value': 99, 'uom': 25},   # 'thermostat type'
-        #{'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
+        {'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
 

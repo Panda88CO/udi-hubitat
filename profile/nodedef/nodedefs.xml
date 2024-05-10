@@ -424,7 +424,7 @@
             <st id="GV8"    editor="REMOTE_BTN" />
             <st id="GV9"    editor="REMOTE_BTN" />
             <st id="BATLVL" editor="BATLVL" />
-            <!--<st id="GV20"   editor="ONLINE" />-->
+            <st id="GV20"   editor="ONLINE" />
         </sts>
         <cmds>
             <sends>
@@ -446,7 +446,7 @@
             <st id="ST" editor="MOTION"/>
             <st id="CLITEMP" editor="CLITEMP" />
             <!--<st id="BATLVL" editor="BATLVL" /> -->
-            <!-- <st id="GV20" editor="ONLINE" />-->
+            <st id="GV20" editor="ONLINE" />
         </sts>
         <cmds>
             <sends >
@@ -462,7 +462,7 @@
     <nodeDef id="ECOBTSTAT" nls="ecobeetstat">
         <editors />
         <sts>
-            <st id="ST"     editor="ONLINE" />
+            <st id="ST"      editor="ONLINE" hide="True"/>
             <st id="CLITEMP" editor="CLITEMP" />
             <st id="CLIHUM" editor="CLIHUM" />
             <st id="CLIMD"  editor="CLIMD" />
@@ -473,7 +473,7 @@
             <st id="CLIFRS" editor="CLIFRS" />
             <!--<st id="CLISMD" editor="CLISMD" />-->
             <st id="GV19"   editor="THMODE" /> 
-            <!--<st id="GV20"   editor="ONLINE" />-->
+            <st id="GV20"   editor="ONLINE" />
             <!--<st id="GV10" editor="SET_POINT" /> -->
         </sts>
         <cmds>
