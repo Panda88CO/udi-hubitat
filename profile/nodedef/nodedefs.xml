@@ -474,7 +474,7 @@
             <st id="CLIHCS" editor="CLIHCS" />
             <st id="CLIFRS" editor="CLIFRS" />
             <st id="CLISMD" editor="CLISMD" />
-            <st id="GV20"   editor="ONLINE" /> 
+            <st id="GV20"   editor="THMODE" /> 
             <!--<st id="GV10" editor="SET_POINT" /> -->
         </sts>
         <cmds>
@@ -487,9 +487,9 @@
                 <cmd id="TSTATMODE" >
                         <p id="" editor="setCLIHCS" init="CLIHCS"/> 
                 </cmd>
-                <cmd id="OPMODE" >
+                <!--<cmd id="OPMODE" >
                         <p id="" editor="setCLIHCS" init="CLIHCS"/> 
-                </cmd>
+                </cmd>-->
                 <cmd id="HEREAWAY" >
                         <p id="" editor="setCLISMD" init="CLIMD"/> 
                 </cmd>

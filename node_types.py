@@ -2,6 +2,7 @@
 import requests
 import re
 import time 
+import json
 
 try:
     import udi_interface
@@ -659,7 +660,7 @@ class EcobeeThermostat(HubitatBase):
         {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
         {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
         {'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
-        {'driver': 'GV20', 'value': 99, 'uom': 25},   # ''thermostatSetpoint'
+        {'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
 
@@ -670,14 +671,36 @@ class EcobeeThermostat(HubitatBase):
         logging.debug('EcobeeThermostat Init')
         self.poly = polyglot
         self.dev_info = dev
-        self.hereawayState = 99
-        self.node.setDriver('CLISMD', self.hereawayState  )
         logging.debug('EcobeeThermostat dev info: {}'.format(dev))
+        self.hereawayState = 99
+    
+        self.node.setDriver('CLISMD', self.hereawayState  )
         try:
-            self.t_unit = dev['attributes']['deviceTemperatureUnit']
-        except:
-            self.t_unit = 1
+            thmode = json.load(dev['attributes']['supportedThermostatModes'])
+            logging.debug('thmodes : {}'.format(thmode))
+            if len(thmode) == 2:
+                if 'heat' in thmode:
+                    thtype = 0
+                elif 'cool' in thmode:
+                    thtype = 1
+                elif 'auto' in thmode:
+                    thtype = 2
+            elif len(thmode) == 3:
+                thmode = 3
+            elif len(thmode) == 4:
+                thmode = 4
+            else:
+                thmode = 99
 
+    
+            self.t_unit = dev['attributes']['deviceTemperatureUnit']
+        except Exception as e:
+            logging.error('not able to determine type {}'.format(e))
+            self.t_unit = 1
+            thmode = 99
+
+        self.node.setDriver('GV20', thmode  )
+        
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
@@ -807,8 +830,8 @@ class EcobeeThermostat(HubitatBase):
     commands = {'QUERY'     : updateThermostat,
                 'FANMODE'   : setFanMode,
                 'TSTATMODE' : setThermostatMode,
-                'OPMODE'    : setHereAway,
-                'HEREAWAY'   : setOperationMode,
+                #'OPMODE'    : ,
+                'HEREAWAY'   : setHereAway,
                 'HEATPOINT' : setHeatPoint,  
                 'COOLPOINT' : setCoolPoint
                 }
