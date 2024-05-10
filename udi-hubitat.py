@@ -53,6 +53,7 @@ class Controller(udi_interface.Node):
         self.poly.updateProfile()
         self.poly.ready()
         self.EcoBee_t_unit = 'F'
+        self.device_list = {}
 
     def node_queue(self, data):
         self.n_queue.append(data['address'])
@@ -185,8 +186,8 @@ class Controller(udi_interface.Node):
 
             _label = self.poly.getValidName(dev['label'])
             _type = dev['type']
-            _id = 'hubitat'+ dev['id']
-
+            #_id = 'hubitat'+ dev['id']
+            _id =  dev['id']
             # if dev['type'] == 'Virtual Switch':
             #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Z-Wave Switch':
