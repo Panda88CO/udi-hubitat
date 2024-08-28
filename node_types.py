@@ -802,7 +802,7 @@ class EcobeeThermostat(HubitatBase):
             HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
         else:
             logging.error('setThermostatMode unexpected command: {}'.format(command.get('value') ))           
-        time.sleep(1)
+        time.sleep(3)
         cmd['value'] = ''
         HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')        
 
