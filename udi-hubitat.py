@@ -233,7 +233,7 @@ class Controller(udi_interface.Node):
                     node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 '''
             elif dev['type'] == 'Air Things Device':
-                node_types.AirthingsSensor(self.poly,  self.address, _id, _label, self.maker_uri, dev )
+                node_types.AirThingsSensor(self.poly,  self.address, _id, _label, self.maker_uri, dev )
 
             elif dev['type'] == 'Ecobee Sensor':
                 #nodeAdr = str(_id)
