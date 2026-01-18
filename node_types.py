@@ -678,9 +678,30 @@ class EcobeeSensor(HubitatBase):
     commands = {  'QUERY': query   }
 
     
-    
+class AirThingsSensor(HubitatBase):    
+    drivers = [
+        {'driver': 'ST', 'value': 0, 'uom': 25}, #'DeviceWatch-DeviceStatus'
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
 
+        {'driver': 'GV19', 'value': 99, 'uom': 25},   # 'thermostat type'
+        {'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
+        #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
+        ]
 
+    id = 'AirThingsSensor'
+    def __init__(self, polyglot, primary,address, name, marker_uri, dev):
+        super().__init__(polyglot, primary, address, name, marker_uri)
+        logging.debug('AirThingsSensor Init')
+        self.poly = polyglot
+        self.dev_info = dev
+    def updateAirthingData(self, command):
+        logging.debug('updateAirthingData')
+        HubitatBase.hubitatRefresh(self)
+
+    commands = {'QUERY'     : updateAirthingData,
+
+                }
 class EcobeeThermostat(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 25}, #'DeviceWatch-DeviceStatus'

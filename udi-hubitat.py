@@ -15,9 +15,10 @@ import sys
 import time
 import requests
 import traceback
+import json
 from lomond import WebSocket
 import node_types
-version = '0.1.10'
+version = '0.1.12'
 #LOGGER = polyinterface.LOGGER
 
 class Controller(udi_interface.Node):
@@ -189,7 +190,7 @@ class Controller(udi_interface.Node):
             logging.error('Hubitat not responding - waiting for good response')
             r = requests.get(self.maker_uri)
         data = r.json()
-        logging.debug('Hubitat data::{}'.format(data))
+        logging.debug('Hubitat data::{}'.format(json.dumps(data, indent=4, separators=(',', ': ') )))
 
         for dev in data:
             logging.debug('device id: {}'.format(dev))
@@ -231,6 +232,9 @@ class Controller(udi_interface.Node):
                 elif dev['type'] == 'Virtual Dimmer':
                     node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
                 '''
+            elif dev['type'] == 'Air Things Device':
+                node_types.AirthingsSensor(self.poly,  self.address, _id, _label, self.maker_uri, dev )
+
             elif dev['type'] == 'Ecobee Sensor':
                 #nodeAdr = str(_id)
                 node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri, dev )
@@ -352,7 +356,7 @@ class Controller(udi_interface.Node):
                     h_value = event.json['value']
                     h_name = event.json['name']
                     h_type = event.json['type']
-                    logging.debug(event.json)
+                    logging.debug(json.dumps(event.json, indent=4, separators=(',', ': ') ))
                     logging.debug('Device Property: ' + h_name + " " + h_value + " " + h_type)
 
                     if _deviceId in self.node_list:
