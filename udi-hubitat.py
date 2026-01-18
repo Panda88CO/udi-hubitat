@@ -665,7 +665,55 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('ST', 99, True, True, 25)
 
 
-                            else:
+                            elif h_name == 'absHumidity':
+                                m_node.setDriver('CLIHUM', h_value)
+'''
+"attributes": {
+            "pm2": null,
+            "dataType": "NUMBER",
+            "values": null,
+            "pm12": null,
+            "pm29": null,
+            "relayDeviceType": "hub",
+            "pm21": null,
+            "rssi": "0",
+            "absHumidity": "9.09",
+            "pm10": null,
+            "pm27": null,
+            "pressure": "991.0",
+            "co2": "662.0",
+            "carbonDioxide": "662.0",
+            "airQualityIndex": "12",
+            "html": null,
+            "temperature": "20.1",
+            "pm19": null,
+            "pm23": null,
+            "pm15": null,
+            "humidity": "52.0",
+            "pm25AqiText": "<span style='color:green'>Good</span>",
+            "pm25": "3.0",
+            "pm11": null,
+            "pm17": null,
+            "pm16": null,
+            "pm14": null,
+            "pm25Aqi": "12.5",
+            "mold": null,
+            "lastPoll": null,
+            "radonShortTermAvg": "103.0",
+            "pm24": null,
+            "pm18": null,
+            "pm28": null,
+            "pm20": null,
+            "battery": "0",
+            "pm1": "3.0",
+            "pm22": null,
+            "pm26": null,
+            "voc": "269.0",
+            "pm13": null
+        },
+
+'''
+                    else:
                                 print('Driver not implemented for {} {} {}'.format(h_name, h_value, event.json))
                         except KeyError:
                             print('Device not found in ISY')
