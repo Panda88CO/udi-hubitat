@@ -342,6 +342,13 @@ class Controller(udi_interface.Node):
         logging.info('update_profile:')
         st = self.poly.updateProfile()
         return st
+    
+    def isnumber(self, string):
+        try:
+            float(string)
+            return True
+        except ValueError:
+            return False
 
     def hubitat_events(self):
         logging.debug('hubitat_events')
@@ -356,6 +363,13 @@ class Controller(udi_interface.Node):
                 if event.json['source'] == 'DEVICE':
                     _deviceId = str(event.json['deviceId'])
                     h_value = event.json['value']
+                    if isinstance(h_value, str):
+                        if self.isnumber(h_value):
+                            if '.' in h_value:
+                                h_value = float(h_value)
+                            else:
+                                h_value = int(h_value)
+                                
                     h_name = event.json['name']
                     h_type = event.json['type']
                     logging.debug(json.dumps(event.json, indent=4, separators=(',', ': ') ))
@@ -641,9 +655,9 @@ class Controller(udi_interface.Node):
                             elif h_name == 'deviceAlive':
                                 logging.debug('deviceAlive')
                                 if h_value  == 'true':
-                                    m_node.my_setDriver('ST', 1, True, True, 25)
+                                    m_node.my_setDriver('ST', 1,  25)
                                 else:
-                                    m_node.my_setDriver('ST', 0, True, True, 25)
+                                    m_node.my_setDriver('ST', 0,  25)
 
                                 '''
                                 elif h_name == 'temperature':
@@ -661,11 +675,11 @@ class Controller(udi_interface.Node):
 
                             elif h_name == 'motion':
                                 if h_value  == 'inactive':
-                                    m_node.my_setDriver('ST', 0, True, True, 25)
+                                    m_node.my_setDriver('ST', 0,  25)
                                 elif  h_value  == 'active':
-                                    m_node.my_setDriver('ST', 1, True, True, 25)
+                                    m_node.my_setDriver('ST', 1,  25)
                                 else:
-                                    m_node.my_setDriver('ST', 99, True, True, 25)
+                                    m_node.my_setDriver('ST', 99, 25)
 
 
                             elif h_name == 'absHumidity':
