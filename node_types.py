@@ -712,6 +712,8 @@ class AirThingsSensor(HubitatBase):
         logging.debug('AirThingsSensor Init')
         self.poly = polyglot
         self.dev_info = dev
+        if self.temp_unit == 'F':
+            self.id = 'AirThingsSensorF'
 
     def updateAirthingData(self, command):
         logging.debug('updateAirthingData')
