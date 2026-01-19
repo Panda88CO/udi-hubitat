@@ -404,7 +404,7 @@ class Controller(udi_interface.Node):
                                     m_node.setDriver('SPEED', 0)
                             elif h_name == 'battery':
                                 m_node.setDriver('BATLVL', h_value)
-                            elif h_name == 'temperature':
+                            elif h_name in [temperature']:
                                     #Need to separate Ecobee
                                 if self.device_list[_deviceId] in ['Ecobee Sensor', 'Ecobee Thermostat']:
                                     if self.temp_unit == 'F':
@@ -643,6 +643,7 @@ class Controller(udi_interface.Node):
                                 else:
                                     m_node.setDriver('ST', 0, True, True, 25)
 
+                            '''
                             elif h_name == 'temperature':
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
@@ -654,7 +655,7 @@ class Controller(udi_interface.Node):
                                              m_node.setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
                                         else:
                                             m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
-                    
+                            '''
 
                             elif h_name == 'motion':
                                 if h_value  == 'inactive':
@@ -667,9 +668,33 @@ class Controller(udi_interface.Node):
 
                             elif h_name == 'absHumidity':
                                 m_node.setDriver('CLIHUM', h_value)
-'''
-"attributes": {
-            "pm2": null,
+
+                            elif h_name in ['co2', 'carbonDioxide']:
+                                m_node.setDriver('CO2LVL', h_value)
+
+                            elif h_name in ['airQualityIndex']:
+                                m_node.setDriver('AQI', h_value)
+
+                            elif h_name in ['pressure']:
+                                m_node.setDriver('ATMPRES', h_value)     
+                            elif h_name in ['radonShortTermAvg']:
+                            # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
+                                m_node.setDriver('RADON', round(h_value/37), 1)     
+                            elif h_name in ['voc']:
+                                m_node.setDriver('VOCLVL', h_value)
+                            elif h_type == 'Air Things Device':
+                                if h_name in ['pm25','pm1', 'absHumidity']:
+                                    if h_name == 'pm25':
+                                        m_node.setDriver('GV25', h_value)
+                                    elif h_name == 'pm1':
+                                        m_node.setDriver('GV1', h_value)
+                                    elif h_name == 'absHumidity':
+                                        m_node.setDriver('GV0', h_value)
+
+                            else:
+                                print('Driver not implemented for {} {} {}'.format(h_name, h_value, event.json))
+    
+           '''
             "dataType": "NUMBER",
             "values": null,
             "pm12": null,
@@ -677,15 +702,15 @@ class Controller(udi_interface.Node):
             "relayDeviceType": "hub",
             "pm21": null,
             "rssi": "0",
-            "absHumidity": "9.09",
+           X "absHumidity": "9.09",
             "pm10": null,
             "pm27": null,
-            "pressure": "991.0",
-            "co2": "662.0",
-            "carbonDioxide": "662.0",
-            "airQualityIndex": "12",
+           X "pressure": "991.0",
+           X "co2": "662.0",
+            X"carbonDioxide": "662.0",
+            X"airQualityIndex": "12",
             "html": null,
-            "temperature": "20.1",
+            X"temperature": "20.1",
             "pm19": null,
             "pm23": null,
             "pm15": null,
@@ -699,7 +724,7 @@ class Controller(udi_interface.Node):
             "pm25Aqi": "12.5",
             "mold": null,
             "lastPoll": null,
-            "radonShortTermAvg": "103.0",
+            X"radonShortTermAvg": "103.0",
             "pm24": null,
             "pm18": null,
             "pm28": null,
