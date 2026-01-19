@@ -85,7 +85,7 @@ class Controller(udi_interface.Node):
 
     def start(self):
         logging.info('Started Hubitat')
-        self.my_setDriver('ST', 1, True, True)
+        self.my_setDriver('ST', 1)
         # Remove all existing notices
         self.poly.Notices.clear()
         while not self.configDone:
@@ -98,7 +98,7 @@ class Controller(udi_interface.Node):
 
     def stopHandler(self):
         # Set nodes offline
-        self.my_setDriver('ST', 0, True, True)
+        self.my_setDriver('ST', 0)
         #self.node.setOffline()
         self.poly.stop()
 
@@ -369,11 +369,11 @@ class Controller(udi_interface.Node):
                                 h_value = float(h_value)
                             else:
                                 h_value = int(h_value)
-                                
+
                     h_name = event.json['name']
                     h_type = event.json['type']
                     logging.debug(json.dumps(event.json, indent=4, separators=(',', ': ') ))
-                    logging.debug('Device Property: ' + h_name + " " + h_value + " " + h_type)
+                    logging.debug('Device Property: ' + h_name + " " + str(h_value) + " " + h_type)
 
                     if _deviceId in self.node_list:
                         m_node = self.nodes[_deviceId]
@@ -425,20 +425,20 @@ class Controller(udi_interface.Node):
                                 if self.device_list[_deviceId] in ['Ecobee Sensor', 'Ecobee Thermostat']:
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                            m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 17)
                                         else: #C
-                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), 17) 
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), 4))
                                         else:
-                                            m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)                                    
+                                            m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)                                    
     
                                 else:
                                     if self.temp_unit == 'F':           
-                                        m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                        m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 17)
                                     else:
-                                        m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
+                                        m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
 
                             elif h_name == 'humidity':
                                 m_node.my_setDriver('CLIHUM', h_value)
@@ -559,17 +559,7 @@ class Controller(udi_interface.Node):
                                 else:
                                     m_node.my_setDriver('ST', 0)
 
-                            #EB thermostat     
-                            #elif h_name== 'DeviceWatch-DeviceStatus':
-                            #    if h_value == 'online':
-                            #        m_node.my_setDriver('GV20', 1, True, True, 25)
-                            #    else:
-                            #        m_node.my_setDriver('GV20', 0, True, True, 25)
-                            #elif h_name== 'deviceAlive':
-                            #    if h_value == 'online':
-                            #        m_node.my_setDriver('ST', 1, True, True, 25)
-                            #    else:
-                            #        m_node.my_setDriver('ST', 0, True, True, 25)                                                       
+                                                    
                             elif h_name == 'thermostatMode':
                                 if h_value  == 'auto':
                                     m_node.my_setDriver('CLIMD', 0)
@@ -589,25 +579,25 @@ class Controller(udi_interface.Node):
                             elif h_name== 'coolingSetpoint':
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                            m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), 17)
                                         else: #C
-                                            m_node.my_setDriver('CLISPC', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                            m_node.my_setDriver('CLISPC', round(int(float((h_value+32)*9/5)*2.0)/2, 1), 17) 
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                             m_node.my_setDriver('CLISPC', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                             m_node.my_setDriver('CLISPC', round(int(float((h_value*5/9-32)*2.0)/2, 1), 4))
                                         else:
-                                            m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
+                                            m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), 4)
                             elif h_name== 'heatingSetpoint':
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                            m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), 17)
                                         else: #C
-                                            m_node.my_setDriver('CLISPH', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                            m_node.my_setDriver('CLISPH', round(int(float((h_value+32)*9/5)*2.0)/2, 1), 17) 
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                             m_node.my_setDriver('CLISPH', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                             m_node.my_setDriver('CLISPH', round(int(float((h_value*5/9-32)*2.0)/2, 1), 4))
                                         else:
-                                            m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), True, True, 4)                                    
+                                            m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), 4)                                    
                             elif h_name == 'thermostatFanMode':
                                 if h_value  == 'auto':
                                     m_node.my_setDriver('CLIFRS', 0)
