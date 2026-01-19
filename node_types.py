@@ -14,6 +14,7 @@ except ImportError:
 
 class HubitatBase(udi_interface.Node):
     """ Base class for lights and groups """
+    from udiLib import my_setDriver
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name)
         self.RESPONSE_OK = 200
@@ -178,6 +179,7 @@ class HubitatBase(udi_interface.Node):
 New Class definitions for generalization
 """
 class StdLampNode(HubitatBase):
+    from udiLib import my_setDriver
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('StdLampNode Init')
@@ -680,16 +682,17 @@ class EcobeeSensor(HubitatBase):
     
 class AirThingsSensor(HubitatBase):    
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 70}, #'Longterm Rador Status'     
-        {'driver': 'RADON', 'value': 0, 'uom': 70}, 
+        {'driver': 'ST', 'value': 0, 'uom': 124}, #'Longterm Rador Status'     
+        {'driver': 'RADON', 'value': 0, 'uom': 124}, 
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
         {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
         {'driver': 'GV0', 'value': 0, 'uom': 22},   
         {'driver': 'ATMPRES', 'value': 99, 'uom': 23},   # 'pressure type'
         {'driver': 'CO2LVL', 'value': 99, 'uom': 54},   # 'CO2 type'
         {'driver': 'AQI', 'value': 99, 'uom': 25},   # 'AQI type'
-        {'driver': 'VOCLVL', 'value': 99, 'uom': 25},   # 'VOC type'
-        {'driver': 'GV1', 'value': 99, 'uom': 122},   # 'particle type'
+        {'driver': 'VOCLVL', 'value': 99, 'uom': 54},   # 'VOC type'
+        {'driver': 'GV2', 'value': 99, 'uom': 25},   # 'VOC type'
+
         {'driver': 'GV25', 'value': 99, 'uom': 122},   # 'particle type'
         {'driver': 'BATLVL', 'value': 99, 'uom': 25},   # 'thermostat type'
         {'driver': 'TIME', 'value': int(time.time()), 'uom': 151},   # 'thermostat type'
@@ -709,7 +712,7 @@ class AirThingsSensor(HubitatBase):
         logging.debug('AirThingsSensor Init')
         self.poly = polyglot
         self.dev_info = dev
-        
+
     def updateAirthingData(self, command):
         logging.debug('updateAirthingData')
         HubitatBase.hubitatRefresh(self)

@@ -22,6 +22,7 @@ version = '0.1.12'
 #LOGGER = polyinterface.LOGGER
 
 class Controller(udi_interface.Node):
+    from udiLib import my_setDriver
     def __init__(self, polyglot, primary, address, name):
 
         self.RESPONSE_OK = 200
@@ -84,7 +85,7 @@ class Controller(udi_interface.Node):
 
     def start(self):
         logging.info('Started Hubitat')
-        self.node.setDriver('ST', 1, True, True)
+        self.my_setDriver('ST', 1, True, True)
         # Remove all existing notices
         self.poly.Notices.clear()
         while not self.configDone:
@@ -97,7 +98,7 @@ class Controller(udi_interface.Node):
 
     def stopHandler(self):
         # Set nodes offline
-        self.node.setDriver('ST', 0, True, True)
+        self.my_setDriver('ST', 0, True, True)
         #self.node.setOffline()
         self.poly.stop()
 
@@ -365,92 +366,92 @@ class Controller(udi_interface.Node):
                         try:
                             if h_name == 'switch':
                                 if h_value == 'on':
-                                    m_node.setDriver('ST', 100)
+                                    m_node.my_setDriver('ST', 100)
                                     m_node.reportCmd('DON', 2)
                                 elif h_value == 'off':
-                                    m_node.setDriver('ST', 0)
+                                    m_node.my_setDriver('ST', 0)
                                     m_node.reportCmd('DOF', 2)
                             elif h_name == 'level':
-                                m_node.setDriver('OL', h_value)
+                                m_node.my_setDriver('OL', h_value)
                             elif h_name == 'colorMode':
                                 if h_value == 'CT':
-                                    m_node.setDriver('GV5', 1)
+                                    m_node.my_setDriver('GV5', 1)
                                 elif h_value == 'RGB':
-                                    m_node.setDriver('GV5', 2)
+                                    m_node.my_setDriver('GV5', 2)
                                 else:
-                                    m_node.setDriver('GV5', 0)
+                                    m_node.my_setDriver('GV5', 0)
                             elif h_name == 'colorTemperature':
-                                m_node.setDriver('GV6', h_value)
+                                m_node.my_setDriver('GV6', h_value)
                             elif h_name == 'hue':
-                                m_node.setDriver('GV3', h_value)
+                                m_node.my_setDriver('GV3', h_value)
                             elif h_name == 'saturation':
-                                m_node.setDriver('GV4', h_value)
+                                m_node.my_setDriver('GV4', h_value)
                             elif h_name == 'motion':
                                 if h_value == 'active':
-                                    m_node.setDriver('ST', 100)
+                                    m_node.my_setDriver('ST', 100)
                                     m_node.reportCmd('DON', 2)
                                 elif h_value == 'inactive':
-                                    m_node.setDriver('ST', 0)
+                                    m_node.my_setDriver('ST', 0)
                                     m_node.reportCmd('DOF', 2)
                             elif h_name == 'tamper':
                                 if h_value == 'detected':
-                                    m_node.setDriver('ALARM', 1)
+                                    m_node.my_setDriver('ALARM', 1)
                                 elif h_value == 'clear':
-                                    m_node.setDriver('ALARM', 0)
+                                    m_node.my_setDriver('ALARM', 0)
                             elif h_name == 'acceleration':
                                 if h_value == 'active':
-                                    m_node.setDriver('SPEED', 1)
+                                    m_node.my_setDriver('SPEED', 1)
                                 elif h_value == 'inactive':
-                                    m_node.setDriver('SPEED', 0)
+                                    m_node.my_setDriver('SPEED', 0)
                             elif h_name == 'battery':
-                                m_node.setDriver('BATLVL', h_value)
-                            elif h_name in [temperature']:
+                                m_node.my_setDriver('BATLVL', h_value)
+                            elif h_name in ['temperature']:
                                     #Need to separate Ecobee
                                 if self.device_list[_deviceId] in ['Ecobee Sensor', 'Ecobee Thermostat']:
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                            m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
                                         else: #C
-                                            m_node.setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
                                         else:
-                                            m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)                                    
+                                            m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)                                    
     
                                 else:
                                     if self.temp_unit == 'F':           
-                                        m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                        m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
                                     else:
-                                        m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
+                                        m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
 
                             elif h_name == 'humidity':
-                                m_node.setDriver('CLIHUM', h_value)
+                                m_node.my_setDriver('CLIHUM', h_value)
                             elif h_name == 'illuminance':
-                                m_node.setDriver('LUMIN', h_value)
+                                m_node.my_setDriver('LUMIN', h_value)
                             elif h_name == 'current':
-                                m_node.setDriver('CC', h_value)
+                                m_node.my_setDriver('CC', h_value)
                             elif h_name == 'currentH':
-                                m_node.setDriver('GV0', h_value)
+                                m_node.my_setDriver('GV0', h_value)
                             elif h_name == 'currentL':
-                                m_node.setDriver('GV1', h_value)
+                                m_node.my_setDriver('GV1', h_value)
                             elif h_name == 'energy':
-                                m_node.setDriver('TPW', h_value)
+                                m_node.my_setDriver('TPW', h_value)
                             elif h_name == 'power':
-                                m_node.setDriver('CPW', h_value)
+                                m_node.my_setDriver('CPW', h_value)
                             elif h_name == 'powerH':
-                                m_node.setDriver('GV2', h_value)
+                                m_node.my_setDriver('GV2', h_value)
                             elif h_name == 'powerL':
-                                m_node.setDriver('GV3', h_value)
+                                m_node.my_setDriver('GV3', h_value)
                             elif h_name == 'voltage':
-                                m_node.setDriver('CV', h_value)
+                                m_node.my_setDriver('CV', h_value)
                             elif h_name == 'voltageH':
-                                m_node.setDriver('GV4', h_value)
+                                m_node.my_setDriver('GV4', h_value)
                             elif h_name == 'voltageL':
-                                m_node.setDriver('GV5', h_value)
+                                m_node.my_setDriver('GV5', h_value)
                             elif h_name == 'energyDuration':
                                 _h_value = h_value.split(' ')[0]
-                                m_node.setDriver('GV6', _h_value)
+                                m_node.my_setDriver('GV6', _h_value)
                                 # Lutron Pico buttons ## and remote botton
                             elif h_name == 'pushed':
                                 if h_value.isdigit():
@@ -459,24 +460,24 @@ class Controller(udi_interface.Node):
                                         tmp = 0
                                     if tmp >= 5:
                                         tmp = 5        
-                                    m_node.setDriver('GV8',tmp)
+                                    m_node.my_setDriver('GV8',tmp)
                                     m_node.reportCmd('DON', 2)
                                 else:
                                     logging.error ('Unexpected value: {}'.format(h_value))
                                 '''                                
                                 if h_value == '1':
-                                    m_node.setDriver('GV7', h_value)
+                                    m_node.my_setDriver('GV7', h_value)
                                 elif h_value == '2':
-                                    m_node.setDriver('GV7', h_value)
+                                    m_node.my_setDriver('GV7', h_value)
                                 elif h_value == '3':
-                                    m_node.setDriver('GV7', h_value)
+                                    m_node.my_setDriver('GV7', h_value)
                                 elif h_value == '4':
-                                    m_node.setDriver('GV7', h_value)
+                                    m_node.my_setDriver('GV7', h_value)
                                 elif h_value == '5':
-                                    m_node.setDriver('GV7', h_value)
+                                    m_node.my_setDriver('GV7', h_value)
                                 '''
-                                m_node.setDriver('GV8', 0)
-                                m_node.setDriver('GV9', 0)
+                                m_node.my_setDriver('GV8', 0)
+                                m_node.my_setDriver('GV9', 0)
                             elif h_name == 'released':
                                 if h_value.isdigit():
                                     tmp = int(h_value)
@@ -484,24 +485,24 @@ class Controller(udi_interface.Node):
                                         tmp = 0
                                     if tmp >= 5:
                                         tmp = 5        
-                                    m_node.setDriver('GV8',tmp)
+                                    m_node.my_setDriver('GV8',tmp)
                                     m_node.reportCmd('DOF', 2)
                                 else:
                                     logging.error ('Unexpected value: {}'.format(h_value))
                                 '''
                                 if h_value == '1':
-                                    m_node.setDriver('GV8', h_value)
+                                    m_node.my_setDriver('GV8', h_value)
                                 elif h_value == '2':
-                                    m_node.setDriver('GV8', h_value)
+                                    m_node.my_setDriver('GV8', h_value)
                                 elif h_value == '3':
-                                    m_node.setDriver('GV8', h_value)
+                                    m_node.my_setDriver('GV8', h_value)
                                 elif h_value == '4':
-                                    m_node.setDriver('GV8', h_value)
+                                    m_node.my_setDriver('GV8', h_value)
                                 elif h_value == '5':
-                                    m_node.setDriver('GV8', h_value)
+                                    m_node.my_setDriver('GV8', h_value)
                                 '''
-                                m_node.setDriver('GV7', 0)
-                                m_node.setDriver('GV9', 0)
+                                m_node.my_setDriver('GV7', 0)
+                                m_node.my_setDriver('GV9', 0)
                             elif h_name == 'held':
                                 if h_value.isdigit():
                                     tmp = int(h_value)
@@ -509,122 +510,122 @@ class Controller(udi_interface.Node):
                                         tmp = 0
                                     if tmp >= 5:
                                         tmp = 5
-                                    m_node.setDriver('GV9',tmp)
+                                    m_node.my_setDriver('GV9',tmp)
                                 else:
                                     logging.error ('Unexpected value: {}'.format(h_value))
                                 '''
                                 elif h_value == '2':
-                                    m_node.setDriver('GV9', h_value)
+                                    m_node.my_setDriver('GV9', h_value)
                                 elif h_value == '3':
-                                    m_node.setDriver('GV9', h_value)
+                                    m_node.my_setDriver('GV9', h_value)
                                 elif h_value == '4':
-                                    m_node.setDriver('GV9', h_value)
+                                    m_node.my_setDriver('GV9', h_value)
                                 elif h_value == '5':
-                                    m_node.setDriver('GV9', h_value)
+                                    m_node.my_setDriver('GV9', h_value)
                                 '''
-                                m_node.setDriver('GV7', 0)
-                                m_node.setDriver('GV8', 0)
+                                m_node.my_setDriver('GV7', 0)
+                                m_node.my_setDriver('GV8', 0)
                             elif h_name == 'contact':
                                 if h_value == 'open':
-                                    m_node.setDriver('ST', 0)
+                                    m_node.my_setDriver('ST', 0)
                                     m_node.reportCmd('DON', 2)
                                 elif h_value == 'closed':
-                                    m_node.setDriver('ST', 100)
+                                    m_node.my_setDriver('ST', 100)
                                     m_node.reportCmd('DOF', 2)
 
                             elif h_name== 'DeviceWatch-DeviceStatus':
                                 if h_value == 'online':
-                                    m_node.setDriver('GV20', 1)
+                                    m_node.my_setDriver('GV20', 1)
                                 else:
-                                    m_node.setDriver('GV20', 0)
+                                    m_node.my_setDriver('GV20', 0)
                             elif h_name== 'deviceAlive':
                                 if h_value == 'online':
-                                    m_node.setDriver('ST', 1)
+                                    m_node.my_setDriver('ST', 1)
                                 else:
-                                    m_node.setDriver('ST', 0)
+                                    m_node.my_setDriver('ST', 0)
 
                             #EB thermostat     
                             #elif h_name== 'DeviceWatch-DeviceStatus':
                             #    if h_value == 'online':
-                            #        m_node.setDriver('GV20', 1, True, True, 25)
+                            #        m_node.my_setDriver('GV20', 1, True, True, 25)
                             #    else:
-                            #        m_node.setDriver('GV20', 0, True, True, 25)
+                            #        m_node.my_setDriver('GV20', 0, True, True, 25)
                             #elif h_name== 'deviceAlive':
                             #    if h_value == 'online':
-                            #        m_node.setDriver('ST', 1, True, True, 25)
+                            #        m_node.my_setDriver('ST', 1, True, True, 25)
                             #    else:
-                            #        m_node.setDriver('ST', 0, True, True, 25)                                                       
+                            #        m_node.my_setDriver('ST', 0, True, True, 25)                                                       
                             elif h_name == 'thermostatMode':
                                 if h_value  == 'auto':
-                                    m_node.setDriver('CLIMD', 0)
+                                    m_node.my_setDriver('CLIMD', 0)
                                 elif h_value  == 'cool':
-                                    m_node.setDriver('CLIMD', 1)
+                                    m_node.my_setDriver('CLIMD', 1)
                                 elif h_value  == 'heat':                                    
-                                    m_node.setDriver('CLIMD', 2)
+                                    m_node.my_setDriver('CLIMD', 2)
                                 elif h_value  == 'off':
-                                    m_node.setDriver('CLIMD', 3)                                        
+                                    m_node.my_setDriver('CLIMD', 3)                                        
                                 #elif h_value  == 'off':
-                                #    m_node.setDriver('CLIMD', 4)
+                                #    m_node.my_setDriver('CLIMD', 4)
                                 #elif h_value  == 'emergencyHeat':
-                                #    m_node.setDriver('CLIMD', 5)
+                                #    m_node.my_setDriver('CLIMD', 5)
                                 else:
-                                    m_node.setDriver('CLIMD', 99)
+                                    m_node.my_setDriver('CLIMD', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name== 'coolingSetpoint':
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                            m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
                                         else: #C
-                                            m_node.setDriver('CLISPC', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                            m_node.my_setDriver('CLISPC', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                             m_node.setDriver('CLISPC', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                             m_node.my_setDriver('CLISPC', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
                                         else:
-                                            m_node.setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
+                                            m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
                             elif h_name== 'heatingSetpoint':
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                            m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
                                         else: #C
-                                            m_node.setDriver('CLISPH', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
+                                            m_node.my_setDriver('CLISPH', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                             m_node.setDriver('CLISPH', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                             m_node.my_setDriver('CLISPH', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
                                         else:
-                                            m_node.setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), True, True, 4)                                    
+                                            m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), True, True, 4)                                    
                             elif h_name == 'thermostatFanMode':
                                 if h_value  == 'auto':
-                                    m_node.setDriver('CLIFRS', 0)
+                                    m_node.my_setDriver('CLIFRS', 0)
                                 elif h_value  == 'on':
-                                    m_node.setDriver('CLIFRS', 1)
+                                    m_node.my_setDriver('CLIFRS', 1)
                                 else:
-                                    m_node.setDriver('CLIMD', 99)
+                                    m_node.my_setDriver('CLIMD', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name == 'thermostatOperatingState':
                                 if -1 != h_value.find('auto'):
-                                    m_node.setDriver('CLIHCS', 0)
+                                    m_node.my_setDriver('CLIHCS', 0)
                                 elif -1 != h_value.find('cool'):
-                                    m_node.setDriver('CLIHCS', 1)
+                                    m_node.my_setDriver('CLIHCS', 1)
                                 elif -1 != h_value.find('heat'):                        
-                                    m_node.setDriver('CLIHCS', 2)
+                                    m_node.my_setDriver('CLIHCS', 2)
                                 elif -1 != h_value.find('off'):
-                                    m_node.setDriver('CLIHCS', 3)
+                                    m_node.my_setDriver('CLIHCS', 3)
                                 elif -1 != h_value.find('idle'):
-                                    m_node.setDriver('CLIHCS', 4)                             
+                                    m_node.my_setDriver('CLIHCS', 4)                             
                                 elif -1 != h_value.find('emergencyHeat'):
-                                    m_node.setDriver('CLIHCS', 5)
+                                    m_node.my_setDriver('CLIHCS', 5)
                                 else:
-                                    m_node.setDriver('CLIHCS', 99)
+                                    m_node.my_setDriver('CLIHCS', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name == 'thermostatFanOperatingState':  # Not found this one yet so guessing name
                                 if h_value  == 'auto':
-                                    m_node.setDriver('CLIFS', 0)
+                                    m_node.my_setDriver('CLIFS', 0)
                                 if h_value  == 'on':
-                                    m_node.setDriver('CLIFS', 1)
+                                    m_node.my_setDriver('CLIFS', 1)
                                 if h_value  == 'idle':
-                                    m_node.setDriver('CLIFS', 2)
+                                    m_node.my_setDriver('CLIFS', 2)
                                 else:
-                                    m_node.setDriver('CLIFS', 99)
+                                    m_node.my_setDriver('CLIFS', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))       
 
                             elif h_name == 'deviceTemperatureUnit':
@@ -634,112 +635,125 @@ class Controller(udi_interface.Node):
                             #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
 
                             #elif h_name in ['resumeProgram']:
-                            #    m_node.setDriver(
+                            #    m_node.my_setDriver(
                                     
                             elif h_name == 'deviceAlive':
                                 logging.debug('deviceAlive')
                                 if h_value  == 'true':
-                                    m_node.setDriver('ST', 1, True, True, 25)
+                                    m_node.my_setDriver('ST', 1, True, True, 25)
                                 else:
-                                    m_node.setDriver('ST', 0, True, True, 25)
+                                    m_node.my_setDriver('ST', 0, True, True, 25)
 
-                            '''
-                            elif h_name == 'temperature':
-                                    if self.temp_unit == 'F':
-                                        if self.EcoBee_t_unit == 'F':
-                                            m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
-                                        else: #C
-                                            m_node.setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
-                                    else:
-                                        if self.EcoBee_t_unit == 'F':
-                                             m_node.setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                '''
+                                elif h_name == 'temperature':
+                                        if self.temp_unit == 'F':
+                                            if self.EcoBee_t_unit == 'F':
+                                                m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
+                                            else: #C
+                                                m_node.my_setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
                                         else:
-                                            m_node.setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
-                            '''
+                                            if self.EcoBee_t_unit == 'F':
+                                                m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
+                                            else:
+                                                m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
+                                '''
 
                             elif h_name == 'motion':
                                 if h_value  == 'inactive':
-                                    m_node.setDriver('ST', 0, True, True, 25)
+                                    m_node.my_setDriver('ST', 0, True, True, 25)
                                 elif  h_value  == 'active':
-                                    m_node.setDriver('ST', 1, True, True, 25)
+                                    m_node.my_setDriver('ST', 1, True, True, 25)
                                 else:
-                                    m_node.setDriver('ST', 99, True, True, 25)
+                                    m_node.my_setDriver('ST', 99, True, True, 25)
 
 
                             elif h_name == 'absHumidity':
-                                m_node.setDriver('CLIHUM', h_value)
+                                m_node.my_setDriver('CLIHUM', h_value)
 
                             elif h_name in ['co2', 'carbonDioxide']:
-                                m_node.setDriver('CO2LVL', h_value)
+                                m_node.my_setDriver('CO2LVL', h_value)
 
                             elif h_name in ['airQualityIndex']:
-                                m_node.setDriver('AQI', h_value)
+                                m_node.my_setDriver('AQI', h_value)
 
                             elif h_name in ['pressure']:
-                                m_node.setDriver('ATMPRES', h_value)     
+                                m_node.my_setDriver('ATMPRES', h_value)     
                             elif h_name in ['radonShortTermAvg']:
                             # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
-                                m_node.setDriver('RADON', round(h_value/37), 1)     
+                                m_node.my_setDriver('RADON', round(h_value/37), 1)     
                             elif h_name in ['voc']:
-                                m_node.setDriver('VOCLVL', h_value)
+                                if isinstance(h_value, (int, float)):
+                                    if h_value < 250:
+                                        m_node.my_setDriver('GV2', 1)
+                                    elif 250 <= h_value < 500:
+                                        m_node.my_setDriver('GV2', 2) 
+                                    elif 500 <= h_value < 2000:
+                                        m_node.my_setDriver('GV2', 3)
+                                    else:
+                                        m_node.my_setDriver('GV2', 4)
+
+                                m_node.my_setDriver('VOCLVL', h_value)
                             elif h_type == 'Air Things Device':
-                                if h_name in ['pm25','pm1', 'absHumidity']:
+                                if h_name in ['pm25','pm1', 'absHumidity', 'voc']:
                                     if h_name == 'pm25':
-                                        m_node.setDriver('GV25', h_value)
+                                        m_node.my_setDriver('GV25', h_value)
                                     elif h_name == 'pm1':
-                                        m_node.setDriver('GV1', h_value)
+                                        m_node.my_setDriver('GV1', h_value)
                                     elif h_name == 'absHumidity':
-                                        m_node.setDriver('GV0', h_value)
+                                        m_node.my_setDriver('GV0', h_value)
+                                    elif h_name == 'voc':
+                                        if isinstance(h_value, (int, float)):
+                                            m_node.my_setDriver('GV2', h_value)
+
+
 
                             else:
                                 print('Driver not implemented for {} {} {}'.format(h_name, h_value, event.json))
-    
-           '''
-            "dataType": "NUMBER",
-            "values": null,
-            "pm12": null,
-            "pm29": null,
-            "relayDeviceType": "hub",
-            "pm21": null,
-            "rssi": "0",
-           X "absHumidity": "9.09",
-            "pm10": null,
-            "pm27": null,
-           X "pressure": "991.0",
-           X "co2": "662.0",
-            X"carbonDioxide": "662.0",
-            X"airQualityIndex": "12",
-            "html": null,
-            X"temperature": "20.1",
-            "pm19": null,
-            "pm23": null,
-            "pm15": null,
-            "humidity": "52.0",
-            "pm25AqiText": "<span style='color:green'>Good</span>",
-            "pm25": "3.0",
-            "pm11": null,
-            "pm17": null,
-            "pm16": null,
-            "pm14": null,
-            "pm25Aqi": "12.5",
-            "mold": null,
-            "lastPoll": null,
-            X"radonShortTermAvg": "103.0",
-            "pm24": null,
-            "pm18": null,
-            "pm28": null,
-            "pm20": null,
-            "battery": "0",
-            "pm1": "3.0",
-            "pm22": null,
-            "pm26": null,
-            "voc": "269.0",
-            "pm13": null
-        },
+                        
+                                '''
+                                    "dataType": "NUMBER",
+                                    "values": null,
+                                    "pm12": null,
+                                    "pm29": null,
+                                    "relayDeviceType": "hub",
+                                    "pm21": null,
+                                    "rssi": "0",
+                                X "absHumidity": "9.09",
+                                    "pm10": null,
+                                    "pm27": null,
+                                X "pressure": "991.0",
+                                X "co2": "662.0",
+                                    X"carbonDioxide": "662.0",
+                                    X"airQualityIndex": "12",
+                                    "html": null,
+                                    X"temperature": "20.1",
+                                    "pm19": null,
+                                    "pm23": null,
+                                    "pm15": null,
+                                    "humidity": "52.0",
+                                    "pm25AqiText": "<span style='color:green'>Good</span>",
+                                    "pm25": "3.0",
+                                    "pm11": null,
+                                    "pm17": null,
+                                    "pm16": null,
+                                    "pm14": null,
+                                    "pm25Aqi": "12.5",
+                                    "mold": null,
+                                    "lastPoll": null,
+                                    X"radonShortTermAvg": "103.0",
+                                    "pm24": null,
+                                    "pm18": null,
+                                    "pm28": null,
+                                    "pm20": null,
+                                    "battery": "0",
+                                    "pm1": "3.0",
+                                    "pm22": null,
+                                    "pm26": null,
+                                    "voc": "269.0",
+                                    "pm13": null
+                                },
 
-'''
-                    else:
-                                print('Driver not implemented for {} {} {}'.format(h_name, h_value, event.json))
+                                '''
                         except KeyError:
                             print('Device not found in ISY')
 
