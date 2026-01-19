@@ -202,6 +202,7 @@ class Controller(udi_interface.Node):
             #_id = 'hubitat'+ dev['id']
             _id =  dev['id']
             self.device_list[_id] = dev
+            dev['temp_unit'] = self.temp_unit
             # if dev['type'] == 'Virtual Switch':
             #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Z-Wave Switch':
