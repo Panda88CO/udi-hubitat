@@ -214,10 +214,7 @@
     <range uom="124" min="0" max="100" prec="1" />
     <range uom="25" subset="0,99" nls="error" />
   </editor>  
-    <editor id="radon">
-    <range uom="124" min="0" max="100" prec="1" />
-    <range uom="25" subset="0,99" nls="error" />
-  </editor>  
+
     <editor id="ATMPRES">
         <range uom="23" min="0" max="2000" prec="0" />
         <range uom="25" subset="0,99" nls="error" />
