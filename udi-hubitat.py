@@ -470,7 +470,7 @@ class Controller(udi_interface.Node):
     
                                 else:
                                     if self.temp_unit == 'F':           
-                                        m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 17)
+                                        m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), 17))
                                     else:
                                         m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
 
@@ -725,15 +725,15 @@ class Controller(udi_interface.Node):
                             elif h_name in ['voc']:
                                 if isinstance(h_value, (int, float)):
                                     if h_value < 250:
-                                        m_node.my_setDriver('GV2', 1)
+                                        m_node.my_setDriver('VOCLVL', 1)
                                     elif 250 <= h_value < 500:
-                                        m_node.my_setDriver('GV2', 2) 
+                                        m_node.my_setDriver('VOCLVL', 2) 
                                     elif 500 <= h_value < 2000:
-                                        m_node.my_setDriver('GV2', 3)
+                                        m_node.my_setDriver('VOCLVL', 3)
                                     else:
-                                        m_node.my_setDriver('GV2', 4)
+                                        m_node.my_setDriver('VOCLVL', 4)
 
-                                m_node.my_setDriver('VOCLVL', h_value)
+                                m_node.my_setDriver('GV2', h_value)
                             elif h_type == 'Air Things Device':
                                 if h_name in ['pm25','pm1', 'absHumidity', 'voc']:
                                     if h_name == 'pm25':

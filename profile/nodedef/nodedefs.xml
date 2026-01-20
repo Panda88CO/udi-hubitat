@@ -501,7 +501,8 @@
             </accepts>
         </cmds>
     </nodeDef>
-        <nodeDef id="AirThSensor" nls="AirThSensor">
+
+    <nodeDef id="AirThSensor" nls="AirThSensor">
         <editors />
         <sts>
             <st id="ST" editor="radon"/>
@@ -513,11 +514,11 @@
             <st id="AQI" editor="AQI" />
             <st id="VOCLVL" editor="VOCLVL" />
             <st id="GV2" editor="VOC" />
-            <st id="CO2LVL" editor="CO2GROUP" />
+            <st id="CO2LVL" editor="CO2LVL" />
             <st id="GV1" editor="particle" />
             <st id="GV25" editor="particle" />
             <st id="BATLVL" editor="BATLVL" />
-            <st id="TIME" editor="UNIXTIME" />
+            <st id="TIME" editor="unixtime" />
         </sts>
         <cmds>
             <sends />
@@ -526,7 +527,8 @@
             </accepts>
         </cmds>
     </nodeDef>
-        <nodeDef id="AirThSensorF" nls="AirThSensor">
+    
+    <nodeDef id="AirThSensorF" nls="AirThSensor">
         <editors />
         <sts>
             <st id="ST" editor="radon"/>
@@ -542,7 +544,7 @@
             <st id="GV1" editor="particle" />
             <st id="GV25" editor="particle" />
             <st id="BATLVL" editor="BATLVL" />
-            <st id="TIME" editor="UNIXTIME" />
+            <st id="TIME" editor="unixtime" />
         </sts>
         <cmds>
             <sends />
@@ -551,5 +553,4 @@
             </accepts>
         </cmds>
     </nodeDef>
- 
 </nodeDefs>

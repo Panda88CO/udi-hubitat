@@ -690,9 +690,8 @@ class AirThingsSensor(HubitatBase):
         {'driver': 'ATMPRES', 'value': 99, 'uom': 23},   # 'pressure type'
         {'driver': 'CO2LVL', 'value': 99, 'uom': 54},   # 'CO2 type'
         {'driver': 'AQI', 'value': 99, 'uom': 25},   # 'AQI type'
-        {'driver': 'VOCLVL', 'value': 99, 'uom': 54},   # 'VOC type'
-        {'driver': 'GV2', 'value': 99, 'uom': 25},   # 'VOC type'
-
+        {'driver': 'VOCLVL', 'value': 99, 'uom': 25},   # 'VOC type'
+        {'driver': 'GV2', 'value': 99, 'uom': 54},   # 'VOC reading
         {'driver': 'GV25', 'value': 99, 'uom': 122},   # 'particle type'
         {'driver': 'BATLVL', 'value': 99, 'uom': 25},   # 'thermostat type'
         {'driver': 'TIME', 'value': int(time.time()), 'uom': 151},   # 'thermostat type'

@@ -223,16 +223,18 @@
         <range uom="54" min="0" max="2000" prec="1" />
         <range uom="25" subset="0,99" nls="error" />
      </editor>  
+     
+          
     <editor id="AQI">
         <range uom="54" min="0" max="2000" prec="1" />
         <range uom="25" subset="0,99" nls="error" />
      </editor>  
     <editor id="VOCLVL">
-        <range uom="54" min="1" max="4" prec="0" />
-        <range uom="25" subset="0,99" nls="error" />
+        <range uom="96" min="1" max="4" />
+        <range uom="25" subset="99" nls="error" />
      </editor>  
     <editor id="VOC">
-        <range uom="70" min="0" max="4000" prec="0" />
+        <range uom="54" min="0" max="4000" prec="0" />
         <range uom="25" subset="0,99" nls="VOCGROUP" />
      </editor>  
     <editor id="particle">

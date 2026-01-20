@@ -305,3 +305,8 @@ ST-AirThSensor-BATLVL-NAME = Battery Level
 ST-AirThSensor-TIME-NAME = Last Update Time
 CMD-AirThSensor-UPDATE-NAME = Update
 
+VOCGROUP-1=Clean
+VOCGROUP-2=Slightly Poluted
+VOCGROUP-3=Moderately Poluted
+VOCGROUP-4=Highly Poluted
+VOCGROUP-99=Unknown
