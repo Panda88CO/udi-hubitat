@@ -719,7 +719,7 @@ class Controller(udi_interface.Node):
                                 m_node.my_setDriver('ATMPRES', h_value)     
                             elif h_name in ['radonShortTermAvg']:
                             # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
-                                m_node.my_setDriver('RADON', round(h_value/37), 1)    
+                                m_node.my_setDriver('RADON', round(h_value/37,1), 1)    
                                 self.airth_radon_readings[unixtime] = h_value/37
                                 
                             elif h_name in ['voc']:
