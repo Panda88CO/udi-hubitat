@@ -500,7 +500,6 @@
                 </cmd>
             </accepts>
         </cmds>
-
     </nodeDef>
         <nodeDef id="AirThSensor" nls="AirThSensor">
         <editors />
@@ -527,7 +526,6 @@
             </accepts>
         </cmds>
     </nodeDef>
-       </nodeDef>
         <nodeDef id="AirThSensorF" nls="AirThSensor">
         <editors />
         <sts>
