@@ -225,8 +225,8 @@ CMD-ecobeesens-QUERY-NAME = Update
 
 
 ND-ECOBTSTAT-NAME = Ecobee EcobeeThermostat
-ND-ECOBTSTAT-ICON = setThermostatMode
-ST-ecobeetstat-ST-NAME = Satate
+ND-ECOBTSTAT-ICON = Thermostat
+ST-ecobeetstat-ST-NAME = State
 ST-ecobeetstat-CLITEMP-NAME = Temperature
 ST-ecobeetstat-CLIHUM-NAME = Humidity
 ST-ecobeetstat-CLIHCS-NAME = Thermostat state
@@ -285,3 +285,23 @@ THMODE-1 = Off,  Cool
 THMODE-2 = Off, Auto
 THMODE-3 = Off, Heat, Cool
 THMODE-4 = Off, Heat, Cool, Auto
+
+
+ND-AirThSensor-NAME = AitThings Sensor
+ND-AirThSensor-ICON = Sensor
+ST-AirThSensor-ST-NAME = 24H Longterm Radon Level
+ST-AirThSensor-RADON-NAME = Current Radon Reading
+ST-AirThSensor-CLITEMP-NAME = Temperature
+ST-AirThSensor-CLIHUM-NAME = Humidity
+ST-AirThSensor-GV0-NAME = Abs Humidity
+ST-AirThSensor-ATMPRES-NAME = Atmospheric Pressure
+ST-AirThSensor-AIQ-NAME = Air Quality Index
+ST-AirThSensor-VOCLVL-NAME = VOC levele
+ST-AirThSensor-GV2-NAME = VOC state
+ST-AirThSensor-CO2LVL-NAME = CO2 level
+ST-AirThSensor-GV1-NAME = 1 ppm particle count
+ST-AirThSensor-GV25-NAME = 2.5 ppm particle count
+ST-AirThSensor-BATLVL-NAME = Battery Level
+ST-AirThSensor-TIME-NAME = Last Update Time
+CMD-AirThSensor-UPDATE-NAME = Update
+

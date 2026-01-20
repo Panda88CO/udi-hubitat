@@ -706,7 +706,7 @@ class AirThingsSensor(HubitatBase):
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
 
-    id = 'AirThingsSensor'
+    id = 'AirThSensor'
     def __init__(self, polyglot, primary,address, name, marker_uri, dev):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('AirThingsSensor Init')
@@ -714,7 +714,7 @@ class AirThingsSensor(HubitatBase):
         self.dev_info = dev
 
         if dev['temp_unit'] == 'F':
-            self.id = 'AirThingsSensorF'
+            self.id = 'AirThSensorF'
 
     def updateAirthingData(self, command):
         logging.debug('updateAirthingData')

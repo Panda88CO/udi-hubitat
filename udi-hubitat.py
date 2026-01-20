@@ -10,7 +10,7 @@ import udi_interface
 logging = udi_interface.LOGGER
 Custom = udi_interface.Custom
 
-
+from datetime import datetime
 import sys
 import time
 import requests
@@ -57,6 +57,7 @@ class Controller(udi_interface.Node):
         self.temp_unit= 'F'
         self.EcoBee_t_unit = 'F'
         self.device_list = {}
+        self.airth_radon_readings = {}
 
     def node_queue(self, data):
         self.n_queue.append(data['address'])
@@ -181,7 +182,29 @@ class Controller(udi_interface.Node):
         if maker_st:
             return True
     '''
+    def update_radon_long(self):
+        # Calculate 24H average radon level
+        total = 0
+        count = 0
+        delete_list = []
+        now = int(time.time())
+        for timestamp in self.airth_radon_readings:
+            #logging.debug('Radon timestamp: {} value: {}'.format(timestamp, self.airth_radon_readings[timestamp]))
+            if now - timestamp <= 86400:
+                total += self.airth_radon_readings[timestamp]
+                count += 1
+            else:
+                delete_list.append(timestamp)
+        for timestamp in delete_list:
+            del self.airth_radon_readings[timestamp]    
 
+        if count > 0:
+            avg_radon = round(total/count,1)
+        else:
+            avg_radon = 0
+        logging.debug('Radon 24H average: {} pCi/L'.format(avg_radon))
+        return avg_radon
+    
     def discover(self, *args, **kwargs):
         assigned_addresses =['controller']    
         r = requests.get(self.maker_uri)
@@ -372,6 +395,10 @@ class Controller(udi_interface.Node):
 
                     h_name = event.json['name']
                     h_type = event.json['type']
+                    temp_data = event.json['date']
+                    dt = datetime.strptime(temp_data, '%Y-%m-%dT%H:%M:%S%z')
+                    unixtime = int(dt.timestamp())
+
                     logging.debug(json.dumps(event.json, indent=4, separators=(',', ': ') ))
                     logging.debug('Device Property: ' + h_name + " " + str(h_value) + " " + h_type)
 
@@ -379,6 +406,7 @@ class Controller(udi_interface.Node):
                         m_node = self.nodes[_deviceId]
 
                         try:
+
                             if h_name == 'switch':
                                 if h_value == 'on':
                                     m_node.my_setDriver('ST', 100)
@@ -685,7 +713,9 @@ class Controller(udi_interface.Node):
                                 m_node.my_setDriver('ATMPRES', h_value)     
                             elif h_name in ['radonShortTermAvg']:
                             # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
-                                m_node.my_setDriver('RADON', round(h_value/37), 1)     
+                                m_node.my_setDriver('RADON', round(h_value/37), 1)    
+                                self.airth_radon_readings[unixtime] = h_value/37
+                                
                             elif h_name in ['voc']:
                                 if isinstance(h_value, (int, float)):
                                     if h_value < 250:
@@ -709,7 +739,10 @@ class Controller(udi_interface.Node):
                                     elif h_name == 'voc':
                                         if isinstance(h_value, (int, float)):
                                             m_node.my_setDriver('GV2', h_value)
-
+                                    elif h_name in ['radonShortTermAvg']:
+                                        radon24H =self.update_radon_long()
+                                        m_node.my_setDriver('ST', radon24H)
+                                m_node.my_setDriver('TIME', unixtime)
 
 
                             else:
