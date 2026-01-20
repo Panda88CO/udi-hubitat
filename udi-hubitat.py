@@ -384,6 +384,7 @@ class Controller(udi_interface.Node):
         for event in websocket:
             if event.name == "text":
                 if event.json['source'] == 'DEVICE':
+                    logging.debug(json.dumps(event.json, indent=4, separators=(',', ': ') ))
                     _deviceId = str(event.json['deviceId'])
                     h_value = event.json['value']
                     if isinstance(h_value, str):
@@ -395,9 +396,12 @@ class Controller(udi_interface.Node):
 
                     h_name = event.json['name']
                     h_type = event.json['type']
-                    temp_data = event.json['date']
-                    dt = datetime.strptime(temp_data, '%Y-%m-%dT%H:%M:%S%z')
-                    unixtime = int(dt.timestamp())
+                    if 'date' in event.json:
+                        temp_data = event.json['date']
+                        dt = datetime.strptime(temp_data, '%Y-%m-%dT%H:%M:%S%z')
+                        unixtime = int(dt.timestamp())
+                    else:
+                        unixtime = int(time.time())
 
                     logging.debug(json.dumps(event.json, indent=4, separators=(',', ': ') ))
                     logging.debug('Device Property: ' + h_name + " " + str(h_value) + " " + h_type)
