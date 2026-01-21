@@ -507,7 +507,7 @@
         <sts>
             <st id="ST" editor="radon"/>
             <st id="RADON" editor="radon"/>            
-            <st id="CLITEMP" editor="celcius" />
+            <st id="CLITEMP" editor="celsius" />
             <st id="CLIHUM" editor="CLIHUM" />
             <st id="GV0" editor="CLIHUM" />
             <st id="ATMPRES" editor="ATMPRES" />
@@ -527,7 +527,6 @@
             </accepts>
         </cmds>
     </nodeDef>
-    
     <nodeDef id="AirThSensorF" nls="AirThSensor">
         <editors />
         <sts>

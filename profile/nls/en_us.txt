@@ -192,9 +192,15 @@ MOTION-1 = Motion Detected
 MOTION-99 = No data
 MOTION-100 = Motion Detected
 
-#BATLVL-0 = Idle
-#BATLVL-1 = motion
-#BATLVL-99 = Unknow/No support
+BATLVL-0 = Empty
+BATLVL-1 = Very Low
+BATLVL-2 = Very Low
+BATLVL-3 = Medium
+BATLVL-4 = Medium High
+BATLVL-5 = Full
+BATLVL-98 = External Power
+BATLVL-99 = Unknow/No support
+
 
 # Generic Remote button Xiaomi/Aqara/Opple
 ND-remotebtnnode-NAME = Pico Remote
@@ -217,7 +223,7 @@ ONLINE-99 = Unknow/Not supported
 
 ND-ECOBSENSOR-NAME = Ecobee Sensor
 ND-ECOBSENSOR-ICON = MotionSensor
-ST-ecobeesens-ST-NAME = Motion Detction
+ST-ecobeesens-ST-NAME = Motion Detection
 ST-ecobeesens-CLITEMP-NAME = Temperature
 ST-ecobeesens-GV20-NAME = Device Status
 # ST-ecobeesens-BATLVL-NAME = Battery Level
@@ -240,7 +246,7 @@ ST-ecobeetstat-GV19-NAME = Supported Modes
 ST-ecobeetstat-GV20-NAME = Device Status
 CMD-ecobeetstat-QUERY-NAME = Update
 CMD-ecobeetstat-FANMODE-NAME = Set Fan Mode
-CMD-ecobeetstat-TSTATMODE-NAME = Set Thermostat  Mode
+CMD-ecobeetstat-TSTATMODE-NAME = Set Thermostat Mode
 CMD-ecobeetstat-AWAY-NAME = set Away
 CMD-ecobeetstat-RESUME-NAME = Resume Schedule
 CMD-ecobeetstat-HEATPOINT-NAME = Heat point
@@ -287,7 +293,7 @@ THMODE-3 = Off, Heat, Cool
 THMODE-4 = Off, Heat, Cool, Auto
 
 
-ND-AirThSensor-NAME = AitThings Sensor
+ND-AirThSensor-NAME = AirThings Sensor
 ND-AirThSensor-ICON = Sensor
 ST-AirThSensor-ST-NAME = 24H Longterm Radon Level
 ST-AirThSensor-RADON-NAME = Current Radon Reading
@@ -295,8 +301,8 @@ ST-AirThSensor-CLITEMP-NAME = Temperature
 ST-AirThSensor-CLIHUM-NAME = Humidity
 ST-AirThSensor-GV0-NAME = Abs Humidity
 ST-AirThSensor-ATMPRES-NAME = Atmospheric Pressure
-ST-AirThSensor-AIQ-NAME = Air Quality Index
-ST-AirThSensor-VOCLVL-NAME = VOC levele
+ST-AirThSensor-AQI-NAME = Air Quality Index
+ST-AirThSensor-VOCLVL-NAME = VOC level
 ST-AirThSensor-GV2-NAME = VOC state
 ST-AirThSensor-CO2LVL-NAME = CO2 level
 ST-AirThSensor-GV1-NAME = 1 ppm particle count
@@ -306,7 +312,7 @@ ST-AirThSensor-TIME-NAME = Last Update Time
 CMD-AirThSensor-UPDATE-NAME = Update
 
 VOCGROUP-1=Clean
-VOCGROUP-2=Slightly Poluted
-VOCGROUP-3=Moderately Poluted
-VOCGROUP-4=Highly Poluted
+VOCGROUP-2=Slightly Polluted
+VOCGROUP-3=Moderately Polluted
+VOCGROUP-4=Highly Polluted
 VOCGROUP-99=Unknown

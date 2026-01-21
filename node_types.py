@@ -693,6 +693,7 @@ class AirThingsSensor(HubitatBase):
         {'driver': 'VOCLVL', 'value': 99, 'uom': 25},   # 'VOC type'
         {'driver': 'GV2', 'value': 99, 'uom': 54},   # 'VOC reading
         {'driver': 'GV25', 'value': 99, 'uom': 122},   # 'particle type'
+        {'driver': 'GV1', 'value': 99, 'uom': 122},   # 'particle type'        
         {'driver': 'BATLVL', 'value': 99, 'uom': 25},   # 'thermostat type'
         {'driver': 'TIME', 'value': int(time.time()), 'uom': 151},   # 'thermostat type'
 
@@ -722,6 +723,35 @@ class AirThingsSensor(HubitatBase):
     commands = {'QUERY'     : updateAirthingData,
 
                 }
+    
+class EcobeeSensor(HubitatBase):
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25 },
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
+        {'driver': 'GV20', 'value': 99, 'uom': 25},
+        ] 
+    id = 'ECOBSENSOR'
+
+    def __init__(self, polyglot, primary, address, name, marker_uri, dev):
+        #def __init__(self, polyglot, primary, marker_uri, dev):
+        super().__init__(polyglot, primary, address, name, marker_uri)
+        logging.debug('EcobeeSensor Init')
+        self.poly = polyglot
+        time.sleep(1)
+        self.dev_info = dev
+        logging.debug('EcobeeSensor dev info: {}'.format(dev))
+        HubitatBase.hubitatRefresh(self)
+ 
+        
+        try:
+            self.t_unit = dev['attributes']['deviceTemperatureUnit']
+        except:
+            self.t_unit = 1
+
+    def query(self):
+        HubitatBase.hubitatRefresh(self)
+
+    commands = {  'QUERY': query   }    
 class EcobeeThermostat(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 25}, #'DeviceWatch-DeviceStatus'

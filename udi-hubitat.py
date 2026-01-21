@@ -188,6 +188,7 @@ class Controller(udi_interface.Node):
         count = 0
         delete_list = []
         now = int(time.time())
+        logging.debug('Calculating Radon 24H average from {} readings'.format(len(self.airth_radon_readings)))  
         for timestamp in self.airth_radon_readings:
             #logging.debug('Radon timestamp: {} value: {}'.format(timestamp, self.airth_radon_readings[timestamp]))
             if now - timestamp <= 86400:
@@ -718,8 +719,10 @@ class Controller(udi_interface.Node):
                                 m_node.my_setDriver('ATMPRES', h_value)     
                             elif h_name in ['radonShortTermAvg']:
                             # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
-                                m_node.my_setDriver('RADON', round(h_value/37,1), 1)    
+                            
+                                m_node.my_setDriver('RADON', round(h_value/37,1), 124)    
                                 self.airth_radon_readings[unixtime] = h_value/37
+                                logging.debug('Radon reading added: {} timestamp: {}'.format(round(h_value/37,1), unixtime))
                                 
                             elif h_name in ['voc']:
                                 if isinstance(h_value, (int, float)):
@@ -746,7 +749,13 @@ class Controller(udi_interface.Node):
                                             m_node.my_setDriver('GV2', h_value)
                                     elif h_name in ['radonShortTermAvg']:
                                         radon24H =self.update_radon_long()
-                                        m_node.my_setDriver('ST', radon24H)
+                                        m_node.my_setDriver('ST', radon24H, 124)
+                            elif h_name in ['battery']:
+                                if isinstance(h_value, (int, float)):
+                                    if h_value == 0:
+                                        m_node.my_setDriver('BATLVL', 98, 25)
+                                    else:
+                                        m_node.my_setDriver('BATLVL', h_value)
                                 m_node.my_setDriver('TIME', unixtime)
 
 

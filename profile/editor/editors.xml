@@ -22,7 +22,7 @@
 
     <editor id="BATLVL">
         <range uom="51" min="0" max="100" step="1" prec="0"   />
-        <range uom="25" subset="0-5,99" nls="BATLVL" />
+        <range uom="25" subset="0-5,98,99" nls="BATLVL" />
     </editor>
 
     <editor id="CLITEMP">
@@ -156,10 +156,6 @@
 
     <editor id="CLIFRS">
         <range uom="25" subset="0-1,99" nls="CLIFRS" />
-    </editor> 
-
-    <editor id="CLIFS">
-        <range uom="25" subset="0-1" nls="CLIFRS" />
     </editor> 
 
     <editor id="CLIFS">
