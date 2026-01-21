@@ -454,7 +454,17 @@ class Controller(udi_interface.Node):
                                 elif h_value == 'inactive':
                                     m_node.my_setDriver('SPEED', 0)
                             elif h_name == 'battery':
-                                m_node.my_setDriver('BATLVL', h_value)
+
+                                if isinstance(h_value, (int, float))    :
+                                    if h_type == 'Air Things Device':
+                                        logging.debug('Battery level update Airthings: {} '.format(h_value))
+                                        if h_value == 0:
+                                            m_node.my_setDriver('BATLVL', 98, 25)
+                                        else:
+                                            m_node.my_setDriver('BATLVL', h_value)                                
+                                    else:
+                                        m_node.my_setDriver('BATLVL', h_value)
+
                             elif h_name in ['temperature']:
                                     #Need to separate Ecobee
                                 if self.device_list[_deviceId] in ['Ecobee Sensor', 'Ecobee Thermostat']:
@@ -727,7 +737,7 @@ class Controller(udi_interface.Node):
                                 m_node.my_setDriver('GV2', h_value)
                             elif h_type == 'Air Things Device':
                                 logging.debug('Air Things Device Property: ' + h_name + " " + str(h_value) + " " + h_type)                                  
-                                if h_name in ['pm25','pm1', 'absHumidity', 'voc', 'radonShortTermAvg','battery']:
+                                if h_name in ['pm25','pm1', 'absHumidity', 'voc', 'radonShortTermAvg']:
                                     if h_name == 'pm25':
                                         m_node.my_setDriver('GV25', h_value)
                                     elif h_name == 'pm1':
@@ -740,13 +750,7 @@ class Controller(udi_interface.Node):
                                     elif h_name in ['radonShortTermAvg']:
                                         radon24H =self.update_radon_long()
                                         m_node.my_setDriver('ST', radon24H, 124)
-                                    elif h_name in ['battery']:
-                                        logging.debug('Battery level update Airthings: {} '.format(h_value))
-                                        if isinstance(h_value, (int, float)):
-                                            if h_value == 0:
-                                                m_node.my_setDriver('BATLVL', 98, 25)
-                                            else:
-                                                m_node.my_setDriver('BATLVL', h_value)
+                                   
                                 m_node.my_setDriver('TIME', unixtime)
 
 
