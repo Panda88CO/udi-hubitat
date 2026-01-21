@@ -472,16 +472,16 @@ class Controller(udi_interface.Node):
                                         if self.EcoBee_t_unit == 'F':
                                             m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 17)
                                         else: #C
-                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), 17) 
+                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value*9/5+32)*2.0)/2), 1), 17) 
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2), 1), 4)
+                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value-32)*5/9)*2.0)/2, 1), 4)
                                         else:
                                             m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)                                    
     
                                 else:
-                                    if self.temp_unit == 'F':           
-                                        m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2), 1), 17)
+                                    if self.temp_unit == 'F': #assume C for result          
+                                        m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9+32)*2.0)/2), 1), 17)
                                     else:
                                         m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
                                 logging.debug('Temperature updated to {}'.format(h_value)) 
@@ -722,6 +722,8 @@ class Controller(udi_interface.Node):
                                 m_node.my_setDriver('RADON', round(h_value/37,1), 124)    
                                 self.airth_radon_readings[unixtime] = h_value/37
                                 logging.debug('Radon reading added: {} timestamp: {}'.format(round(h_value/37,1), unixtime))
+                                radon24H =self.update_radon_long()
+                                m_node.my_setDriver('ST', radon24H, 124)
                                 
                             elif h_name in ['voc']:
                                 if isinstance(h_value, (int, float)):
@@ -737,7 +739,7 @@ class Controller(udi_interface.Node):
                                 m_node.my_setDriver('GV2', h_value)
                             elif h_type == 'Air Things Device':
                                 logging.debug('Air Things Device Property: ' + h_name + " " + str(h_value) + " " + h_type)                                  
-                                if h_name in ['pm25','pm1', 'absHumidity', 'voc', 'radonShortTermAvg']:
+                                if h_name in ['pm25','pm1', 'absHumidity', 'voc']:
                                     if h_name == 'pm25':
                                         m_node.my_setDriver('GV25', h_value)
                                     elif h_name == 'pm1':
@@ -747,9 +749,7 @@ class Controller(udi_interface.Node):
                                     elif h_name == 'voc':
                                         if isinstance(h_value, (int, float)):
                                             m_node.my_setDriver('GV2', h_value)
-                                    elif h_name in ['radonShortTermAvg']:
-                                        radon24H =self.update_radon_long()
-                                        m_node.my_setDriver('ST', radon24H, 124)
+
                                    
                                 m_node.my_setDriver('TIME', unixtime)
 
