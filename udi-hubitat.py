@@ -470,6 +470,7 @@ class Controller(udi_interface.Node):
                                 if self.device_list[_deviceId] in ['Ecobee Sensor', 'Ecobee Thermostat']:
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
+                                            logging
                                             m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 17)
                                         else: #C
                                             m_node.my_setDriver('CLITEMP', round(int(float((h_value*9/5+32)*2.0)/2), 1), 17) 
@@ -481,7 +482,7 @@ class Controller(udi_interface.Node):
     
                                 else:
                                     if self.temp_unit == 'F': #assume C for result          
-                                        m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9+32)*2.0)/2), 1), 17)
+                                        m_node.my_setDriver('CLITEMP', round(int(float((h_value*9/5+32)*2.0)/2), 1), 17)
                                     else:
                                         m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
                                 logging.debug('Temperature updated to {}'.format(h_value)) 
@@ -724,7 +725,7 @@ class Controller(udi_interface.Node):
                                 logging.debug('Radon reading added: {} timestamp: {}'.format(round(h_value/37,1), unixtime))
                                 radon24H =self.update_radon_long()
                                 m_node.my_setDriver('ST', radon24H, 124)
-                                
+
                             elif h_name in ['voc']:
                                 if isinstance(h_value, (int, float)):
                                     if h_value < 250:
