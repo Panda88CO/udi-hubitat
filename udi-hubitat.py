@@ -474,7 +474,7 @@ class Controller(udi_interface.Node):
                                         m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2), 1), 17)
                                     else:
                                         m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
-
+                                loggging.debug('Temperature updated to {}'.format(h_value)) 
                             elif h_name == 'humidity':
                                 m_node.my_setDriver('CLIHUM', h_value)
                             elif h_name == 'illuminance':
@@ -741,6 +741,7 @@ class Controller(udi_interface.Node):
                                         radon24H =self.update_radon_long()
                                         m_node.my_setDriver('ST', radon24H, 124)
                             elif h_name in ['battery']:
+                                logging.debug('Battery level update Airthings: {} '.format(h_value))
                                 if isinstance(h_value, (int, float)):
                                     if h_value == 0:
                                         m_node.my_setDriver('BATLVL', 98, 25)
