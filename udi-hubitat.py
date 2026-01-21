@@ -464,13 +464,13 @@ class Controller(udi_interface.Node):
                                             m_node.my_setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), 17) 
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), 4))
+                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2), 1), 4)
                                         else:
                                             m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)                                    
     
                                 else:
                                     if self.temp_unit == 'F':           
-                                        m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), 17))
+                                        m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2), 1), 17)
                                     else:
                                         m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
 
@@ -683,19 +683,7 @@ class Controller(udi_interface.Node):
                                 else:
                                     m_node.my_setDriver('ST', 0,  25)
 
-                                '''
-                                elif h_name == 'temperature':
-                                        if self.temp_unit == 'F':
-                                            if self.EcoBee_t_unit == 'F':
-                                                m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 17)
-                                            else: #C
-                                                m_node.my_setDriver('CLITEMP', round(int(float((h_value+32)*9/5)*2.0)/2, 1), True, True, 17) 
-                                        else:
-                                            if self.EcoBee_t_unit == 'F':
-                                                m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2, 1), True, True, 4))
-                                            else:
-                                                m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), True, True, 4)
-                                '''
+                                
 
                             elif h_name == 'motion':
                                 if h_value  == 'inactive':
@@ -737,6 +725,7 @@ class Controller(udi_interface.Node):
 
                                 m_node.my_setDriver('GV2', h_value)
                             elif h_type == 'Air Things Device':
+                                logging.debug('Air Things Device Property: ' + h_name + " " + str(h_value) + " " + h_type)                                  
                                 if h_name in ['pm25','pm1', 'absHumidity', 'voc']:
                                     if h_name == 'pm25':
                                         m_node.my_setDriver('GV25', h_value)
