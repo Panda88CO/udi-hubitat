@@ -405,7 +405,6 @@ class Controller(udi_interface.Node):
                     else:
                         unixtime = int(time.time())
 
-                    logging.debug(json.dumps(event.json, indent=4, separators=(',', ': ') ))
                     logging.debug('Device Property: ' + h_name + " " + str(h_value) + " " + h_type)
 
                     if _deviceId in self.node_list:
