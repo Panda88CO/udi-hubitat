@@ -474,7 +474,7 @@ class Controller(udi_interface.Node):
                                         m_node.my_setDriver('CLITEMP', round(int(float((h_value*5/9-32)*2.0)/2), 1), 17)
                                     else:
                                         m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
-                                loggging.debug('Temperature updated to {}'.format(h_value)) 
+                                logging.debug('Temperature updated to {}'.format(h_value)) 
                             elif h_name == 'humidity':
                                 m_node.my_setDriver('CLIHUM', h_value)
                             elif h_name == 'illuminance':
