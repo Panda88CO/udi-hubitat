@@ -398,7 +398,7 @@ class Controller(udi_interface.Node):
 
                     h_name = event.json['name']
                     h_type = event.json['type']
-                    if h_type in ['null', '', None]:
+                    if h_type in ['null', '', None] and _deviceId in self.device_list: 
                         h_type = self.device_list[_deviceId]['type']    
                     if 'date' in event.json:
                         temp_data = event.json['date']
