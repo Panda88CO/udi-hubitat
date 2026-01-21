@@ -227,6 +227,7 @@ class Controller(udi_interface.Node):
             _id =  dev['id']
             self.device_list[_id] = dev
             dev['temp_unit'] = self.temp_unit
+            logging.debug(' device_list : {}'.format(self.device_list))
             # if dev['type'] == 'Virtual Switch':
             #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
             # if dev['type'] == 'Generic Z-Wave Switch':
