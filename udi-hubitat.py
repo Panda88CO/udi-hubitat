@@ -708,10 +708,10 @@ class Controller(udi_interface.Node):
                             elif h_type == 'Air Things Device':
                                 logging.debug('Air Things Device Property: ' + h_name + " " + str(h_value) + " " + h_type)                                  
 
-                                if h_name == 'absHumidity':
-                                    m_node.my_setDriver('CLIHUM', h_value)
+                                #if h_name == 'absHumidity':
+                                #    m_node.my_setDriver('CLIHUM', h_value)
 
-                                elif h_name in ['co2', 'carbonDioxide']:
+                                if h_name in ['co2', 'carbonDioxide']:
                                     m_node.my_setDriver('CO2LVL', h_value)
 
                                 elif h_name in ['airQualityIndex']:

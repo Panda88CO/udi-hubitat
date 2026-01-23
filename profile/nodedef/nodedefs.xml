@@ -533,8 +533,8 @@
             <st id="ST" editor="radon"/>
             <st id="RADON" editor="radon"/>            
             <st id="CLITEMP" editor="farenheit" />
-            <st id="CLIHUM" editor="CLIHUM" />
-            <st id="GV0" editor="CLIHUM" />
+            <st id="CLIHUM" editor="ABSCLIHUM" />
+            <st id="GV0" editor="RELCLIHUM" />
             <st id="ATMPRES" editor="ATMPRES" />
             <st id="AQI" editor="AQI" />
             <st id="VOCLVL" editor="VOCLVL" />

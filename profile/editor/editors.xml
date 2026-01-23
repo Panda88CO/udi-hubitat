@@ -32,7 +32,7 @@
 	</editor>
 
 	<editor id="CLIHUM">
-		<range uom="22" min="10" max="100" prec="0" />
+		<range uom="22" min="0" max="100" prec="0" />
 	</editor>
 
     <editor id="LUMIN">
@@ -235,5 +235,13 @@
      </editor>  
     <editor id="particle">
         <range uom="122"  min="0" max="2000" prec="0"/>
+     </editor>  
+    <editor id="ABSCLIHUM">
+        <range uom="21"  min="0" max="2000" prec="1"/>
+        <range uom="25" subset="99" nls="error" />
+     </editor>  
+    <editor id="RELCLIHUM">
+        <range uom="22"  min="0" max="100" prec="0"/>
+        <range uom="25" subset="99" nls="error" />
      </editor>  
 </editors>

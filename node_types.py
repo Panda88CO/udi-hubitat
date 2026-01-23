@@ -685,7 +685,7 @@ class AirThingsSensor(HubitatBase):
         {'driver': 'ST', 'value': 0, 'uom': 124}, #'Longterm Rador Status'     
         {'driver': 'RADON', 'value': 0, 'uom': 124}, 
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 21},    # 'humidity'    
         {'driver': 'GV0', 'value': 0, 'uom': 22},   
         {'driver': 'ATMPRES', 'value': 99, 'uom': 23},   # 'pressure type'
         {'driver': 'CO2LVL', 'value': 99, 'uom': 54},   # 'CO2 type'
