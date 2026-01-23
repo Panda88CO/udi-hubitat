@@ -705,52 +705,46 @@ class Controller(udi_interface.Node):
                                 else:
                                     m_node.my_setDriver('ST', 99, 25)
 
-
-                            elif h_name == 'absHumidity':
-                                m_node.my_setDriver('CLIHUM', h_value)
-
-                            elif h_name in ['co2', 'carbonDioxide']:
-                                m_node.my_setDriver('CO2LVL', h_value)
-
-                            elif h_name in ['airQualityIndex']:
-                                m_node.my_setDriver('AQI', h_value)
-
-                            elif h_name in ['pressure']:
-                                m_node.my_setDriver('ATMPRES', h_value)     
-                            elif h_name in ['radonShortTermAvg']:
-                            # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
-                            
-                                m_node.my_setDriver('RADON', round(h_value/37,1), 124)    
-                                self.airth_radon_readings[unixtime] = h_value/37
-                                logging.debug('Radon reading added: {} timestamp: {}'.format(round(h_value/37,1), unixtime))
-                                radon24H =self.update_radon_long()
-                                m_node.my_setDriver('ST', radon24H, 124)
-
-                            elif h_name in ['voc']:
-                                if isinstance(h_value, (int, float)):
-                                    if h_value < 250:
-                                        m_node.my_setDriver('VOCLVL', 1)
-                                    elif 250 <= h_value < 500:
-                                        m_node.my_setDriver('VOCLVL', 2) 
-                                    elif 500 <= h_value < 2000:
-                                        m_node.my_setDriver('VOCLVL', 3)
-                                    else:
-                                        m_node.my_setDriver('VOCLVL', 4)
-
-                                m_node.my_setDriver('GV2', h_value)
                             elif h_type == 'Air Things Device':
                                 logging.debug('Air Things Device Property: ' + h_name + " " + str(h_value) + " " + h_type)                                  
-                                if h_name in ['pm25','pm1', 'absHumidity', 'voc']:
-                                    if h_name == 'pm25':
-                                        m_node.my_setDriver('GV25', h_value)
-                                    elif h_name == 'pm1':
-                                        m_node.my_setDriver('GV1', h_value)
-                                    elif h_name == 'absHumidity':
-                                        m_node.my_setDriver('GV0', h_value)
-                                    elif h_name == 'voc':
-                                        if isinstance(h_value, (int, float)):
-                                            m_node.my_setDriver('GV2', h_value)
 
+                                if h_name == 'absHumidity':
+                                    m_node.my_setDriver('CLIHUM', h_value)
+
+                                elif h_name in ['co2', 'carbonDioxide']:
+                                    m_node.my_setDriver('CO2LVL', h_value)
+
+                                elif h_name in ['airQualityIndex']:
+                                    m_node.my_setDriver('AQI', h_value)
+
+                                elif h_name in ['pressure']:
+                                    m_node.my_setDriver('ATMPRES', h_value)     
+                                elif h_name in ['radonShortTermAvg']:
+                                # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
+                            
+                                    m_node.my_setDriver('RADON', round(h_value/37,1), 124)    
+                                    self.airth_radon_readings[unixtime] = h_value/37
+                                    logging.debug('Radon reading added: {} timestamp: {}'.format(round(h_value/37,1), unixtime))
+                                    radon24H =self.update_radon_long()
+                                    m_node.my_setDriver('ST', radon24H, 124)
+
+                                elif h_name == 'pm25':
+                                    m_node.my_setDriver('GV25', h_value)
+                                elif h_name == 'pm1':
+                                    m_node.my_setDriver('GV1', h_value)
+                                elif h_name == 'absHumidity':
+                                    m_node.my_setDriver('GV0', h_value)
+                                elif h_name == 'voc':
+                                    if isinstance(h_value, (int, float)):
+                                        m_node.my_setDriver('GV2', h_value, 54)
+                                    if h_value < 250:
+                                        m_node.my_setDriver('VOCLVL', 1, 96)
+                                    elif 250 <= h_value < 500:
+                                        m_node.my_setDriver('VOCLVL', 2, 96) 
+                                    elif 500 <= h_value < 2000:
+                                        m_node.my_setDriver('VOCLVL', 3, 96)
+                                    else:
+                                        m_node.my_setDriver('VOCLVL', 4, 96)
                                    
                                 m_node.my_setDriver('TIME', unixtime)
 

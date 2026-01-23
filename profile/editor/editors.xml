@@ -231,7 +231,7 @@
      </editor>  
     <editor id="VOC">
         <range uom="54" min="0" max="4000" prec="0" />
-        <range uom="25" subset="0,99" nls="VOCGROUP" />
+        <range uom="25" subset="0,99" nls="error" />
      </editor>  
     <editor id="particle">
         <range uom="122"  min="0" max="2000" prec="0"/>
