@@ -235,6 +235,7 @@
      </editor>  
     <editor id="particle">
         <range uom="122"  min="0" max="2000" prec="0"/>
+        <range uom="25" subset="99" nls="error" />
      </editor>  
     <editor id="ABSCLIHUM">
         <range uom="21"  min="0" max="2000" prec="1"/>

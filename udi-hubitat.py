@@ -182,22 +182,23 @@ class Controller(udi_interface.Node):
         if maker_st:
             return True
     '''
-    def update_radon_long(self):
+    def update_radon_long(self, _deviceId):
         # Calculate 24H average radon level
         total = 0
         count = 0
         delete_list = []
         now = int(time.time())
-        logging.debug('Calculating Radon 24H average from {} readings'.format(len(self.airth_radon_readings)))  
-        for timestamp in self.airth_radon_readings:
+
+        logging.debug('Calculating Radon 24H average from {} readings'.format(len(self.airth_radon_readings[_deviceId])))  
+        for timestamp in self.airth_radon_readings[_deviceId]:
             #logging.debug('Radon timestamp: {} value: {}'.format(timestamp, self.airth_radon_readings[timestamp]))
             if now - timestamp <= 86400:
-                total += self.airth_radon_readings[timestamp]
+                total += self.airth_radon_readings[_deviceId][timestamp]
                 count += 1
             else:
                 delete_list.append(timestamp)
         for timestamp in delete_list:
-            del self.airth_radon_readings[timestamp]    
+            del self.airth_radon_readings[_deviceId][timestamp]    
 
         if count > 0:
             avg_radon = round(total/count,1)
@@ -487,7 +488,7 @@ class Controller(udi_interface.Node):
                                         m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
                                 logging.debug('Temperature updated to {}'.format(h_value)) 
                             elif h_name == 'humidity':
-                                m_node.my_setDriver('CLIHUM', h_value)
+                                m_node.my_setDriver('CLIHUM', h_value, 21)
                             elif h_name == 'illuminance':
                                 m_node.my_setDriver('LUMIN', h_value)
                             elif h_name == 'current':
@@ -712,40 +713,62 @@ class Controller(udi_interface.Node):
                                 #    m_node.my_setDriver('CLIHUM', h_value)
 
                                 if h_name in ['co2', 'carbonDioxide']:
-                                    m_node.my_setDriver('CO2LVL', h_value)
+                                    if isinstance(h_value, (int, float)): 
+                                        m_node.my_setDriver('CO2LVL', h_value, 54)
 
                                 elif h_name in ['airQualityIndex']:
-                                    m_node.my_setDriver('AQI', h_value)
+                                    if isinstance(h_value, (int, float)):
+                                        m_node.my_setDriver('AQI', h_value,54)
 
                                 elif h_name in ['pressure']:
-                                    m_node.my_setDriver('ATMPRES', h_value)     
+                                    if isinstance(h_value, (int, float)):
+                                        m_node.my_setDriver('ATMPRES', h_value, 23)     
                                 elif h_name in ['radonShortTermAvg']:
                                 # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
-                            
-                                    m_node.my_setDriver('RADON', round(h_value/37,1), 124)    
-                                    self.airth_radon_readings[unixtime] = h_value/37
-                                    logging.debug('Radon reading added: {} timestamp: {}'.format(round(h_value/37,1), unixtime))
-                                    radon24H =self.update_radon_long()
-                                    m_node.my_setDriver('ST', radon24H, 124)
+                                    if isinstance(h_value, (int, float)): 
+                                        if _deviceId not in self.airth_radon_readings:
+                                            self.airth_radon_readings[_deviceId] = {}
+                                        m_node.my_setDriver('RADON', round(h_value/37,1), 124)    
+                                        self.airth_radon_readings[_deviceId][unixtime] = h_value/37
+                                        logging.debug('Radon reading added: {} timestamp: {}'.format(round(h_value/37,1), unixtime))
+                                        radon24H =self.update_radon_long(_deviceId )
+                                        m_node.my_setDriver('ST', radon24H, 124)
+                                    
 
                                 elif h_name == 'pm25':
-                                    m_node.my_setDriver('GV25', h_value)
+                                    if isinstance(h_value, (int, float)):
+                                        m_node.my_setDriver('GV25', h_value, 122)
+                                    else:
+                                        logging.error ('Unexpected PM2.5 value: {}'.format(h_value))
+                                        m_node.my_setDriver('GV25', None)
                                 elif h_name == 'pm1':
-                                    m_node.my_setDriver('GV1', h_value)
+                                    if isinstance(h_value, (int, float)):
+                                        m_node.my_setDriver('GV1', h_value)
+                                    else:
+                                        logging.error ('Unexpected PM1.0 value: {}'.format(h_value))
+                                        m_node.my_setDriver('G1', None)
+                                  
                                 elif h_name == 'absHumidity':
-                                    m_node.my_setDriver('GV0', h_value)
+                                    if isinstance(h_value, (int, float)):
+                                        m_node.my_setDriver('GV0', h_value, 22)
+                                    else:
+                                        m_node.my_setDriver('GV0', None)
                                 elif h_name == 'voc':
                                     if isinstance(h_value, (int, float)):
                                         m_node.my_setDriver('GV2', h_value, 54)
-                                    if h_value < 250:
-                                        m_node.my_setDriver('VOCLVL', 1, 96)
-                                    elif 250 <= h_value < 500:
-                                        m_node.my_setDriver('VOCLVL', 2, 96) 
-                                    elif 500 <= h_value < 2000:
-                                        m_node.my_setDriver('VOCLVL', 3, 96)
+                                        if h_value < 250:
+                                            m_node.my_setDriver('VOCLVL', 1, 96)
+                                        elif 250 <= h_value < 500:
+                                            m_node.my_setDriver('VOCLVL', 2, 96) 
+                                        elif 500 <= h_value < 2000:
+                                            m_node.my_setDriver('VOCLVL', 3, 96)
+                                        else:
+                                            m_node.my_setDriver('VOCLVL', 4, 96)
                                     else:
-                                        m_node.my_setDriver('VOCLVL', 4, 96)
-                                   
+                                        logging.error ('Unexpected VOC value: {}'.format(h_value))
+                                        m_node.my_setDriver('VOCLVL', None)
+                                        m_node.my_setDriver('GV2', None)
+
                                 m_node.my_setDriver('TIME', unixtime)
 
 
