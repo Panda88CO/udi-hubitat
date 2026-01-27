@@ -5,7 +5,7 @@
     </editor>
 
     <editor id="STATUS">
-        <range uom="78" subset="0,100" />
+        <range uom="78" subset="0,100,101" />
     </editor>
 
     <editor id="CONTACT">
@@ -16,16 +16,23 @@
         <range uom="51" min="0" max="100" step="1" prec="0" />
     </editor>
 
+    <editor id="OUTL">
+        <range uom="51" min="0" max="100" step="1" prec="0" />
+    </editor>
+
     <editor id="BATLVL">
-        <range uom="51" subset="0,100" />
+        <range uom="51" min="0" max="100" step="1" prec="0"   />
+        <range uom="25" subset="0-5,98,99" nls="BATLVL" />
     </editor>
 
     <editor id="CLITEMP">
-		<range uom="17" min="-40" max="149" step="1" prec="0" />
+		<range uom="17" min="-40" max="149" step="0.5" prec="1" />
+        <range uom="4" min="-40" max="65" step="0.5" prec="1" />
+        <range uom="25" subset="99" nls="UNKNOWN" />
 	</editor>
 
 	<editor id="CLIHUM">
-		<range uom="22" min="10" max="100" prec="0" />
+		<range uom="22" min="0" max="100" prec="0" />
 	</editor>
 
     <editor id="LUMIN">
@@ -87,6 +94,7 @@
     <editor id="PICO_BUTTON">
         <range uom="25" subset="0-5" nls="PICO_BUTTON" />
     </editor> -->
+    
     <editor id="PICO_BUTTON">
         <range uom="57" min="0" max="5" step="1" prec="0"  />
     </editor>
@@ -119,4 +127,122 @@
         <range uom="25" subset="0-2" nls="COLOR_MODE" />
     </editor>
 
+    <!--Newly added-->
+    <editor id="ONLINE">
+        <range uom="25" subset="0-1,99" nls="ONLINE" />
+    </editor>
+   
+    <editor id="MOTION">
+        <range uom="25" subset="0-1,99,100" nls="MOTION" />
+    </editor>
+
+    <!--Thermostat mode -->
+    <editor id="CLIHCS">
+        <range uom="25" subset="0-5,99" nls="CLIHCS" />
+    </editor>
+
+    <editor id="setCLIMD">
+        <range uom="25" subset="0-4" nls="CLIHCS" />
+    </editor>
+
+    <editor id="CLIMD">
+        <range uom="25" subset="0-2,99" nls="CLIMD" />
+    </editor>
+
+   
+    <editor id="setCLIHCS">
+        <range uom="25" subset="0-3" nls="CLIHCS" />    
+    </editor> 
+
+    <editor id="CLIFRS">
+        <range uom="25" subset="0-1,99" nls="CLIFRS" />
+    </editor> 
+
+    <editor id="CLIFS">
+        <range uom="25" subset="0-1,99" nls="CLIFRS" />
+    </editor>    
+   <editor id="setCLIFS">
+        <range uom="25" subset="0-1" nls="CLIFRS" />
+    </editor>    
+
+    <editor id="CLISMD">
+        <range uom="25" subset="1-3,5,99" nls="CLISMD" />        
+    </editor>
+
+    <editor id="setCLISMD">
+        <range uom="25" subset="0-1" nls="CLISMD" />        
+    </editor>    
+    <editor id="ONOFF">
+        <range uom="25" subset="0-1,99,100" nls="ONOFF" />        
+    </editor> 
+    <editor id="THMODE">
+        <range uom="25" subset="0-4,99" nls="THMODE" />        
+    </editor> 
+    <editor id="TSTATTEMP">
+        <range uom="17" min="45" max="95" prec="1" step="0.5" />
+        <range uom="4" min="7" max="35" prec="1" step="0.5" />
+        <range uom="25" subset="99" nls="UNKNOWN" />
+    </editor>
+    <editor id="celsius">
+    <range uom="4" min="-40" max="105" prec="1" />
+    <range uom="25" subset="98,99" nls="wl_state" />
+  </editor>
+    <editor id="celsiusSet">
+    <range uom="4" min="-40" max="105" prec="1" />
+  </editor>
+
+  <editor id="farenheit">
+    <range uom="17" min="-40" max="221" prec="1" />
+    <range uom="25" subset="98,99" nls="wl_state" />
+  </editor>
+    <editor id="farenheitSet">
+    <range uom="17" min="-40" max="221" prec="1" />
+  </editor>
+  <editor id="epochtime">
+    <range uom="44" min="0" max="9999999999" prec="0" />
+    <range uom="25" subset="0,99" nls="error" />
+  </editor>
+  <editor id="unixtime">
+    <range uom="151" min="1737400000" max="9999999999" prec="0" />
+    <range uom="25" subset="0,99" nls="error" />
+  </editor>
+  <editor id="radon">
+    <range uom="124" min="0" max="100" prec="1" />
+    <range uom="25" subset="0,99" nls="error" />
+  </editor>  
+
+    <editor id="ATMPRES">
+        <range uom="23" min="0" max="2000" prec="0" />
+        <range uom="25" subset="0,99" nls="error" />
+     </editor>  
+    <editor id="CO2LVL">
+        <range uom="54" min="0" max="2000" prec="1" />
+        <range uom="25" subset="0,99" nls="error" />
+     </editor>  
+     
+          
+    <editor id="AQI">
+        <range uom="54" min="0" max="2000" prec="1" />
+        <range uom="25" subset="0,99" nls="error" />
+     </editor>  
+    <editor id="VOCLVL">
+        <range uom="96" min="1" max="4" />
+        <range uom="25" subset="99" nls="error" />
+     </editor>  
+    <editor id="VOC">
+        <range uom="54" min="0" max="4000" prec="0" />
+        <range uom="25" subset="0,99" nls="error" />
+     </editor>  
+    <editor id="particle">
+        <range uom="122"  min="0" max="2000" prec="0"/>
+        <range uom="25" subset="99" nls="error" />
+     </editor>  
+    <editor id="ABSCLIHUM">
+        <range uom="21"  min="0" max="2000" prec="1"/>
+        <range uom="25" subset="99" nls="error" />
+     </editor>  
+    <editor id="RELCLIHUM">
+        <range uom="22"  min="0" max="100" prec="0"/>
+        <range uom="25" subset="99" nls="error" />
+     </editor>  
 </editors>

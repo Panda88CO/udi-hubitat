@@ -1,33 +1,38 @@
 # controller
 ND-controller-NAME = Hubitat Elevation
 ND-controller-ICON = GenericCtl
+ST-ctl-ST-NAME = NodeServer Online
 CMD-ctl-DISCOVER-NAME = Re-Discover
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove Notices
-ST-ctl-ST-NAME = NodeServer Online
+
 
 #Generic for all Types
-CMD-DON-NAME = On
-CMD-DOF-NAME = Off
-CMD-DFON-NAME = Fast On
-CMD-DFOF-NAME = Fast Off
-CMD-BRT-NAME = Brighten
-CMD-DIM-NAME = Dim
-CMD-FDUP-NAME = Fade Up
-CMD-FDDOWN-NAME = Fade Down
-CMD-FDSTOP-NAME = Fade Stop
-CMD-QUERY-NAME = Query
-CMD-SETLVL-NAME = Set Level
-CMD-SET_HUE-NAME = Set Hue
-CMD-SET_SAT-NAME = Set Saturation
-CMD-SET_KELVIN-NAME = Set Color Temperature
+#CMD-DON-NAME = On
+#CMD-DOF-NAME = Off
+#CMD-DFON-NAME = Fast On
+#CMD-DFOF-NAME = Fast Off
+#CMD-BRT-NAME = Brighten
+#CMD-DIM-NAME = Dim
+#CMD-FDUP-NAME = Fade Up
+#CMD-FDDOWN-NAME = Fade Down
+#CMD-FDSTOP-NAME = Fade Stop
+#CMD-QUERY-NAME = Update
+#CMD-SETLVL-NAME = Set Level
+#CMD-SET_HUE-NAME = Set Hue
+#CMD-SET_SAT-NAME = Set Saturation
+#CMD-SET_KELVIN-NAME = Set Color Temperature
 
 #### New Generalized Entries
 # Generic Bulb Node
-ND-STD_LAMP-NAME = Standard Light
-ND-STD_LAMP-ICON = Lamp
+ND-STDLAMP-NAME = Standard Light
+ND-STDLAMP-ICON = Lamp
 ST-STDL-ST-NAME = Status
 ST-STDL-OL-NAME = On Level
+CMD-STDL-DON-NAME = On
+CMD-STDL-DOF-NAME = Off
+CMD-STDL-QUERY-NAME = Update
+CMD-STDL-SETLVL-NAME = Set On Level
 
 # Generic RGBW Bulb Node
 ND-COLOR_LIGHT-NAME = Color Light
@@ -58,18 +63,29 @@ ST-EOUTLET-GV6-NAME = Duration
 # Generic Outlet
 ND-OUTLET-NAME = Generic Outlet
 ND-OUTLET-ICON = Switch
-ST-OUTLET-ST-NAME = Status
+ST-NLSOUTLET-ST-NAME = Status
+CMD-NLSOUTLET-DON-NAME = On
+CMD-NLSOUTLET-DOF-NAME = Off
+CMD-NLSOUTLET-QUERY-NAME = Update
 
 # Generic Switch Node
 ND-SWITCH-NAME = Generic Switch
 ND-SWITCH-ICON = Switch
-ST-SWITCH-ST-NAME = Status
+ST-NLSSWITCH-ST-NAME = Status
+CMD-NLSSWITCH-DON-NAME = On
+CMD-NLSSWITCH-DOF-NAME = Off
+CMD-NLSSWITCH-QUERY-NAME = Update
+
 
 # Generic Dimmer Node
 ND-DIMMER-NAME = Generic Dimmer
 ND-DIMMER-ICON = Switch
-ST-DIMMER-ST-NAME = Status
-ST-DIMMER-OL-NAME = On Level
+ST-NLSDIMMER-ST-NAME = Status
+ST-NLSDIMMER-OL-NAME = On Level
+CMD-NLSDIMMER-DON-NAME = On
+CMD-NLSDIMMER-DOF-NAME = Off
+CMD-NLSDIMMER-QUERY-NAME = Update
+CMD-NLSDIMMER-SETLVL-NAME = Set On Level
 
 # Generic Multi Sensor - Temp/Humi/Lux/Alarm (Zooz 4-n-1)
 ND-MSTHLA_SENSOR-NAME = Generic Multi-Sensor
@@ -156,17 +172,6 @@ ST-fastpico-GV7-NAME = Pushed
 ST-fastpico-GV8-NAME = Released
 ST-remotebtn-GV9-NAME = Held
 
-# Generic Remote button Xiaomi/Aqara/Opple
-ND-remotebtnnnode-NAME = Pico Remote
-ND-remotebtnnnode-ICON = Switch
-ST-remotebtn-ST-NAME = Status
-ST-remotebtn-GV7-NAME = Pushed 
-ST-remotebtn-GV8-NAME = Released
-ST-remotebtn-GV9-NAME = Held
-CMD-remotebtn-PUSH_BTN-NAME = Push Button
-CMD-remotebtn-HOLD_BTN-NAME = Hold Button
-CMD-remotebtn-RELEASE_BTN-NAME = Release Button
-
 # Lutron Pico Buttons
 PICO_BUTTON-0 = N/A
 PICO_BUTTON-1 = 1
@@ -180,3 +185,134 @@ COLOR_MODE-0 = N/A
 COLOR_MODE-1 = CT
 COLOR_MODE-2 = RGB
 
+# Newly added   
+
+MOTION-0 = Idle
+MOTION-1 = Motion Detected
+MOTION-99 = No data
+MOTION-100 = Motion Detected
+
+BATLVL-0 = Empty
+BATLVL-1 = Very Low
+BATLVL-2 = Very Low
+BATLVL-3 = Medium
+BATLVL-4 = Medium High
+BATLVL-5 = Full
+BATLVL-98 = External Power
+BATLVL-99 = Unknow/No support
+
+
+# Generic Remote button Xiaomi/Aqara/Opple
+ND-remotebtnnode-NAME = Pico Remote
+ND-remotebtnnode-ICON = Switch
+ST-remotebtn-ST-NAME = Status
+ST-remotebtn-GV7-NAME = Pushed 
+ST-remotebtn-GV8-NAME = Released
+ST-remotebtn-GV9-NAME = Held
+ST-remotebtn-BATLVL-NAME = Battery Level
+ST-remotebtn-GV20-NAME = Device Status
+CMD-remotebtn-PUSH_BTN-NAME = Push Button
+CMD-remotebtn-HOLD_BTN-NAME = Hold Button
+CMD-remotebtn-RELEASE_BTN-NAME = Release Button
+CMD-remotebtn-QUERY-NAME = Update
+
+ONLINE-0 = Offline
+ONLINE-1 = Online
+ONLINE-99 = Unknow/Not supported
+
+
+ND-ECOBSENSOR-NAME = Ecobee Sensor
+ND-ECOBSENSOR-ICON = MotionSensor
+ST-ecobeesens-ST-NAME = Motion Detection
+ST-ecobeesens-CLITEMP-NAME = Temperature
+ST-ecobeesens-GV20-NAME = Device Status
+# ST-ecobeesens-BATLVL-NAME = Battery Level
+CMD-ecobeesens-QUERY-NAME = Update
+
+
+ND-ECOBTSTAT-NAME = Ecobee EcobeeThermostat
+ND-ECOBTSTAT-ICON = Thermostat
+ST-ecobeetstat-ST-NAME = State
+ST-ecobeetstat-CLITEMP-NAME = Temperature
+ST-ecobeetstat-CLIHUM-NAME = Humidity
+ST-ecobeetstat-CLIHCS-NAME = Thermostat state
+ST-ecobeetstat-CLISPC-NAME = Cooling setpoint
+ST-ecobeetstat-CLISPH-NAME = Heating setpoint
+ST-ecobeetstat-CLIMD-NAME = Thermostat Operating Mode
+ST-ecobeetstat-CLIFS-NAME = Fan Operating Mode
+ST-ecobeetstat-CLIFRS-NAME = Fan State
+ST-ecobeetstat-CLISMD-NAME = Operating State
+ST-ecobeetstat-GV19-NAME = Supported Modes
+ST-ecobeetstat-GV20-NAME = Device Status
+CMD-ecobeetstat-QUERY-NAME = Update
+CMD-ecobeetstat-FANMODE-NAME = Set Fan Mode
+CMD-ecobeetstat-TSTATMODE-NAME = Set Thermostat Mode
+CMD-ecobeetstat-AWAY-NAME = set Away
+CMD-ecobeetstat-RESUME-NAME = Resume Schedule
+CMD-ecobeetstat-HEATPOINT-NAME = Heat point
+CMD-ecobeetstat-COOLPOINT-NAME = Cool point
+
+CLIHCS-0 = Auto
+CLIHCS-1 = Cool
+CLIHCS-2 = Heat
+CLIHCS-3 = Off
+CLIHCS-4 = Idle
+CLIHCS-5 = Emergency Heat
+CLIHCS-99 = No data
+
+CLIMD-0 = Auto
+CLIMD-1 = Cooling
+CLIMD-2 = Heating
+CLIMD-3 = Off
+CLIMD-99 = No data
+
+CLIFRS-0 = Auto
+CLIFRS-1 = On
+CLIFRS-2 = Off
+CLIFRS-99 = No data
+
+CLIFS-0 = On
+CLIFS-1 = Auto
+CLIFS-99 = No data
+
+CLISMD-1 = Here/Resume
+CLISMD-0 = Away
+CLISMD-99 = No data
+ 
+ONOFF-0 = Off
+ONOFF-1 = On
+ONOFF-100 = On
+ONOFF-99 = No data
+
+UNKNOWN-99 = Unknown
+
+THMODE-0 = Off, Heat
+THMODE-1 = Off,  Cool
+THMODE-2 = Off, Auto
+THMODE-3 = Off, Heat, Cool
+THMODE-4 = Off, Heat, Cool, Auto
+
+
+ND-AirThSensor-NAME = AirThings Sensor
+ND-AirThSensor-ICON = Sensor
+ST-AirThSensor-ST-NAME = 24H Longterm Radon Level
+ST-AirThSensor-RADON-NAME = Current Radon Reading
+ST-AirThSensor-CLITEMP-NAME = Temperature
+ST-AirThSensor-CLIHUM-NAME = Relative Humidity
+ST-AirThSensor-GV0-NAME = Absolute Humidity
+ST-AirThSensor-ATMPRES-NAME = Atmospheric Pressure
+ST-AirThSensor-AQI-NAME = Air Quality Index
+ST-AirThSensor-VOCLVL-NAME = VOC level
+ST-AirThSensor-GV2-NAME = VOC state
+ST-AirThSensor-CO2LVL-NAME = CO2 level
+ST-AirThSensor-GV1-NAME = 1 ppm particle count
+ST-AirThSensor-GV25-NAME = 2.5 ppm particle count
+ST-AirThSensor-BATLVL-NAME = Battery Level
+ST-AirThSensor-TIME-NAME = Last Update Time
+CMD-AirThSensor-UPDATE-NAME = Update
+
+VOCGROUP-1=Clean
+VOCGROUP-2=Slightly Polluted
+VOCGROUP-3=Moderately Polluted
+VOCGROUP-4=Highly Polluted
+VOCGROUP-99=Unknown

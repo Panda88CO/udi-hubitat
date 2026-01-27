@@ -19,10 +19,10 @@
     <!--New Generalized definitions -->
 
     <!--Generic Lamp/Bulb -->
-     <nodeDef id="STD_LAMP" nls="STDL">
+     <nodeDef id="STDLAMP" nls="STDL">
         <editors />
         <sts>
-            <st id="ST" editor="STATUS" />
+            <st id="ST" editor="ONOFF" />
             <st id="OL" editor="OL"/>
         </sts>
         <cmds>
@@ -34,16 +34,16 @@
             <accepts>
                 <cmd id="DON" />
                 <cmd id="DOF" />
-                <cmd id="OL" />
                 <cmd id="QUERY" />
                 <cmd id="SETLVL">
-                    <p id="" editor="OL"/>
+                    <p id="" editor="OUTL"  init="OL"/>
                 </cmd>
             </accepts>
         </cmds>
     </nodeDef>
-
+    
     <!-- Color Lamp/Bulb/Light -->
+    
     <nodeDef id="COLOR_LIGHT" nls="ZCL">
         <editors />
         <sts>
@@ -126,6 +126,7 @@
         </cmds>
     </nodeDef>
 
+
     <nodeDef id="ENERGY_OUTLET" nls="EOUTLET">
         <editors />
         <sts>
@@ -152,13 +153,16 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="OUTLET" nls="OUTLET">
+    <nodeDef id="OUTLET" nls="NLSOUTLET">
         <editors />
         <sts>
-            <st id="ST" editor="STATUS" />
+            <st id="ST" editor="ONOFF" />
         </sts>
         <cmds>
-            <sends />
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
             <accepts>
                 <cmd id="DON" />
                 <cmd id="DOF" />
@@ -167,10 +171,10 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="SWITCH" nls="SWITCH">
+    <nodeDef id="SWITCH" nls="NLSSWITCH">
             <editors />
             <sts>
-                <st id="ST" editor="STATUS" />
+                <st id="ST" editor="ONOFF" />
             </sts>
             <cmds>
                 <sends>
@@ -185,10 +189,10 @@
             </cmds>
         </nodeDef>
 
-    <nodeDef id="DIMMER" nls="DIMMER">
+    <nodeDef id="DIMMER" nls="NLSDIMMER">
         <editors />
         <sts>
-            <st id="ST" editor="STATUS" />
+            <st id="ST" editor="ONOFF" />
             <st id="OL" editor="OL"/>
         </sts>
         <cmds>
@@ -200,7 +204,6 @@
             <accepts>
                 <cmd id="DON" />
                 <cmd id="DOF" />
-                <cmd id="OL" />
                 <cmd id="QUERY" />
                 <cmd id="SETLVL">
                     <p id="" editor="OL"/>
@@ -412,24 +415,141 @@
             </accepts>
         </cmds>
     </nodeDef>
-    <nodeDef id="remotebtnnnode" nls="remotebtn">
+
+    <nodeDef id="remotebtnnode" nls="remotebtn">
         <editors />
         <sts>
-            <st id="ST" editor="bool" hide="True" />
-            <st id="GV7" editor="REMOTE_BTN" />
-            <st id="GV8" editor="REMOTE_BTN" />
-            <st id="GV9" editor="REMOTE_BTN" />
+            <st id="ST"     editor="bool" hide="True" />
+            <st id="GV7"    editor="REMOTE_BTN" />
+            <st id="GV8"    editor="REMOTE_BTN" />
+            <st id="GV9"    editor="REMOTE_BTN" />
             <st id="BATLVL" editor="BATLVL" />
+            <st id="GV20"   editor="ONLINE" />
         </sts>
         <cmds>
-            <sends />
+            <sends>
+                <cmd id="DON" />
+                <cmd id="DOF" />
+            </sends>
             <accepts>
                 <cmd id="PUSH_BTN" />
                 <cmd id="HOLD_BTN" />
                 <cmd id="RELEASE_BTN" />
-                <!--<cmd id="DIM" />-->
+                <cmd id="QUERY" />
             </accepts>
         </cmds>
     </nodeDef>
 
+    <nodeDef id="ECOBSENSOR" nls="ecobeesens">
+        <editors />
+        <sts>
+            <st id="ST" editor="MOTION"/>
+            <st id="CLITEMP" editor="CLITEMP" />
+            <!--<st id="BATLVL" editor="BATLVL" /> -->
+            <st id="GV20" editor="ONLINE" />
+        </sts>
+        <cmds>
+            <sends >
+                <cmd id = "DON" />
+                <cmd id = "DOF" />
+            </sends>
+            <accepts>
+                <cmd id="QUERY" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="ECOBTSTAT" nls="ecobeetstat">
+        <editors />
+        <sts>
+            <st id="ST"      editor="ONLINE" hide="True"/>
+            <st id="CLITEMP" editor="CLITEMP" />
+            <st id="CLIHUM" editor="CLIHUM" />
+            <st id="CLIMD"  editor="CLIMD" />
+            <st id="CLIFS"  editor="CLIFS" />
+            <st id="CLISPC" editor="TSTATTEMP" />
+            <st id="CLISPH" editor="TSTATTEMP" />
+            <st id="CLIHCS" editor="CLIHCS" />
+            <st id="CLIFRS" editor="CLIFRS" />
+            <!--<st id="CLISMD" editor="CLISMD" />-->
+            <st id="GV19"   editor="THMODE" /> 
+            <st id="GV20"   editor="ONLINE" />
+            <!--<st id="GV10" editor="SET_POINT" /> -->
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="QUERY" />
+                <cmd id="AWAY" />
+                <cmd id="RESUME" />                
+                <cmd  id="FANMODE" >
+                        <p id="" editor="setCLIFS" init="CLIFS"/> 
+                </cmd>
+                <cmd id="TSTATMODE" >
+                        <p id="" editor="setCLIHCS" init="CLIHCS"/> 
+                </cmd>
+                <!--<cmd id="OPMODE" >
+                        <p id="" editor="setCLIHCS" init="CLIHCS"/> 
+                </cmd>-->
+
+                <cmd id="HEATPOINT" >
+                        <p id="" editor="TSTATTEMP" init="CLISPH"/>
+                </cmd>
+                <cmd id="COOLPOINT" >
+                        <p id="" editor="TSTATTEMP" init="CLISPC"/>
+                </cmd>
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <nodeDef id="AirThSensor" nls="AirThSensor">
+        <editors />
+        <sts>
+            <st id="ST" editor="radon"/>
+            <st id="RADON" editor="radon"/>            
+            <st id="CLITEMP" editor="celsius" />
+            <st id="CLIHUM" editor="CLIHUM" />
+            <st id="GV0" editor="CLIHUM" />
+            <st id="ATMPRES" editor="ATMPRES" />
+            <st id="AQI" editor="AQI" />
+            <st id="VOCLVL" editor="VOCLVL" />
+            <st id="GV2" editor="VOC" />
+            <st id="CO2LVL" editor="CO2LVL" />
+            <st id="GV1" editor="particle" />
+            <st id="GV25" editor="particle" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="TIME" editor="unixtime" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="UPDATE" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+    <nodeDef id="AirThSensorF" nls="AirThSensor">
+        <editors />
+        <sts>
+            <st id="ST" editor="radon"/>
+            <st id="RADON" editor="radon"/>            
+            <st id="CLITEMP" editor="farenheit" />
+            <st id="CLIHUM" editor="ABSCLIHUM" />
+            <st id="GV0" editor="RELCLIHUM" />
+            <st id="ATMPRES" editor="ATMPRES" />
+            <st id="AQI" editor="AQI" />
+            <st id="VOCLVL" editor="VOCLVL" />
+            <st id="GV2" editor="VOC" />
+            <st id="CO2LVL" editor="CO2GROUP" />
+            <st id="GV1" editor="particle" />
+            <st id="GV25" editor="particle" />
+            <st id="BATLVL" editor="BATLVL" />
+            <st id="TIME" editor="unixtime" />
+        </sts>
+        <cmds>
+            <sends />
+            <accepts>
+                <cmd id="UPDATE" />
+            </accepts>
+        </cmds>
+    </nodeDef>
 </nodeDefs>

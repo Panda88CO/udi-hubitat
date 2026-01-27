@@ -1,0 +1,396 @@
+[
+    {
+        "name": "Ecobee Thermostat",
+        "label": "Ecobee DS corner room",
+        "type": "Ecobee Thermostat",
+        "id": "4",
+        "date": "2024-05-10T16:01:45+0000",
+        "model": null,
+        "manufacturer": null,
+        "room": "DS corner",
+        "capabilities": [
+            "RelativeHumidityMeasurement",
+            "Actuator",
+            "Refresh",
+            "Initialize",
+            "TemperatureMeasurement",
+            "Thermostat",
+            "Sensor"
+        ],
+        "attributes": {
+            "supportedThermostatFanModes": "[\"on\",\"auto\"]",
+            "dataType": "STRING",
+            "values": null,
+            "thermostat": "idle",
+            "DeviceWatch-DeviceStatus": "online",
+            "heatingSetpoint": "64",
+            "maxCoolingSetpoint": "92",
+            "temperature": "76",
+            "thermostatFanMode": "auto",
+            "minCoolingSetpoint": "65",
+            "resumeProgram": "resume",
+            "humidity": "44",
+            "maxHeatingSetpoint": "79",
+            "thermostatSetpoint": "73",
+            "thermostatOperatingState": "idle",
+            "coolingSetpoint": "82",
+            "supportedThermostatModes": "[\"off\",\"heat\"]",
+            "thermostatMode": "off",
+            "minHeatingSetpoint": "45",
+            "deviceAlive": "true",
+            "deviceTemperatureUnit": "F"
+        },
+        "commands": [
+            {
+                "command": "auto"
+            },
+            {
+                "command": "cool"
+            },
+            {
+                "command": "emergencyHeat"
+            },
+            {
+                "command": "fanAuto"
+            },
+            {
+                "command": "fanCirculate"
+            },
+            {
+                "command": "fanOn"
+            },
+            {
+                "command": "heat"
+            },
+            {
+                "command": "initialize"
+            },
+            {
+                "command": "off"
+            },
+            {
+                "command": "refresh"
+            },
+            {
+                "command": "resumeProgram"
+            },
+            {
+                "command": "setAway"
+            },
+            {
+                "command": "setCoolingSetpoint"
+            },
+            {
+                "command": "setHeatingSetpoint"
+            },
+            {
+                "command": "setThermostatFanMode"
+            },
+            {
+                "command": "setThermostatMode"
+            }
+        ]
+    },
+    {
+        "name": "Generic Component Temperature Sensor",
+        "label": "Solar Temperature",
+        "type": "Generic Component Temperature Sensor",
+        "id": "180",
+        "date": null,
+        "model": null,
+        "manufacturer": null,
+        "room": null,
+        "capabilities": [
+            "TemperatureMeasurement",
+            "Refresh",
+            "Sensor"
+        ],
+        "attributes": {
+            "temperature": "65",
+            "dataType": "NUMBER",
+            "values": null
+        },
+        "commands": [
+            {
+                "command": "refresh"
+            }
+        ]
+    },
+    {
+        "name": "Ecobee Thermostat",
+        "label": "Ecobee Saratoga",
+        "type": "Ecobee Thermostat",
+        "id": "5",
+        "date": "2024-05-10T16:20:00+0000",
+        "model": null,
+        "manufacturer": null,
+        "room": "Family Room",
+        "capabilities": [
+            "RelativeHumidityMeasurement",
+            "Actuator",
+            "Refresh",
+            "Initialize",
+            "TemperatureMeasurement",
+            "Thermostat",
+            "Sensor"
+        ],
+        "attributes": {
+            "supportedThermostatFanModes": "[\"on\",\"auto\"]",
+            "dataType": "STRING",
+            "values": null,
+            "thermostat": "idle",
+            "DeviceWatch-DeviceStatus": "online",
+            "heatingSetpoint": "62",
+            "maxCoolingSetpoint": "92",
+            "temperature": "76",
+            "thermostatFanMode": "auto",
+            "minCoolingSetpoint": "65",
+            "resumeProgram": "resume",
+            "humidity": "52",
+            "maxHeatingSetpoint": "79",
+            "thermostatSetpoint": "77",
+            "thermostatOperatingState": "idle",
+            "coolingSetpoint": "92",
+            "supportedThermostatModes": "[\"off\",\"cool\",\"heat\",\"auto\"]",
+            "thermostatMode": "auto",
+            "minHeatingSetpoint": "45",
+            "deviceAlive": "true",
+            "deviceTemperatureUnit": "F"
+        },
+        "commands": [
+            {
+                "command": "auto"
+            },
+            {
+                "command": "cool"
+            },
+            {
+                "command": "emergencyHeat"
+            },
+            {
+                "command": "fanAuto"
+            },
+            {
+                "command": "fanCirculate"
+            },
+            {
+                "command": "fanOn"
+            },
+            {
+                "command": "heat"
+            },
+            {
+                "command": "initialize"
+            },
+            {
+                "command": "off"
+            },
+            {
+                "command": "refresh"
+            },
+            {
+                "command": "resumeProgram"
+            },
+            {
+                "command": "setAway"
+            },
+            {
+                "command": "setCoolingSetpoint"
+            },
+            {
+                "command": "setHeatingSetpoint"
+            },
+            {
+                "command": "setThermostatFanMode"
+            },
+            {
+                "command": "setThermostatMode"
+            }
+        ]
+    },
+    {
+        "name": "Ecobee Thermostat",
+        "label": "Ecobee Guestroom",
+        "type": "Ecobee Thermostat",
+        "id": "6",
+        "date": "2024-05-10T16:04:50+0000",
+        "model": null,
+        "manufacturer": null,
+        "room": "Guest Room",
+        "capabilities": [
+            "RelativeHumidityMeasurement",
+            "Actuator",
+            "Refresh",
+            "Initialize",
+            "TemperatureMeasurement",
+            "Thermostat",
+            "Sensor"
+        ],
+        "attributes": {
+            "supportedThermostatFanModes": "[\"on\",\"auto\"]",
+            "dataType": "STRING",
+            "values": null,
+            "thermostat": "idle",
+            "DeviceWatch-DeviceStatus": "online",
+            "heatingSetpoint": "70",
+            "maxCoolingSetpoint": "92",
+            "temperature": "76",
+            "thermostatFanMode": "auto",
+            "minCoolingSetpoint": "65",
+            "resumeProgram": "resume",
+            "humidity": "44",
+            "maxHeatingSetpoint": "76",
+            "thermostatSetpoint": "74",
+            "thermostatOperatingState": "idle",
+            "coolingSetpoint": "78",
+            "supportedThermostatModes": "[\"off\",\"heat\"]",
+            "thermostatMode": "off",
+            "minHeatingSetpoint": "45",
+            "deviceAlive": "true",
+            "deviceTemperatureUnit": "F"
+        },
+        "commands": [
+            {
+                "command": "auto"
+            },
+            {
+                "command": "cool"
+            },
+            {
+                "command": "emergencyHeat"
+            },
+            {
+                "command": "fanAuto"
+            },
+            {
+                "command": "fanCirculate"
+            },
+            {
+                "command": "fanOn"
+            },
+            {
+                "command": "heat"
+            },
+            {
+                "command": "initialize"
+            },
+            {
+                "command": "off"
+            },
+            {
+                "command": "refresh"
+            },
+            {
+                "command": "resumeProgram"
+            },
+            {
+                "command": "setAway"
+            },
+            {
+                "command": "setCoolingSetpoint"
+            },
+            {
+                "command": "setHeatingSetpoint"
+            },
+            {
+                "command": "setThermostatFanMode"
+            },
+            {
+                "command": "setThermostatMode"
+            }
+        ]
+    },
+    {
+        "name": "Ecobee Sensor",
+        "label": "Bedroom",
+        "type": "Ecobee Sensor",
+        "id": "7",
+        "date": "2024-05-10T16:25:01+0000",
+        "model": null,
+        "manufacturer": null,
+        "room": "Matias Bed Room",
+        "capabilities": [
+            "MotionSensor",
+            "Refresh",
+            "TemperatureMeasurement",
+            "Sensor"
+        ],
+        "attributes": {
+            "DeviceWatch-DeviceStatus": "online",
+            "dataType": "ENUM",
+            "values": [
+                "inactive",
+                "active"
+            ],
+            "temperature": "74.8",
+            "motion": "active"
+        },
+        "commands": [
+            {
+                "command": "refresh"
+            }
+        ]
+    },
+    {
+        "name": "Ecobee Sensor",
+        "label": "Living Room",
+        "type": "Ecobee Sensor",
+        "id": "8",
+        "date": "2024-05-10T16:20:00+0000",
+        "model": null,
+        "manufacturer": null,
+        "room": "Living Room",
+        "capabilities": [
+            "MotionSensor",
+            "Refresh",
+            "TemperatureMeasurement",
+            "Sensor"
+        ],
+        "attributes": {
+            "DeviceWatch-DeviceStatus": "online",
+            "dataType": "ENUM",
+            "values": [
+                "inactive",
+                "active"
+            ],
+            "temperature": "74.0",
+            "motion": "inactive"
+        },
+        "commands": [
+            {
+                "command": "refresh"
+            }
+        ]
+    },
+    {
+        "name": "Ecobee Sensor",
+        "label": "Office",
+        "type": "Ecobee Sensor",
+        "id": "9",
+        "date": "2024-05-10T16:25:01+0000",
+        "model": null,
+        "manufacturer": null,
+        "room": "Small Bed Room",
+        "capabilities": [
+            "MotionSensor",
+            "Refresh",
+            "TemperatureMeasurement",
+            "Sensor"
+        ],
+        "attributes": {
+            "DeviceWatch-DeviceStatus": "online",
+            "dataType": "ENUM",
+            "values": [
+                "inactive",
+                "active"
+            ],
+            "temperature": "73.3",
+            "motion": "inactive"
+        },
+        "commands": [
+            {
+                "command": "refresh"
+            }
+        ]
+    }
+]
