@@ -246,7 +246,7 @@ class RgbLampNode(HubitatBase):
         {'driver': 'GV6', 'value': 0, 'uom': 26}
     ]
 
-    id = 'COLOR_LIGHT'
+    id = 'COLORLIGHT'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
         'SETLVL': HubitatBase.hubitatCtl, 'SET_HUE': HubitatBase.hubitatCtl,
@@ -278,7 +278,7 @@ class CtLampNode(HubitatBase):
         {'driver': 'GV6', 'value': 0, 'uom': 26}
     ]
 
-    id = 'COLOR_LIGHT'
+    id = 'COLORLIGHT'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
         'SETLVL': HubitatBase.hubitatCtl, 'SET_KELVIN': HubitatBase.hubitatCtl
@@ -308,7 +308,7 @@ class EnergyOutletNode(HubitatBase):
         {'driver': 'GV5', 'value': 0, 'uom': 72},  # voltageL
         {'driver': 'GV6', 'value': 0, 'uom': 45}  # energy duration
     ]
-    id = 'ENERGY_OUTLET'
+    id = 'ENERGYOUTLET'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -405,7 +405,7 @@ class MultiSensorTHLA(HubitatBase):
         {'driver': 'LUMIN', 'value': 0, 'uom': 36},
         {'driver': 'ALARM', 'value': 0, 'uom': 2}
     ]
-    id = 'MSTHLA_SENSOR'
+    id = 'MSTHLASENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -426,7 +426,7 @@ class MultiSensorTLAS (HubitatBase):
         {'driver': 'ALARM', 'value': 0, 'uom': 2},
         {'driver': 'SPEED', 'value': 0, 'uom': 2}
     ]
-    id = 'MSTLAS_SENSOR'
+    id = 'MSTLASSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -445,7 +445,7 @@ class MultiSensorTH(HubitatBase):
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
         {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
     ]
-    id = 'MSTH_SENSOR'
+    id = 'MSTHSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -463,7 +463,7 @@ class MultiSensorT(HubitatBase):
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17}
     ]
-    id = 'MST_SENSOR'
+    id = 'MSTSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -481,7 +481,7 @@ class MultiSensorTL(HubitatBase):
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
         {'driver': 'LUMIN', 'value': 0, 'uom': 36},
     ]
-    id = 'MSTL_SENSOR'
+    id = 'MSTLSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -499,7 +499,7 @@ class MultiSensorL(HubitatBase):
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
         {'driver': 'LUMIN', 'value': 0, 'uom': 36},
     ]
-    id = 'MSL_SENSOR'
+    id = 'MSLSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -516,7 +516,7 @@ class MotionSensor(HubitatBase):
         {'driver': 'ST', 'value': 0, 'uom': 78},
         {'driver': 'BATLVL', 'value': 0, 'uom': 51},
     ]
-    id = 'MS_SENSOR'
+    id = 'MSSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -546,7 +546,7 @@ class LutronPicoNode(HubitatBase):
         {'driver': 'GV7', 'value': 0, 'uom': 25},
         {'driver': 'GV8', 'value': 0, 'uom': 25},
         ]
-    id = 'piconode'
+    id = 'PICONODE'
     commands = {
         # 'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -574,7 +574,7 @@ class LutronFastPicoNode(HubitatBase):
         {'driver': 'GV7', 'value': 0, 'uom': 25},
         {'driver': 'GV8', 'value': 0, 'uom': 25}
     ]
-    id = 'fastpiconode'
+    id = 'FASTPICONODE'
     commands = {
         # 'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -591,7 +591,7 @@ class THSensor(HubitatBase):
         {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
         {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
     ]
-    id = 'TH_SENSOR'
+    id = 'THSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -608,7 +608,7 @@ class ContactNode(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 79},  # Status
     ]
-    id = 'CONTACT_SENSOR'
+    id = 'CONTACTSENSOR'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -644,7 +644,7 @@ class SimpleRemoteNode(HubitatBase):
                 {'driver': 'BATLVL', 'value': 99, 'uom': 51},
                 {'driver': 'GV20', 'value': 99, 'uom': 25},
                 ]
-    id = 'remotebtnnode'
+    id = 'REMOTEBTNNODE'
     commands = {
         'PUSH_BTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -706,7 +706,7 @@ class AirThingsSensor(HubitatBase):
         #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
         ]
 
-    id = 'AirThSensor'
+    id = 'AIRTHSENSOR'
     def __init__(self, polyglot, primary,address, name, marker_uri, dev):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('AirThingsSensor Init')
@@ -714,7 +714,7 @@ class AirThingsSensor(HubitatBase):
         self.dev_info = dev
 
         if dev['temp_unit'] == 'F':
-            self.id = 'AirThSensorF'
+            self.id = 'AIRTHSENSORF'
 
     def updateAirthingData(self, command):
         logging.debug('updateAirthingData')

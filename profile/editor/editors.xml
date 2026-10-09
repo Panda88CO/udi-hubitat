@@ -1,7 +1,8 @@
 <editors>
     <!-- Boolean -->
-    <editor id="bool">
+    <editor id="TRUEFALSE">
         <range uom="2" subset="0,1" />
+        <range uom="25" subset="0,1" nls="TRUEFALSE" />
     </editor>
 
     <editor id="STATUS">
@@ -63,43 +64,43 @@
         <range uom="33" min="0" max="1000" step="1" prec="3" />
     </editor>
 
-    <editor id="CURRENT_H">
+    <editor id="CURRENTH">
         <range uom="73" min="0" max="1000" step="1" prec="3" />
     </editor>
 
-    <editor id="CURRENT_L">
+    <editor id="CURRENTL">
         <range uom="73" min="0" max="1000" step="1" prec="3" />
     </editor>
 
-    <editor id="POWER_H">
+    <editor id="POWERH">
         <range uom="33" min="0" max="1000" step="1" prec="3" />
     </editor>
 
-    <editor id="POWER_L">
+    <editor id="POWERL">
         <range uom="33" min="0" max="1000" step="1" prec="3" />
     </editor>
 
-    <editor id="VOLTAGE_H">
+    <editor id="VOLTAGEH">
         <range uom="72" min="0" max="1000" step="1" prec="3" />
     </editor>
 
-    <editor id="VOLTAGE_L">
+    <editor id="VOLTAGEL">
         <range uom="72" min="0" max="1000" step="1" prec="3" />
     </editor>
 
-    <editor id="ENERGY_DURATION">
+    <editor id="ENERGYDURATION">
         <range uom="45" min="0" max="1000" step="1" prec="3" />
     </editor>
     <!--
-    <editor id="PICO_BUTTON">
-        <range uom="25" subset="0-5" nls="PICO_BUTTON" />
+    <editor id="PICOBUTTON">
+        <range uom="25" subset="0-5" nls="PICOBUTTON" />
     </editor> -->
     
-    <editor id="PICO_BUTTON">
+    <editor id="PICOBUTTON">
         <range uom="57" min="0" max="5" step="1" prec="0"  />
     </editor>
     
-    <editor id="REMOTE_BTN">
+    <editor id="REMOTEBTN">
         <range uom="57" min="0" max="5" step="1" prec="0"  />
     </editor>
 
@@ -123,8 +124,8 @@
         <range uom="57" min="0" max="300" prec="0" step="1" />
     </editor>
 
-    <editor id="COLOR_MODE">
-        <range uom="25" subset="0-2" nls="COLOR_MODE" />
+    <editor id="COLORMODE">
+        <range uom="25" subset="0-2" nls="COLORMODE" />
     </editor>
 
     <!--Newly added-->
@@ -141,7 +142,7 @@
         <range uom="25" subset="0-5,99" nls="CLIHCS" />
     </editor>
 
-    <editor id="setCLIMD">
+    <editor id="SETCLIMD">
         <range uom="25" subset="0-4" nls="CLIHCS" />
     </editor>
 
@@ -150,7 +151,7 @@
     </editor>
 
    
-    <editor id="setCLIHCS">
+    <editor id="SETCLIHCS">
         <range uom="25" subset="0-3" nls="CLIHCS" />    
     </editor> 
 
@@ -161,7 +162,7 @@
     <editor id="CLIFS">
         <range uom="25" subset="0-1,99" nls="CLIFRS" />
     </editor>    
-   <editor id="setCLIFS">
+   <editor id="SETCLIFS">
         <range uom="25" subset="0-1" nls="CLIFRS" />
     </editor>    
 
@@ -169,7 +170,7 @@
         <range uom="25" subset="1-3,5,99" nls="CLISMD" />        
     </editor>
 
-    <editor id="setCLISMD">
+    <editor id="SETCLISMD">
         <range uom="25" subset="0-1" nls="CLISMD" />        
     </editor>    
     <editor id="ONOFF">
@@ -183,30 +184,30 @@
         <range uom="4" min="7" max="35" prec="1" step="0.5" />
         <range uom="25" subset="99" nls="UNKNOWN" />
     </editor>
-    <editor id="celsius">
+    <editor id="CELSIUS">
     <range uom="4" min="-40" max="105" prec="1" />
     <range uom="25" subset="98,99" nls="wl_state" />
   </editor>
-    <editor id="celsiusSet">
+    <editor id="CELSIUSSET">
     <range uom="4" min="-40" max="105" prec="1" />
   </editor>
 
-  <editor id="farenheit">
+  <editor id="FARENHEIT">
     <range uom="17" min="-40" max="221" prec="1" />
     <range uom="25" subset="98,99" nls="wl_state" />
   </editor>
-    <editor id="farenheitSet">
+    <editor id="FARENHEITSET">
     <range uom="17" min="-40" max="221" prec="1" />
   </editor>
-  <editor id="epochtime">
+  <editor id="EPOCHTIME">
     <range uom="44" min="0" max="9999999999" prec="0" />
     <range uom="25" subset="0,99" nls="error" />
   </editor>
-  <editor id="unixtime">
+  <editor id="UNIXTIME">
     <range uom="151" min="1737400000" max="9999999999" prec="0" />
     <range uom="25" subset="0,99" nls="error" />
   </editor>
-  <editor id="radon">
+  <editor id="RADON">
     <range uom="124" min="0" max="100" prec="1" />
     <range uom="25" subset="0,99" nls="error" />
   </editor>  
@@ -233,7 +234,7 @@
         <range uom="54" min="0" max="4000" prec="0" />
         <range uom="25" subset="0,99" nls="error" />
      </editor>  
-    <editor id="particle">
+    <editor id="PARTICLE">
         <range uom="122"  min="0" max="2000" prec="0"/>
         <range uom="25" subset="99" nls="error" />
      </editor>  
