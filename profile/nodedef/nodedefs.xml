@@ -1,17 +1,17 @@
 <nodeDefs>
     <!-- NODE DEF from 5.0 document http://wiki.universal-devices.com/index.php?title=V50_MAIN -->
     <!-- controller -->
-    <nodeDef id="controller" nls="ctl">
+    <nodeDef id="CONTROLLER" nls="ctl">
         <editors />
         <sts>
-			<st id="ST" editor="bool" />
+			<st id="ST" editor="TRUEFALSE" />
 		</sts>
         <cmds>
             <sends />
             <accepts>
               <cmd id="DISCOVER" />
-              <cmd id="REMOVE_NOTICES_ALL" />
-              <cmd id="UPDATE_PROFILE" />
+              <cmd id="REMOVENOTICESALL" />
+              <cmd id="UPDATEPROFILE" />
             </accepts>
         </cmds>
     </nodeDef>
@@ -44,14 +44,14 @@
     
     <!-- Color Lamp/Bulb/Light -->
     
-    <nodeDef id="COLOR_LIGHT" nls="ZCL">
+    <nodeDef id="COLORLIGHT" nls="ZCL">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
             <st id="OL" editor="OL"/> <!-- Brightness -->
             <st id="GV3" editor="ZCLHUE" /> <!-- Hue -->
             <st id="GV4" editor="ZCLSAT" /> <!-- Saturation -->
-            <st id="GV5" editor="COLOR_MODE"/> <!-- Color Mode -->
+            <st id="GV5" editor="COLORMODE"/> <!-- Color Mode -->
             <st id="GV6" editor="KELVIN" /> <!-- Color Temperature -->
         </sts>
         <cmds>
@@ -62,13 +62,13 @@
                 <cmd id="SETLVL">
                     <p id="" editor="OL"/>
                 </cmd>
-                <cmd id="SET_HUE">
+                <cmd id="SETHUE">
                     <p id="" editor="ZCLHUE" init="GV3"/>
                 </cmd>
-                <cmd id="SET_SAT">
+                <cmd id="SETSAT">
                     <p id="" editor="ZCLSAT" init="GV4"/>
                 </cmd>
-                <cmd id="SET_KELVIN">
+                <cmd id="SETKELVIN">
                     <p id="" editor="KELVIN" init="GV6"/>
                 </cmd>
             </sends>
@@ -81,13 +81,13 @@
                 <cmd id="SETLVL">
                     <p id="" editor="OL"/>
                 </cmd>
-                <cmd id="SET_HUE">
+                <cmd id="SETHUE">
                     <p id="" editor="ZCLHUE" init="GV3"/>
                 </cmd>
-                <cmd id="SET_SAT">
+                <cmd id="SETSAT">
                     <p id="" editor="ZCLSAT" init="GV4"/>
                 </cmd>
-                <cmd id="SET_KELVIN">
+                <cmd id="SETKELVIN">
                     <p id="" editor="KELVIN" init="GV6"/>
                 </cmd>
                 <!--
@@ -127,7 +127,7 @@
     </nodeDef>
 
 
-    <nodeDef id="ENERGY_OUTLET" nls="EOUTLET">
+    <nodeDef id="ENERGYOUTLET" nls="EOUTLET">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
@@ -135,13 +135,13 @@
             <st id="CPW" editor="CPW" />
             <st id="CV" editor="CV" />
             <st id="TPW" editor="TPW" />
-            <st id="GV0" editor="CURRENT_H" />
-            <st id="GV1" editor="CURRENT_L" />
-            <st id="GV2" editor="POWER_H" />
-            <st id="GV3" editor="POWER_L" />
-            <st id="GV4" editor="VOLTAGE_H" />
-            <st id="GV5" editor="VOLTAGE_L" />
-            <st id="GV6" editor="ENERGY_DURATION" />
+            <st id="GV0" editor="CURRENTH" />
+            <st id="GV1" editor="CURRENTL" />
+            <st id="GV2" editor="POWERH" />
+            <st id="GV3" editor="POWERL" />
+            <st id="GV4" editor="VOLTAGEH" />
+            <st id="GV5" editor="VOLTAGEL" />
+            <st id="GV6" editor="ENERGYDURATION" />
         </sts>
         <cmds>
             <sends />
@@ -212,7 +212,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="MSTHLA_SENSOR" nls="MSTHLA">
+    <nodeDef id="MSTHLASENSOR" nls="MSTHLA">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
@@ -231,7 +231,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="MSTLAS_SENSOR" nls="MSTLAS">
+    <nodeDef id="MSTLASSENSOR" nls="MSTLAS">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
@@ -250,7 +250,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="MSTH_SENSOR" nls="MSTH">
+    <nodeDef id="MSTHSENSOR" nls="MSTH">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
@@ -270,7 +270,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="MST_SENSOR" nls="MST">
+    <nodeDef id="MSTSENSOR" nls="MST">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
@@ -289,7 +289,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="MSTL_SENSOR" nls="MSTL">
+    <nodeDef id="MSTLSENSOR" nls="MSTL">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
@@ -306,7 +306,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="MSL_SENSOR" nls="MSL">
+    <nodeDef id="MSLSENSOR" nls="MSL">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
@@ -337,7 +337,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="TH_SENSOR" nls="TH">
+    <nodeDef id="THSENSOR" nls="TH">
         <editors />
         <sts>
             <st id="ST" editor="STATUS" />
@@ -357,7 +357,7 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="CONTACT_SENSOR" nls="CONTACT">
+    <nodeDef id="CONTACTSENSOR" nls="CONTACT">
         <editors />
         <sts>
             <st id="ST" editor="CONTACT" />
@@ -378,13 +378,13 @@
 
     <!--Old Definitions -->
 
-    <nodeDef id="piconode" nls="pico">
+    <nodeDef id="PICONODE" nls="pico">
         <editors />
         <sts>
-            <st id="ST" editor="bool" hide="True" />
-            <st id="GV7" editor="PICO_BUTTON" />
-            <st id="GV8" editor="PICO_BUTTON" />
-            <st id="GV9" editor="PICO_BUTTON" />
+            <st id="ST" editor="TRUEFALSE" hide="True" />
+            <st id="GV7" editor="PICOBUTTON" />
+            <st id="GV8" editor="PICOBUTTON" />
+            <st id="GV9" editor="PICOBUTTON" />
         </sts>
         <cmds>
             <sends />
@@ -397,13 +397,13 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="fastpiconode" nls="fastpico">
+    <nodeDef id="FASTPICONODE" nls="fastpico">
         <editors />
         <sts>
-            <st id="ST" editor="bool" hide="True" />
-            <st id="GV7" editor="PICO_BUTTON" />
-            <st id="GV8" editor="PICO_BUTTON" />
-            <st id="GV9" editor="PICO_BUTTON" />
+            <st id="ST" editor="TRUEFALSE" hide="True" />
+            <st id="GV7" editor="PICOBUTTON" />
+            <st id="GV8" editor="PICOBUTTON" />
+            <st id="GV9" editor="PICOBUTTON" />
         </sts>
         <cmds>
             <sends />
@@ -416,13 +416,13 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="remotebtnnode" nls="remotebtn">
+    <nodeDef id="REMOTEBTNNODE" nls="remotebtn">
         <editors />
         <sts>
-            <st id="ST"     editor="bool" hide="True" />
-            <st id="GV7"    editor="REMOTE_BTN" />
-            <st id="GV8"    editor="REMOTE_BTN" />
-            <st id="GV9"    editor="REMOTE_BTN" />
+            <st id="ST"     editor="TRUEFALSE" hide="True" />
+            <st id="GV7"    editor="REMOTEBTN" />
+            <st id="GV8"    editor="REMOTEBTN" />
+            <st id="GV9"    editor="REMOTEBTN" />
             <st id="BATLVL" editor="BATLVL" />
             <st id="GV20"   editor="ONLINE" />
         </sts>
@@ -432,9 +432,9 @@
                 <cmd id="DOF" />
             </sends>
             <accepts>
-                <cmd id="PUSH_BTN" />
-                <cmd id="HOLD_BTN" />
-                <cmd id="RELEASE_BTN" />
+                <cmd id="PUSHBTN" />
+                <cmd id="HOLDBTN" />
+                <cmd id="RELEASEBTN" />
                 <cmd id="QUERY" />
             </accepts>
         </cmds>
@@ -483,13 +483,13 @@
                 <cmd id="AWAY" />
                 <cmd id="RESUME" />                
                 <cmd  id="FANMODE" >
-                        <p id="" editor="setCLIFS" init="CLIFS"/> 
+                        <p id="" editor="SETCLIFS" init="CLIFS"/> 
                 </cmd>
                 <cmd id="TSTATMODE" >
-                        <p id="" editor="setCLIHCS" init="CLIHCS"/> 
+                        <p id="" editor="SETCLIHCS" init="CLIHCS"/> 
                 </cmd>
                 <!--<cmd id="OPMODE" >
-                        <p id="" editor="setCLIHCS" init="CLIHCS"/> 
+                        <p id="" editor="SETCLIHCS" init="CLIHCS"/> 
                 </cmd>-->
 
                 <cmd id="HEATPOINT" >
@@ -502,12 +502,12 @@
         </cmds>
     </nodeDef>
 
-    <nodeDef id="AirThSensor" nls="AirThSensor">
+    <nodeDef id="AIRTHSENSOR" nls="AirThSensor">
         <editors />
         <sts>
-            <st id="ST" editor="radon"/>
-            <st id="RADON" editor="radon"/>            
-            <st id="CLITEMP" editor="celsius" />
+            <st id="ST" editor="RADON"/>
+            <st id="RADON" editor="RADON"/>            
+            <st id="CLITEMP" editor="CELSIUS" />
             <st id="CLIHUM" editor="CLIHUM" />
             <st id="GV0" editor="CLIHUM" />
             <st id="ATMPRES" editor="ATMPRES" />
@@ -515,10 +515,11 @@
             <st id="VOCLVL" editor="VOCLVL" />
             <st id="GV2" editor="VOC" />
             <st id="CO2LVL" editor="CO2LVL" />
-            <st id="GV1" editor="particle" />
-            <st id="GV25" editor="particle" />
+            <st id="GV1" editor="PARTICLE" />
+            <st id="GV25" editor="PARTICLE" />
             <st id="BATLVL" editor="BATLVL" />
-            <st id="TIME" editor="unixtime" />
+            <st id="TIME" editor="UNIXTIME" />
+            <st id="GV20" editor="ONLINE" />
         </sts>
         <cmds>
             <sends />
@@ -527,23 +528,24 @@
             </accepts>
         </cmds>
     </nodeDef>
-    <nodeDef id="AirThSensorF" nls="AirThSensor">
+    <nodeDef id="AIRTHSENSORF" nls="AirThSensor">
         <editors />
         <sts>
-            <st id="ST" editor="radon"/>
-            <st id="RADON" editor="radon"/>            
-            <st id="CLITEMP" editor="farenheit" />
+            <st id="ST" editor="RADON"/>
+            <st id="RADON" editor="RADON"/>            
+            <st id="CLITEMP" editor="FARENHEIT" />
             <st id="CLIHUM" editor="ABSCLIHUM" />
             <st id="GV0" editor="RELCLIHUM" />
             <st id="ATMPRES" editor="ATMPRES" />
             <st id="AQI" editor="AQI" />
             <st id="VOCLVL" editor="VOCLVL" />
             <st id="GV2" editor="VOC" />
-            <st id="CO2LVL" editor="CO2GROUP" />
-            <st id="GV1" editor="particle" />
-            <st id="GV25" editor="particle" />
+            <st id="CO2LVL" editor="CO2LVL" />
+            <st id="GV1" editor="PARTICLE" />
+            <st id="GV25" editor="PARTICLE" />
             <st id="BATLVL" editor="BATLVL" />
-            <st id="TIME" editor="unixtime" />
+            <st id="TIME" editor="UNIXTIME" />
+            <st id="GV20" editor="ONLINE" />
         </sts>
         <cmds>
             <sends />

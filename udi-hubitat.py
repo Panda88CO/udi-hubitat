@@ -34,9 +34,9 @@ class Controller(udi_interface.Node):
         self.primary = primary
         self.address = address
         self.name = name
-        self.id = 'controller'
+        self.id = 'CONTROLLER'
         logging.setLevel(10)
-        self.drivers = [{'driver': 'ST', 'value': 1, 'uom': 2}]
+        self.drivers = [{'driver': 'ST', 'value': 1, 'uom': 2, 'name': 'NodeServer Online'}]
         self.node_list = []
         self.hb = 0
         self.Parameters = Custom(self.poly, 'customparams')
@@ -822,13 +822,13 @@ class Controller(udi_interface.Node):
                         except KeyError:
                             print('Device not found in ISY')
 
-    id = 'controller'
+    id = 'CONTROLLER'
     commands = {
         'DISCOVER': discover,
-        'UPDATE_PROFILE': update_profile,
-        'REMOVE_NOTICES_ALL': remove_notices_all
+        'UPDATE_PROFILE': update_profile, 'UPDATEPROFILE': update_profile,
+        'REMOVE_NOTICES_ALL': remove_notices_all, 'REMOVENOTICESALL': remove_notices_all
     }
-    drivers = [{'driver': 'ST', 'value': 1, 'uom': 2}]
+    drivers = [{'driver': 'ST', 'value': 1, 'uom': 2, 'name': 'NodeServer Online'}]
 
 
 if __name__ == "__main__":

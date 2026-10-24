@@ -92,27 +92,27 @@ class HubitatBase(udi_interface.Node):
             h_cmd = 'setLevel'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
-        elif cmd == 'SET_HUE':
+        elif cmd in ['SET_HUE', 'SETHUE']:
             h_cmd = 'setHue'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
-        elif cmd == 'SET_SAT':
+        elif cmd in ['SET_SAT', 'SETSAT']:
             h_cmd = 'setSaturation'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
-        elif cmd == 'SET_KELVIN':
+        elif cmd in ['SET_KELVIN', 'SETKELVIN']:
             h_cmd = 'setColorTemperature'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
-        elif cmd == 'PUSH_BTN':
+        elif cmd in ['PUSH_BTN', 'PUSHBTN']:
             h_cmd = 'push'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
-        elif cmd == 'HOLD_BTN':
+        elif cmd in ['HOLD_BTN', 'HOLDBTN']:
             h_cmd = 'hold'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)
-        elif cmd == 'RELEASE_BTN':
+        elif cmd in ['RELEASE_BTN', 'RELEASEBTN']:
             h_cmd = 'release'
             cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
             #requests.get(cmd_uri)                                                
@@ -207,8 +207,8 @@ class StdLampNode(HubitatBase):
         #self.node.reportCmd('OL', command.get('value'))
 
     drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25},
-        {'driver': 'OL', 'value': 75, 'uom': 51}
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'OL', 'value': 75, 'uom': 51, 'name': 'On Level'}
     ]
     id = 'STDLAMP'
     commands = {
@@ -238,19 +238,19 @@ class RgbLampNode(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'OL', 'value': 0, 'uom': 51},
-        {'driver': 'GV3', 'value': 0, 'uom': 56},
-        {'driver': 'GV4', 'value': 0, 'uom': 100},
-        {'driver': 'GV5', 'value': 0, 'uom': 25},
-        {'driver': 'GV6', 'value': 0, 'uom': 26}
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'OL', 'value': 0, 'uom': 51, 'name': 'On Level'},
+        {'driver': 'GV3', 'value': 0, 'uom': 56, 'name': 'Hue'},
+        {'driver': 'GV4', 'value': 0, 'uom': 100, 'name': 'Saturation'},
+        {'driver': 'GV5', 'value': 0, 'uom': 25, 'name': 'Color Mode'},
+        {'driver': 'GV6', 'value': 0, 'uom': 26, 'name': 'Color Temperature'}
     ]
 
-    id = 'COLOR_LIGHT'
+    id = 'COLORLIGHT'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
-        'SETLVL': HubitatBase.hubitatCtl, 'SET_HUE': HubitatBase.hubitatCtl,
-        'SET_SAT': HubitatBase.hubitatCtl, 'SET_KELVIN': HubitatBase.hubitatCtl
+        'SETLVL': HubitatBase.hubitatCtl, 'SET_HUE': HubitatBase.hubitatCtl, 'SETHUE': HubitatBase.hubitatCtl,
+        'SET_SAT': HubitatBase.hubitatCtl, 'SETSAT': HubitatBase.hubitatCtl, 'SET_KELVIN': HubitatBase.hubitatCtl, 'SETKELVIN': HubitatBase.hubitatCtl
     }
 
 
@@ -273,15 +273,15 @@ class CtLampNode(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'OL', 'value': 0, 'uom': 51},
-        {'driver': 'GV6', 'value': 0, 'uom': 26}
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'OL', 'value': 0, 'uom': 51, 'name': 'On Level'},
+        {'driver': 'GV6', 'value': 0, 'uom': 26, 'name': 'Color Temperature'}
     ]
 
-    id = 'COLOR_LIGHT'
+    id = 'COLORLIGHT'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
-        'SETLVL': HubitatBase.hubitatCtl, 'SET_KELVIN': HubitatBase.hubitatCtl
+        'SETLVL': HubitatBase.hubitatCtl, 'SET_KELVIN': HubitatBase.hubitatCtl, 'SETKELVIN': HubitatBase.hubitatCtl
     }
 
 
@@ -295,20 +295,20 @@ class EnergyOutletNode(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},  # Status
-        {'driver': 'CC', 'value': 0, 'uom': 1},  # Current - (Amps)
-        {'driver': 'CPW', 'value': 0, 'uom': 73},  # Current Power Used (Watts)
-        {'driver': 'CV', 'value': 0, 'uom': 72},  # Current Voltage
-        {'driver': 'TPW', 'value': 0, 'uom': 33},  # Total Power Used (energy)
-        {'driver': 'GV0', 'value': 0, 'uom': 73},  # currentH
-        {'driver': 'GV1', 'value': 0, 'uom': 73},  # currentL
-        {'driver': 'GV2', 'value': 0, 'uom': 33},  # powerH
-        {'driver': 'GV3', 'value': 0, 'uom': 33},  # powerL
-        {'driver': 'GV4', 'value': 0, 'uom': 72},  # voltageH
-        {'driver': 'GV5', 'value': 0, 'uom': 72},  # voltageL
-        {'driver': 'GV6', 'value': 0, 'uom': 45}  # energy duration
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'CC', 'value': 0, 'uom': 1, 'name': 'Current (Amps)'},
+        {'driver': 'CPW', 'value': 0, 'uom': 73, 'name': 'Power (Watts)'},
+        {'driver': 'CV', 'value': 0, 'uom': 72, 'name': 'Voltage'},
+        {'driver': 'TPW', 'value': 0, 'uom': 33, 'name': 'Total Power Used (energy)'},
+        {'driver': 'GV0', 'value': 0, 'uom': 73, 'name': 'Current High'},
+        {'driver': 'GV1', 'value': 0, 'uom': 73, 'name': 'Current Low'},
+        {'driver': 'GV2', 'value': 0, 'uom': 33, 'name': 'Power High'},
+        {'driver': 'GV3', 'value': 0, 'uom': 33, 'name': 'Power Low'},
+        {'driver': 'GV4', 'value': 0, 'uom': 72, 'name': 'Voltage High'},
+        {'driver': 'GV5', 'value': 0, 'uom': 72, 'name': 'Voltage Low'},
+        {'driver': 'GV6', 'value': 0, 'uom': 45, 'name': 'Duration'}
     ]
-    id = 'ENERGY_OUTLET'
+    id = 'ENERGYOUTLET'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -324,7 +324,7 @@ class OutletNode(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25},  # Status
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
     ]
     id = 'OUTLET'
     commands = {
@@ -351,7 +351,7 @@ class SwitchNode(HubitatBase):
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
-    drivers = [{'driver': 'ST', 'value': 99, 'uom': 25}]
+    drivers = [{'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'}]
     id = 'SWITCH'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
@@ -379,8 +379,8 @@ class DimmerNode(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25},
-        {'driver': 'OL', 'value': 75, 'uom': 51}
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'OL', 'value': 75, 'uom': 51, 'name': 'On Level'}
     ]
     id = 'DIMMER'
     commands = {
@@ -398,14 +398,14 @@ class MultiSensorTHLA(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
-        {'driver': 'LUMIN', 'value': 0, 'uom': 36},
-        {'driver': 'ALARM', 'value': 0, 'uom': 2}
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 22, 'name': 'Humidity'},
+        {'driver': 'LUMIN', 'value': 0, 'uom': 36, 'name': 'Illuminance'},
+        {'driver': 'ALARM', 'value': 0, 'uom': 2, 'name': 'Tamper Alarm'}
     ]
-    id = 'MSTHLA_SENSOR'
+    id = 'MSTHLASENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -419,14 +419,14 @@ class MultiSensorTLAS (HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
-        {'driver': 'LUMIN', 'value': 0, 'uom': 36},
-        {'driver': 'ALARM', 'value': 0, 'uom': 2},
-        {'driver': 'SPEED', 'value': 0, 'uom': 2}
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'LUMIN', 'value': 0, 'uom': 36, 'name': 'Illuminance'},
+        {'driver': 'ALARM', 'value': 0, 'uom': 2, 'name': 'Tamper Alarm'},
+        {'driver': 'SPEED', 'value': 0, 'uom': 2, 'name': 'Acceleration'}
     ]
-    id = 'MSTLAS_SENSOR'
+    id = 'MSTLASSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -440,12 +440,12 @@ class MultiSensorTH(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 22, 'name': 'Humidity'},
     ]
-    id = 'MSTH_SENSOR'
+    id = 'MSTHSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -459,11 +459,11 @@ class MultiSensorT(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17}
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'}
     ]
-    id = 'MST_SENSOR'
+    id = 'MSTSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -476,12 +476,12 @@ class MultiSensorTL(HubitatBase):
         logging.debug('MultiSensorTL Init')
         HubitatBase.hubitatRefresh(self)
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
-        {'driver': 'LUMIN', 'value': 0, 'uom': 36},
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'LUMIN', 'value': 0, 'uom': 36, 'name': 'Illuminance'},
     ]
-    id = 'MSTL_SENSOR'
+    id = 'MSTLSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -495,11 +495,11 @@ class MultiSensorL(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
-        {'driver': 'LUMIN', 'value': 0, 'uom': 36},
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'LUMIN', 'value': 0, 'uom': 36, 'name': 'Illuminance'},
     ]
-    id = 'MSL_SENSOR'
+    id = 'MSLSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -513,10 +513,10 @@ class MotionSensor(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
     ]
-    id = 'MS_SENSOR'
+    id = 'MSSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -542,11 +542,12 @@ class LutronPicoNode(HubitatBase):
         self.reportDrivers()
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 2},
-        {'driver': 'GV7', 'value': 0, 'uom': 25},
-        {'driver': 'GV8', 'value': 0, 'uom': 25},
-        ]
-    id = 'piconode'
+        {'driver': 'ST', 'value': 0, 'uom': 2, 'name': 'Status'},
+        {'driver': 'GV7', 'value': 0, 'uom': 25, 'name': 'Button'},
+        {'driver': 'GV8', 'value': 0, 'uom': 25, 'name': 'Released'},
+        {'driver': 'GV9', 'value': 0, 'uom': 25, 'name': 'Held'}
+    ]
+    id = 'PICONODE'
     commands = {
         # 'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -570,11 +571,12 @@ class LutronFastPicoNode(HubitatBase):
         self.reportDrivers()
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 2},
-        {'driver': 'GV7', 'value': 0, 'uom': 25},
-        {'driver': 'GV8', 'value': 0, 'uom': 25}
+        {'driver': 'ST', 'value': 0, 'uom': 2, 'name': 'Status'},
+        {'driver': 'GV7', 'value': 0, 'uom': 25, 'name': 'Pushed'},
+        {'driver': 'GV8', 'value': 0, 'uom': 25, 'name': 'Released'},
+        {'driver': 'GV9', 'value': 0, 'uom': 25, 'name': 'Held'}
     ]
-    id = 'fastpiconode'
+    id = 'FASTPICONODE'
     commands = {
         # 'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -586,12 +588,12 @@ class THSensor(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 22, 'name': 'Humidity'},
     ]
-    id = 'TH_SENSOR'
+    id = 'THSENSOR'
     commands = {
         # 'DON': setOn, 'DOF': setOff
     }
@@ -606,9 +608,10 @@ class ContactNode(HubitatBase):
         HubitatBase.hubitatRefresh(self)
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 79},  # Status
+        {'driver': 'ST', 'value': 0, 'uom': 79, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'}
     ]
-    id = 'CONTACT_SENSOR'
+    id = 'CONTACTSENSOR'
     commands = {
         'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
     }
@@ -637,25 +640,26 @@ class SimpleRemoteNode(HubitatBase):
     def query(self):
         HubitatBase.hubitatRefresh(self)
 
-    drivers = [ {'driver': 'ST', 'value': 0, 'uom': 78},
-                {'driver': 'GV7', 'value': 0, 'uom': 25},
-                {'driver': 'GV8', 'value': 0, 'uom': 25},
-                {'driver': 'GV9', 'value': 0, 'uom': 25},
-                {'driver': 'BATLVL', 'value': 99, 'uom': 51},
-                {'driver': 'GV20', 'value': 99, 'uom': 25},
-                ]
-    id = 'remotebtnnode'
+    drivers = [
+        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
+        {'driver': 'GV7', 'value': 0, 'uom': 25, 'name': 'Pushed'},
+        {'driver': 'GV8', 'value': 0, 'uom': 25, 'name': 'Released'},
+        {'driver': 'GV9', 'value': 0, 'uom': 25, 'name': 'Held'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery Level'},
+        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'},
+    ]
+    id = 'REMOTEBTNNODE'
     commands = {
-        'PUSH_BTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl, 'QUERY': query
+        'PUSH_BTN': HubitatBase.hubitatCtl, 'PUSHBTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'HOLDBTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl, 'RELEASEBTN': HubitatBase.hubitatCtl, 'QUERY': query
     }
 
 
 class EcobeeSensor(HubitatBase):
     drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25 },
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
-        {'driver': 'GV20', 'value': 99, 'uom': 25},
-        ] 
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Motion Detection'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},        
+        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'}
+    ] 
     id = 'ECOBSENSOR'
 
     def __init__(self, polyglot, primary, address, name, marker_uri, dev):
@@ -682,31 +686,24 @@ class EcobeeSensor(HubitatBase):
     
 class AirThingsSensor(HubitatBase):    
     drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25}, #'Longterm Rador Status'     
-        {'driver': 'RADON', 'value': 99, 'uom': 25}, 
-        {'driver': 'CLITEMP', 'value': 99, 'uom': 25},   # 'temperature'   
-        {'driver': 'CLIHUM', 'value': 99, 'uom': 25},    # 'humidity'    
-        {'driver': 'GV0', 'value': 99, 'uom': 25},   
-        {'driver': 'ATMPRES', 'value': 99, 'uom': 25},   # 'pressure type'
-        {'driver': 'CO2LVL', 'value': 99, 'uom': 25},   # 'CO2 type'
-        {'driver': 'AQI', 'value': 99, 'uom': 25},   # 'AQI type'
-        {'driver': 'VOCLVL', 'value': 99, 'uom': 25},   # 'VOC type'
-        {'driver': 'GV2', 'value': 99, 'uom': 25},   # 'VOC reading
-        {'driver': 'GV25', 'value': 99, 'uom': 25},   # 'particle type'
-        {'driver': 'GV1', 'value': 99, 'uom': 25},   # 'particle type'        
-        {'driver': 'BATLVL', 'value': 99, 'uom': 25},   # 'thermostat type'
-        {'driver': 'TIME', 'value': int(time.time()), 'uom': 151},   # 'thermostat type'
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': '24H Longterm Radon Level'},
+        {'driver': 'RADON', 'value': 99, 'uom': 25, 'name': 'Current Radon Reading'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 25, 'name': 'Temperature'},
+        {'driver': 'CLIHUM', 'value': 99, 'uom': 25, 'name': 'Relative Humidity'},
+        {'driver': 'GV0', 'value': 99, 'uom': 25, 'name': 'Absolute Humidity'},
+        {'driver': 'ATMPRES', 'value': 99, 'uom': 25, 'name': 'Atmospheric Pressure'},
+        {'driver': 'CO2LVL', 'value': 99, 'uom': 25, 'name': 'CO2 level'},
+        {'driver': 'AQI', 'value': 99, 'uom': 25, 'name': 'Air Quality Index'},
+        {'driver': 'VOCLVL', 'value': 99, 'uom': 25, 'name': 'VOC level'},
+        {'driver': 'GV2', 'value': 99, 'uom': 25, 'name': 'VOC state'},
+        {'driver': 'GV25', 'value': 99, 'uom': 25, 'name': '2.5 ppm particle count'},
+        {'driver': 'GV1', 'value': 99, 'uom': 25, 'name': '1 ppm particle count'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 25, 'name': 'Battery Level'},
+        {'driver': 'TIME', 'value': int(time.time()), 'uom': 151, 'name': 'Last Update Time'},
+        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'},
+    ]
 
-
-
-
-
-
-        {'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
-        #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
-        ]
-
-    id = 'AirThSensor'
+    id = 'AIRTHSENSOR'
     def __init__(self, polyglot, primary,address, name, marker_uri, dev):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('AirThingsSensor Init')
@@ -714,7 +711,7 @@ class AirThingsSensor(HubitatBase):
         self.dev_info = dev
 
         if dev['temp_unit'] == 'F':
-            self.id = 'AirThSensorF'
+            self.id = 'AIRTHSENSORF'
 
     def updateAirthingData(self, command):
         logging.debug('updateAirthingData')
@@ -726,10 +723,10 @@ class AirThingsSensor(HubitatBase):
     
 class EcobeeSensor(HubitatBase):
     drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25 },
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},        
-        {'driver': 'GV20', 'value': 99, 'uom': 25},
-        ] 
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Motion Detection'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},        
+        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'}
+    ] 
     id = 'ECOBSENSOR'
 
     def __init__(self, polyglot, primary, address, name, marker_uri, dev):
@@ -754,20 +751,18 @@ class EcobeeSensor(HubitatBase):
     commands = {  'QUERY': query   }    
 class EcobeeThermostat(HubitatBase):
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 25}, #'DeviceWatch-DeviceStatus'
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17},   # 'temperature'   
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22},    # 'humidity'    
-        {'driver': 'CLIFS', 'value': 99, 'uom': 25},  # fan setting   'supportedThermostatFanModes'
-        {'driver': 'CLIMD', 'value': 99, 'uom': 25},  # heat/cool state: 'thermostat'
-        {'driver': 'CLISPC', 'value': 90, 'uom': 17}, # cool setpoint
-        {'driver': 'CLISPH', 'value': 50, 'uom': 17}, # heat setpoint
-        {'driver': 'CLIHCS', 'value': 99, 'uom': 25}, #"thermostatMode"
-        {'driver': 'CLIFRS', 'value': 99, 'uom': 25}, #"thermostatFanMode"
-        #{'driver': 'CLISMD', 'value': 99, 'uom': 25}, #"resumeProgram"
-        {'driver': 'GV19', 'value': 99, 'uom': 25},   # 'thermostat type'
-        {'driver': 'GV20', 'value': 99, 'uom': 25},   # 'thermostat type'
-        #{'driver': 'BATLVL', 'value': 0, 'uom': 51}, #'thermostatFanMode'
-        ]
+        {'driver': 'ST', 'value': 0, 'uom': 25, 'name': 'State'},
+        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'CLIHUM', 'value': 0, 'uom': 22, 'name': 'Humidity'},
+        {'driver': 'CLIFS', 'value': 99, 'uom': 25, 'name': 'Fan Operating Mode'},
+        {'driver': 'CLIMD', 'value': 99, 'uom': 25, 'name': 'Thermostat Operating Mode'},
+        {'driver': 'CLISPC', 'value': 90, 'uom': 17, 'name': 'Cooling setpoint'},
+        {'driver': 'CLISPH', 'value': 50, 'uom': 17, 'name': 'Heating setpoint'},
+        {'driver': 'CLIHCS', 'value': 99, 'uom': 25, 'name': 'Thermostat state'},
+        {'driver': 'CLIFRS', 'value': 99, 'uom': 25, 'name': 'Fan State'},
+        {'driver': 'GV19', 'value': 99, 'uom': 25, 'name': 'Supported Modes'},
+        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'},
+    ]
 
     id = 'ECOBTSTAT'
     
