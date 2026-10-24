@@ -4,18 +4,14 @@
     <nodeDef id="CONTROLLER" nls="ctl">
         <editors />
         <sts>
-<<<<<<< Updated upstream
-            <st id="ST" editor="bool" />
-=======
 			<st id="ST" editor="TRUEFALSE" />
->>>>>>> Stashed changes
 		</sts>
         <cmds>
             <sends />
             <accepts>
               <cmd id="DISCOVER" />
-              <cmd id="REMOVE_NOTICES_ALL" />
-              <cmd id="UPDATE_PROFILE" />
+              <cmd id="REMOVENOTICESALL" />
+              <cmd id="UPDATEPROFILE" />
             </accepts>
         </cmds>
     </nodeDef>
@@ -66,13 +62,13 @@
                 <cmd id="SETLVL">
                     <p id="" editor="OL"/>
                 </cmd>
-                <cmd id="SET_HUE">
+                <cmd id="SETHUE">
                     <p id="" editor="ZCLHUE" init="GV3"/>
                 </cmd>
-                <cmd id="SET_SAT">
+                <cmd id="SETSAT">
                     <p id="" editor="ZCLSAT" init="GV4"/>
                 </cmd>
-                <cmd id="SET_KELVIN">
+                <cmd id="SETKELVIN">
                     <p id="" editor="KELVIN" init="GV6"/>
                 </cmd>
             </sends>
@@ -85,13 +81,13 @@
                 <cmd id="SETLVL">
                     <p id="" editor="OL"/>
                 </cmd>
-                <cmd id="SET_HUE">
+                <cmd id="SETHUE">
                     <p id="" editor="ZCLHUE" init="GV3"/>
                 </cmd>
-                <cmd id="SET_SAT">
+                <cmd id="SETSAT">
                     <p id="" editor="ZCLSAT" init="GV4"/>
                 </cmd>
-                <cmd id="SET_KELVIN">
+                <cmd id="SETKELVIN">
                     <p id="" editor="KELVIN" init="GV6"/>
                 </cmd>
                 <!--
@@ -436,9 +432,9 @@
                 <cmd id="DOF" />
             </sends>
             <accepts>
-                <cmd id="PUSH_BTN" />
-                <cmd id="HOLD_BTN" />
-                <cmd id="RELEASE_BTN" />
+                <cmd id="PUSHBTN" />
+                <cmd id="HOLDBTN" />
+                <cmd id="RELEASEBTN" />
                 <cmd id="QUERY" />
             </accepts>
         </cmds>
@@ -523,6 +519,7 @@
             <st id="GV25" editor="PARTICLE" />
             <st id="BATLVL" editor="BATLVL" />
             <st id="TIME" editor="UNIXTIME" />
+            <st id="GV20" editor="ONLINE" />
         </sts>
         <cmds>
             <sends />
@@ -548,6 +545,7 @@
             <st id="GV25" editor="PARTICLE" />
             <st id="BATLVL" editor="BATLVL" />
             <st id="TIME" editor="UNIXTIME" />
+            <st id="GV20" editor="ONLINE" />
         </sts>
         <cmds>
             <sends />
