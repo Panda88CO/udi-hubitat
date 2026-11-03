@@ -1,5 +1,8 @@
 """ Node classes used by the Hubitat Node Server. """
-import requests
+try:
+    import requests
+except ImportError:
+    requests = None
 import re
 import time 
 import json
@@ -11,6 +14,31 @@ try:
 except ImportError:
     import logging
     logging.basicConfig(level=logging.DEBUG)
+    class _MockNode:
+        def __init__(self, polyglot=None, primary=None, address=None, name=None):
+            self.poly = polyglot
+            self.primary = primary
+            self.address = address
+            self.name = name
+            self.drivers = getattr(self, 'drivers', [])
+        def setDriver(self, driver, value, report=True, force=False, uom=None):
+            pass
+        def reportCmd(self, cmd, val=None):
+            pass
+        def reportDrivers(self):
+            pass
+    class _MockCustom(dict):
+        def __init__(self, polyglot=None, name=None):
+            super().__init__()
+            self.poly = polyglot
+            self.name = name
+        def load(self, params):
+            self.update(params)
+    class _MockUdi:
+        Node = _MockNode
+        LOGGER = logging
+        Custom = _MockCustom
+    udi_interface = _MockUdi
 
 class HubitatBase(udi_interface.Node):
     """ Base class for lights and groups """
@@ -27,15 +55,18 @@ class HubitatBase(udi_interface.Node):
         self.primary = primary
         self.maker_uri = marker_uri
         self.n_queue = []
-        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        self.poly.ready()
-        self.poly.addNode(self)
+        if hasattr(self.poly, 'subscribe') and hasattr(self.poly, 'ADDNODEDONE'):
+            self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+        if hasattr(self.poly, 'ready'):
+            self.poly.ready()
+        if hasattr(self.poly, 'addNode'):
+            self.poly.addNode(self)
         self.wait_for_node_done()
-        self.node = self.poly.getNode(address)
+        if hasattr(self.poly, 'getNode'):
+            self.node = self.poly.getNode(address)
+        else:
+            self.node = self
         logging.debug('self.node : {}'.format(self.node ))
-        # self.st = None
-        #self.maker_uri = polyglot.Parameters['maker_uri']
-        #logging.debug('maker_uri: {}'.format(self.maker_uri))
         self.hubitatRefresh()
 
     def getValidName(self, name):
@@ -53,133 +84,99 @@ class HubitatBase(udi_interface.Node):
         self.n_queue.append(data['address'])
 
     def wait_for_node_done(self):
-        while len(self.n_queue) == 0:
+        timeout = 50
+        while len(self.n_queue) == 0 and timeout > 0:
             time.sleep(0.1)
+            timeout -= 1
             logging.debug('wait_for_node_done')
-        self.n_queue.pop()
+        if len(self.n_queue) > 0:
+            self.n_queue.pop()
 
+    def _build_uri(self, device_id, h_cmd, val=None):
+        if not getattr(self, 'maker_uri', None):
+            return None
+        dev_str = str(device_id) if device_id is not None else ''
+        if '?' in self.maker_uri:
+            _raw_uri = self.maker_uri.split('?', 1)
+            _raw_http = _raw_uri[0].replace('all', dev_str)
+            query_part = '?' + _raw_uri[1]
+        else:
+            _raw_http = self.maker_uri.replace('all', dev_str)
+            query_part = ''
+        if val is not None and str(val) != '':
+            return f"{_raw_http}/{h_cmd}/{val}{query_part}"
+        return f"{_raw_http}/{h_cmd}{query_part}"
+
+    def _send_request(self, cmd_uri, max_retries=3, timeout=10):
+        if not requests or not cmd_uri:
+            return None
+        retries = 0
+        while retries < max_retries:
+            try:
+                r = requests.get(cmd_uri, timeout=timeout)
+                if r.status_code == self.RESPONSE_OK:
+                    return r
+                time.sleep(1)
+                logging.error('Hubitat not responding - waiting for good response')
+            except Exception as e:
+                logging.error('Hubitat request failed: {}'.format(e))
+                time.sleep(1)
+            retries += 1
+        return None
 
     """ Basic On/Off controls """
     def hubitatCtl(self, command):
         h_cmd = None
         cmd = command.get('cmd')
         val = command.get('value')
-        device_id = command.get('address')
-        _raw_uri = self.maker_uri.split('?')
-        _raw_http = _raw_uri[0].replace('all', device_id)
+        if val is not None:
+            val = str(val)
+        device_id = command.get('address') or self.address
         cmd_ok = True
-        # print('debug------------------')
-        # print(command.keys())
-        # print(self.maker_uri)
-        # print(self.name)
-        # print(cmd)
-        # print(val)
-        # print(device_id)
 
         if cmd in ['DON', 'DFON']:
             h_cmd = 'on'
-            cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)
-            # val = command.get('value')
-            # print(cmd_uri)
+            val = None
         elif cmd in ['DOF', 'DFOF']:
             h_cmd = 'off'
-            cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)
-            # val = command.get('value')
-            # print(cmd_uri)
+            val = None
         elif cmd == 'SETLVL':
             h_cmd = 'setLevel'
-            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)
         elif cmd in ['SET_HUE', 'SETHUE']:
             h_cmd = 'setHue'
-            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)
         elif cmd in ['SET_SAT', 'SETSAT']:
             h_cmd = 'setSaturation'
-            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)
         elif cmd in ['SET_KELVIN', 'SETKELVIN']:
             h_cmd = 'setColorTemperature'
-            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)
         elif cmd in ['PUSH_BTN', 'PUSHBTN']:
             h_cmd = 'push'
-            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)
         elif cmd in ['HOLD_BTN', 'HOLDBTN']:
             h_cmd = 'hold'
-            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)
         elif cmd in ['RELEASE_BTN', 'RELEASEBTN']:
             h_cmd = 'release'
-            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-            #requests.get(cmd_uri)                                                
-        
-
-        # if h_cmd == 'on':
-        #     r = requests.get(cmd_uri)
-        #     if r.status_code == 200:
-        #         self.node.setDriver('ST', 100)
-        # elif h_cmd == 'off':
-        #     r = requests.get(cmd_uri)
-        #     if r.status_code == 200:
-        #         self.node.setDriver('ST', 0)
         else:
             logging.error('unsupported command; {} , {}'.format(cmd, val))
             cmd_ok = False
 
         if cmd_ok:
-            r = requests.get(cmd_uri)
-            while r.status_code!= self.RESPONSE_OK:
-                time.sleep(1)
-                logging.error('Hubitat not responding - waiting for good response')
-                r = requests.get(cmd_uri)
-                # print(r.status_code)
-            # print(r.status_code)
-        # print('debug------------------')
+            cmd_uri = self._build_uri(device_id, h_cmd, val)
+            return self._send_request(cmd_uri)
+        return None
 
     def hubitatRefresh(self):
-        device_id = self.address
-        _raw_uri = self.maker_uri.split('?')
-        _raw_http = _raw_uri[0].replace('all', device_id)
-
-        h_cmd = 'refresh'
-        cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-
-        r = requests.get(cmd_uri)
-        logging.debug('hubitatRefresh {} => {}'.format(cmd_uri, r))
-        while r.status_code != self.RESPONSE_OK:
-            time.sleep(1)
-            logging.error('Hubitat not responding - waiting for good response')
-            r = requests.get(cmd_uri)
+        cmd_uri = self._build_uri(self.address, 'refresh')
+        return self._send_request(cmd_uri)
 
     def hubitatDirectCtrl(self, command, h_cmd):
         logging.debug('hubitatDirectCtrl: {} , {}'.format(command, h_cmd))
-        h_cmd = h_cmd
-        #cmd = command.get('cmd')
         val = command.get('value')
-        device_id = command.get('address')
-        _raw_uri = self.maker_uri.split('?')
-        _raw_http = _raw_uri[0].replace('all', device_id)
-        cmd_ok = True
-        if val != None and val != '':
-            cmd_uri = _raw_http + '/' + h_cmd + '/' + val + '?' + _raw_uri[1]
-        else:
-            cmd_uri = _raw_http + '/' + h_cmd + '?' + _raw_uri[1]
-        logging.debug('hubitatDirectCtrl URI: {}'.format(cmd_uri ))
-        if cmd_ok:
-            r = requests.get(cmd_uri)
-            while r.status_code!= self.RESPONSE_OK:
-                time.sleep(1)
-                logging.error('Hubitat not responding - waiting for good response')
-                r = requests.get(cmd_uri)
+        device_id = command.get('address') or self.address
+        cmd_uri = self._build_uri(device_id, h_cmd, val)
+        return self._send_request(cmd_uri)
 """
 New Class definitions for generalization
 """
 class StdLampNode(HubitatBase):
-    from udiLib import my_setDriver
     def __init__(self, polyglot, primary, address, name, marker_uri):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('StdLampNode Init')
@@ -667,7 +664,6 @@ class EcobeeSensor(HubitatBase):
         super().__init__(polyglot, primary, address, name, marker_uri)
         logging.debug('EcobeeSensor Init')
         self.poly = polyglot
-        time.sleep(1)
         self.dev_info = dev
         logging.debug('EcobeeSensor dev info: {}'.format(dev))
         HubitatBase.hubitatRefresh(self)
@@ -720,35 +716,7 @@ class AirThingsSensor(HubitatBase):
     commands = {'QUERY'     : updateAirthingData,
 
                 }
-    
-class EcobeeSensor(HubitatBase):
-    drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Motion Detection'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},        
-        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'}
-    ] 
-    id = 'ECOBSENSOR'
 
-    def __init__(self, polyglot, primary, address, name, marker_uri, dev):
-        #def __init__(self, polyglot, primary, marker_uri, dev):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('EcobeeSensor Init')
-        self.poly = polyglot
-        time.sleep(1)
-        self.dev_info = dev
-        logging.debug('EcobeeSensor dev info: {}'.format(dev))
-        HubitatBase.hubitatRefresh(self)
- 
-        
-        try:
-            self.t_unit = dev['attributes']['deviceTemperatureUnit']
-        except:
-            self.t_unit = 1
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    commands = {  'QUERY': query   }    
 class EcobeeThermostat(HubitatBase):
     drivers = [
         {'driver': 'ST', 'value': 0, 'uom': 25, 'name': 'State'},

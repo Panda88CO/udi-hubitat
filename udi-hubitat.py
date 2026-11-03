@@ -1,24 +1,55 @@
 #!/usr/bin/env python3
 
-#try:
-#    import polyinterface
-#except ImportError:
-#    import pgc_interface as polyinterface
-
-
-import udi_interface
-logging = udi_interface.LOGGER
-Custom = udi_interface.Custom
+import re
+try:
+    import udi_interface
+    logging = udi_interface.LOGGER
+    Custom = udi_interface.Custom
+except ImportError:
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+    class _MockNode:
+        def __init__(self, polyglot=None, primary=None, address=None, name=None):
+            self.poly = polyglot
+            self.primary = primary
+            self.address = address
+            self.name = name
+            self.drivers = getattr(self, 'drivers', [])
+        def setDriver(self, driver, value, report=True, force=False, uom=None):
+            pass
+        def reportCmd(self, cmd, val=None):
+            pass
+        def reportDrivers(self):
+            pass
+    class _MockCustom(dict):
+        def __init__(self, polyglot=None, name=None):
+            super().__init__()
+            self.poly = polyglot
+            self.name = name
+        def load(self, params):
+            self.update(params)
+    class _MockUdi:
+        Node = _MockNode
+        LOGGER = logging
+        Custom = _MockCustom
+    udi_interface = _MockUdi
+    Custom = _MockCustom
 
 from datetime import datetime
 import sys
 import time
-import requests
+try:
+    import requests
+except ImportError:
+    requests = None
 import traceback
 import json
-from lomond import WebSocket
+try:
+    from lomond import WebSocket
+except ImportError:
+    WebSocket = None
 import node_types
-version = '0.1.13'
+version = '0.1.31'
 #LOGGER = polyinterface.LOGGER
 
 class Controller(udi_interface.Node):
@@ -35,29 +66,44 @@ class Controller(udi_interface.Node):
         self.address = address
         self.name = name
         self.id = 'CONTROLLER'
-        logging.setLevel(10)
+        if hasattr(logging, 'setLevel'):
+            logging.setLevel(10)
         self.drivers = [{'driver': 'ST', 'value': 1, 'uom': 2, 'name': 'NodeServer Online'}]
+        self.nodes = {}
         self.node_list = []
         self.hb = 0
         self.Parameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(self.poly, 'notices')
         self.configDone = False
         self.n_queue = []
-        self.poly.subscribe(self.poly.STOP, self.stopHandler)
-        self.poly.subscribe(self.poly.START, self.start, address)
-        self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
-        self.poly.subscribe(self.poly.CONFIGDONE, self.configDoneHandler)
-        self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
+        if hasattr(self.poly, 'subscribe'):
+            self.poly.subscribe(self.poly.STOP, self.stopHandler)
+            self.poly.subscribe(self.poly.START, self.start, address)
+            self.poly.subscribe(self.poly.CUSTOMPARAMS, self.customParamsHandler)
+            self.poly.subscribe(self.poly.CONFIGDONE, self.configDoneHandler)
+            self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
 
-        self.poly.addNode(self)
-        self.node = self.poly.getNode(self.address)
+        if hasattr(self.poly, 'addNode'):
+            self.poly.addNode(self)
+        if hasattr(self.poly, 'getNode'):
+            self.node = self.poly.getNode(self.address)
+        else:
+            self.node = self
         self.debug_enabled = True
-        self.poly.updateProfile()
-        self.poly.ready()
+        if hasattr(self.poly, 'updateProfile'):
+            self.poly.updateProfile()
+        if hasattr(self.poly, 'ready'):
+            self.poly.ready()
         self.temp_unit= 'F'
         self.EcoBee_t_unit = 'F'
         self.device_list = {}
         self.airth_radon_readings = {}
+
+    def getValidName(self, name):
+        if name is None:
+            return ""
+        name = bytes(name, 'utf-8').decode('utf-8', 'ignore')
+        return re.sub(r"[^A-Za-z0-9_ ]", "", name)
 
     def node_queue(self, data):
         self.n_queue.append(data['address'])
@@ -208,24 +254,38 @@ class Controller(udi_interface.Node):
         return avg_radon
     
     def discover(self, *args, **kwargs):
-        assigned_addresses =['controller']    
-        r = requests.get(self.maker_uri)
-        logging.debug('respose code {}'.format(r.status_code))
-        while r.status_code!= self.RESPONSE_OK:
-            time.sleep(30)
-            logging.error('Hubitat not responding - waiting for good response')
-            r = requests.get(self.maker_uri)
-        data = r.json()
-        logging.debug('Hubitat data::{}'.format(json.dumps(data, indent=4, separators=(',', ': ') )))
+        assigned_addresses = ['controller']
+        if not requests or not getattr(self, 'maker_uri', None):
+            logging.error('Cannot discover: requests or maker_uri not available')
+            return
+        try:
+            r = requests.get(self.maker_uri, timeout=10)
+            logging.debug('response code {}'.format(r.status_code))
+            retries = 0
+            while r.status_code != self.RESPONSE_OK and retries < 3:
+                time.sleep(1)
+                logging.error('Hubitat not responding - waiting for good response')
+                r = requests.get(self.maker_uri, timeout=10)
+                retries += 1
+            if r.status_code != self.RESPONSE_OK:
+                logging.error('Hubitat discover failed with status {}'.format(r.status_code))
+                return
+            data = r.json()
+        except Exception as e:
+            logging.error('Error during discover: {}'.format(e))
+            return
+        logging.debug('Hubitat data::{}'.format(json.dumps(data, indent=4, separators=(',', ': '))))
 
         for dev in data:
             logging.debug('device id: {}'.format(dev))
-            _name = dev['name']
-
-            _label = self.poly.getValidName(dev['label'])
-            _type = dev['type']
-            #_id = 'hubitat'+ dev['id']
-            _id =  dev['id']
+            _name = dev.get('name', '')
+            _dev_name = dev.get('label') or _name or 'Device'
+            if hasattr(self.poly, 'getValidName'):
+                _label = self.poly.getValidName(_dev_name)
+            else:
+                _label = self.getValidName(_dev_name)
+            _type = dev.get('type')
+            _id = str(dev['id'])
             self.device_list[_id] = dev
             dev['temp_unit'] = self.temp_unit
             logging.debug(' device_list : {}'.format(self.device_list))
@@ -330,19 +390,21 @@ class Controller(udi_interface.Node):
             assigned_addresses.append(_id)    
             
         # Build node list
-        self.nodes = self.poly.getNodes()
-        for node in self.nodes:
-            self.node_list.append(self.nodes[node].address)
+        if hasattr(self.poly, 'getNodes'):
+            self.nodes = self.poly.getNodes()
+            for node in self.nodes:
+                self.node_list.append(self.nodes[node].address)
+        else:
+            self.nodes = {}
         # remove unused nodes still to be added
-        
-        self.nodes_in_db = self.poly.getNodesFromDb()
-        logging.debug('Scanning db for extra nodes : {}'.format(assigned_addresses))
-        for nde in range(0, len(self.nodes_in_db)):
-            node = self.nodes_in_db[nde]
-            #logging.debug('Scanning db for node : {}'.format(node))
-            if node['address'] not in assigned_addresses:
-                logging.debug('Removing node : {} {}'.format(node['name'], node))
-                self.poly.delNode(node['address'])
+        if hasattr(self.poly, 'getNodesFromDb'):
+            self.nodes_in_db = self.poly.getNodesFromDb() or []
+            logging.debug('Scanning db for extra nodes : {}'.format(assigned_addresses))
+            for nde in range(0, len(self.nodes_in_db)):
+                node = self.nodes_in_db[nde]
+                if node.get('address') not in assigned_addresses:
+                    logging.debug('Removing node : {} {}'.format(node.get('name'), node))
+                    self.poly.delNode(node['address'])
         
 
 
@@ -373,7 +435,7 @@ class Controller(udi_interface.Node):
         try:
             float(string)
             return True
-        except ValueError:
+        except (ValueError, TypeError):
             return False
 
     def hubitat_events(self):
@@ -467,22 +529,23 @@ class Controller(udi_interface.Node):
                                         m_node.my_setDriver('BATLVL', h_value)
 
                             elif h_name in ['temperature']:
-                                    #Need to separate Ecobee
-                                if self.device_list[_deviceId] in ['Ecobee Sensor', 'Ecobee Thermostat']:
+                                # Need to separate Ecobee
+                                dev_info = self.device_list.get(_deviceId)
+                                dev_type = dev_info.get('type') if isinstance(dev_info, dict) else dev_info
+                                if dev_type in ['Ecobee Sensor', 'Ecobee Thermostat']:
                                     if self.temp_unit == 'F':
                                         if self.EcoBee_t_unit == 'F':
-                                            logging
                                             m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 17)
-                                        else: #C
+                                        else: # C to F
                                             m_node.my_setDriver('CLITEMP', round(int(float((h_value*9/5+32)*2.0)/2), 1), 17) 
                                     else:
-                                        if self.EcoBee_t_unit == 'F':
+                                        if self.EcoBee_t_unit == 'F': # F to C
                                             m_node.my_setDriver('CLITEMP', round(int(float((h_value-32)*5/9)*2.0)/2, 1), 4)
                                         else:
                                             m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)                                    
     
                                 else:
-                                    if self.temp_unit == 'F': #assume C for result          
+                                    if self.temp_unit == 'F': # assume C for result          
                                         m_node.my_setDriver('CLITEMP', round(int(float((h_value*9/5+32)*2.0)/2), 1), 17)
                                     else:
                                         m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
@@ -514,77 +577,43 @@ class Controller(udi_interface.Node):
                             elif h_name == 'energyDuration':
                                 _h_value = h_value.split(' ')[0]
                                 m_node.my_setDriver('GV6', _h_value)
-                                # Lutron Pico buttons ## and remote botton
+                                # Lutron Pico buttons ## and remote button
                             elif h_name == 'pushed':
-                                if h_value.isdigit():
+                                if isinstance(h_value, (int, float)) or (isinstance(h_value, str) and h_value.isdigit()):
                                     tmp = int(h_value)
                                     if tmp <= 0:
                                         tmp = 0
-                                    if tmp >= 5:
+                                    elif tmp >= 5:
                                         tmp = 5        
-                                    m_node.my_setDriver('GV8',tmp)
+                                    m_node.my_setDriver('GV7', tmp)
                                     m_node.reportCmd('DON', 2)
                                 else:
-                                    logging.error ('Unexpected value: {}'.format(h_value))
-                                '''                                
-                                if h_value == '1':
-                                    m_node.my_setDriver('GV7', h_value)
-                                elif h_value == '2':
-                                    m_node.my_setDriver('GV7', h_value)
-                                elif h_value == '3':
-                                    m_node.my_setDriver('GV7', h_value)
-                                elif h_value == '4':
-                                    m_node.my_setDriver('GV7', h_value)
-                                elif h_value == '5':
-                                    m_node.my_setDriver('GV7', h_value)
-                                '''
+                                    logging.error('Unexpected value: {}'.format(h_value))
                                 m_node.my_setDriver('GV8', 0)
                                 m_node.my_setDriver('GV9', 0)
                             elif h_name == 'released':
-                                if h_value.isdigit():
+                                if isinstance(h_value, (int, float)) or (isinstance(h_value, str) and h_value.isdigit()):
                                     tmp = int(h_value)
                                     if tmp <= 0:
                                         tmp = 0
-                                    if tmp >= 5:
+                                    elif tmp >= 5:
                                         tmp = 5        
-                                    m_node.my_setDriver('GV8',tmp)
+                                    m_node.my_setDriver('GV8', tmp)
                                     m_node.reportCmd('DOF', 2)
                                 else:
-                                    logging.error ('Unexpected value: {}'.format(h_value))
-                                '''
-                                if h_value == '1':
-                                    m_node.my_setDriver('GV8', h_value)
-                                elif h_value == '2':
-                                    m_node.my_setDriver('GV8', h_value)
-                                elif h_value == '3':
-                                    m_node.my_setDriver('GV8', h_value)
-                                elif h_value == '4':
-                                    m_node.my_setDriver('GV8', h_value)
-                                elif h_value == '5':
-                                    m_node.my_setDriver('GV8', h_value)
-                                '''
+                                    logging.error('Unexpected value: {}'.format(h_value))
                                 m_node.my_setDriver('GV7', 0)
                                 m_node.my_setDriver('GV9', 0)
                             elif h_name == 'held':
-                                if h_value.isdigit():
+                                if isinstance(h_value, (int, float)) or (isinstance(h_value, str) and h_value.isdigit()):
                                     tmp = int(h_value)
                                     if tmp <= 0:
                                         tmp = 0
-                                    if tmp >= 5:
+                                    elif tmp >= 5:
                                         tmp = 5
-                                    m_node.my_setDriver('GV9',tmp)
+                                    m_node.my_setDriver('GV9', tmp)
                                 else:
-                                    logging.error ('Unexpected value: {}'.format(h_value))
-                                '''
-                                elif h_value == '2':
-                                    m_node.my_setDriver('GV9', h_value)
-                                elif h_value == '3':
-                                    m_node.my_setDriver('GV9', h_value)
-                                elif h_value == '4':
-                                    m_node.my_setDriver('GV9', h_value)
-                                elif h_value == '5':
-                                    m_node.my_setDriver('GV9', h_value)
-                                '''
+                                    logging.error('Unexpected value: {}'.format(h_value))
                                 m_node.my_setDriver('GV7', 0)
                                 m_node.my_setDriver('GV8', 0)
                             elif h_name == 'contact':
@@ -628,10 +657,10 @@ class Controller(udi_interface.Node):
                                         if self.EcoBee_t_unit == 'F':
                                             m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), 17)
                                         else: #C
-                                            m_node.my_setDriver('CLISPC', round(int(float((h_value+32)*9/5)*2.0)/2, 1), 17) 
+                                            m_node.my_setDriver('CLISPC', round(int(float(h_value*9/5+32)*2.0)/2, 1), 17)
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                             m_node.my_setDriver('CLISPC', round(int(float((h_value*5/9-32)*2.0)/2, 1), 4))
+                                             m_node.my_setDriver('CLISPC', round(int(float((h_value-32)*5/9)*2.0)/2, 1), 4)
                                         else:
                                             m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), 4)
                             elif h_name== 'heatingSetpoint':
@@ -639,10 +668,10 @@ class Controller(udi_interface.Node):
                                         if self.EcoBee_t_unit == 'F':
                                             m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), 17)
                                         else: #C
-                                            m_node.my_setDriver('CLISPH', round(int(float((h_value+32)*9/5)*2.0)/2, 1), 17) 
+                                            m_node.my_setDriver('CLISPH', round(int(float(h_value*9/5+32)*2.0)/2, 1), 17)
                                     else:
                                         if self.EcoBee_t_unit == 'F':
-                                             m_node.my_setDriver('CLISPH', round(int(float((h_value*5/9-32)*2.0)/2, 1), 4))
+                                             m_node.my_setDriver('CLISPH', round(int(float((h_value-32)*5/9)*2.0)/2, 1), 4)
                                         else:
                                             m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), 4)                                    
                             elif h_name == 'thermostatFanMode':
@@ -651,7 +680,7 @@ class Controller(udi_interface.Node):
                                 elif h_value  == 'on':
                                     m_node.my_setDriver('CLIFRS', 1)
                                 else:
-                                    m_node.my_setDriver('CLIMD', 99)
+                                    m_node.my_setDriver('CLIFRS', 99)
                                     logging.error('Unknown value for {} {}'.format(h_name, h_value))
                             elif h_name == 'thermostatOperatingState':
                                 if -1 != h_value.find('auto'):
@@ -672,9 +701,9 @@ class Controller(udi_interface.Node):
                             elif h_name == 'thermostatFanOperatingState':  # Not found this one yet so guessing name
                                 if h_value  == 'auto':
                                     m_node.my_setDriver('CLIFS', 0)
-                                if h_value  == 'on':
+                                elif h_value  == 'on':
                                     m_node.my_setDriver('CLIFS', 1)
-                                if h_value  == 'idle':
+                                elif h_value  == 'idle':
                                     m_node.my_setDriver('CLIFS', 2)
                                 else:
                                     m_node.my_setDriver('CLIFS', 99)
@@ -746,7 +775,7 @@ class Controller(udi_interface.Node):
                                         m_node.my_setDriver('GV1', h_value)
                                     else:
                                         logging.error ('Unexpected PM1.0 value: {}'.format(h_value))
-                                        m_node.my_setDriver('G1', None)
+                                        m_node.my_setDriver('GV1', None)
                                   
                                 elif h_name == 'absHumidity':
                                     if isinstance(h_value, (int, float)):

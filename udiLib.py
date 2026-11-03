@@ -10,20 +10,24 @@ except ImportError:
 
 def my_setDriver(self, key, value, Unit=None, force=False, type=None):
     logging.debug(f'my_setDriver : {key} {value} {Unit} ')
+    target = getattr(self, 'node', None) or self
     try:
-        if any(item.get('driver') == key for item in self.drivers):
+        if any(item.get('driver') == key for item in getattr(self, 'drivers', [])):
             if value is None:
-                if type is not 'event':
+                if type != 'event':
                     logging.debug('None value passed = seting 99, UOM 25')
-                    self.node.setDriver(key, 99, True, force, 25)
+                    target.setDriver(key, 99, True, force, 25)
             else:                
                 if isinstance(Unit, (int, float)):
-                    self.node.setDriver(key, value, True, force, uom=Unit)
+                    target.setDriver(key, value, True, force, uom=Unit)
                 else:
-                    self.node.setDriver(key, value,True, force)
+                    target.setDriver(key, value, True, force)
+            return True
         else:
-            logging.debug(f'Passed driver {key} does not exist in {self.drivers}')
+            logging.debug(f'Passed driver {key} does not exist in {getattr(self, "drivers", [])}')
+            return False
 
-    except ValueError: #A non number was passed 
+    except ValueError: # A non number was passed 
         logging.error('Non numeric value passed to my_setDriver - setting 99 ')
-        self.node.setDriver(key, 99, True, True, 25)
+        target.setDriver(key, 99, True, True, 25)
+        return False
