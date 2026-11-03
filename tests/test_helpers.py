@@ -46,6 +46,11 @@ class MockPolyglot:
         self.profile_updated = True
         return True
 
+    def updateJsonProfile(self, profile_data=None):
+        self.profile_updated = True
+        self.last_json_profile = profile_data
+        return True
+
     def addNode(self, node):
         addr = getattr(node, 'address', None)
         if addr:

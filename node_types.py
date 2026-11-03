@@ -1,11 +1,12 @@
-""" Node classes used by the Hubitat Node Server. """
+""" Universal and Dynamic Node classes for Hubitat Node Server (Polyglot v3). """
 try:
     import requests
 except ImportError:
     requests = None
 import re
-import time 
+import time
 import json
+from udiLib import my_setDriver
 
 try:
     import udi_interface
@@ -14,6 +15,7 @@ try:
 except ImportError:
     import logging
     logging.basicConfig(level=logging.DEBUG)
+
     class _MockNode:
         def __init__(self, polyglot=None, primary=None, address=None, name=None):
             self.poly = polyglot
@@ -21,76 +23,83 @@ except ImportError:
             self.address = address
             self.name = name
             self.drivers = getattr(self, 'drivers', [])
+
         def setDriver(self, driver, value, report=True, force=False, uom=None):
             pass
+
         def reportCmd(self, cmd, val=None):
             pass
+
         def reportDrivers(self):
             pass
+
     class _MockCustom(dict):
         def __init__(self, polyglot=None, name=None):
             super().__init__()
             self.poly = polyglot
             self.name = name
+
         def load(self, params):
             self.update(params)
+
     class _MockUdi:
         Node = _MockNode
         LOGGER = logging
         Custom = _MockCustom
+
     udi_interface = _MockUdi
 
-class HubitatBase(udi_interface.Node):
-    """ Base class for lights and groups """
-    from udiLib import my_setDriver
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name)
-        self.RESPONSE_OK = 200
-        self.RESPONSE_NO_SUPPORT = 400
-        self.RESPONSE_NO_RESPONSE = 404
-        self.RESPONSE_SERVER_ERROR = 500
+
+class GenericHubitatNode(udi_interface.Node):
+    """
+    Universal Hubitat Node for Polyglot v3.
+    Dynamically configured with drivers and commands synthesized from Hubitat capabilities.
+    """
+    RESPONSE_OK = 200
+
+    def __init__(self, polyglot, primary, address, name, maker_uri, node_def_id=None, drivers=None, command_map=None):
         self.poly = polyglot
-        self.name = self.getValidName(name)
-        self.address = self.getValidAddress(address)
         self.primary = primary
-        self.maker_uri = marker_uri
-        self.n_queue = []
-        if hasattr(self.poly, 'subscribe') and hasattr(self.poly, 'ADDNODEDONE'):
-            self.poly.subscribe(self.poly.ADDNODEDONE, self.node_queue)
-        if hasattr(self.poly, 'ready'):
-            self.poly.ready()
-        if hasattr(self.poly, 'addNode'):
-            self.poly.addNode(self)
-        self.wait_for_node_done()
-        if hasattr(self.poly, 'getNode'):
-            self.node = self.poly.getNode(address)
-        else:
-            self.node = self
-        logging.debug('self.node : {}'.format(self.node ))
-        self.hubitatRefresh()
+        self.address = self.getValidAddress(address)
+        self.name = self.getValidName(name)
+        self.maker_uri = maker_uri
+        self.id = node_def_id or getattr(self, 'id', 'GEN_NODE')
+        self.drivers = drivers if drivers is not None else getattr(self, 'drivers', [])
+        self.command_map = command_map if command_map is not None else getattr(self, 'command_map', {})
+        self.node = self
+
+        super().__init__(polyglot, primary, self.address, self.name)
+
+        # Instance commands table for Polyglot v3 dispatch
+        self.commands = {
+            'DON': self.cmd_on,
+            'DOF': self.cmd_off,
+            'DFON': self.cmd_on,
+            'DFOF': self.cmd_off,
+            'SETLVL': self.cmd_set_level,
+            'QUERY': self.cmd_query,
+            'SETMODE': self.cmd_set_mode,
+            'SETFAN': self.cmd_set_fan,
+            'SETCOOL': self.cmd_set_cool,
+            'SETHEAT': self.cmd_set_heat,
+            'SETKELVIN': self.cmd_set_kelvin,
+            'SETHUE': self.cmd_set_hue,
+            'SETSAT': self.cmd_set_sat,
+        }
+
+    def my_setDriver(self, key, value, Unit=None, force=False, type=None):
+        return my_setDriver(self, key, value, Unit, force, type)
+
+    def getValidAddress(self, address):
+        if address is None:
+            return ""
+        return re.sub(r"[^A-Za-z0-9]", "", str(address))[:14].lower()
 
     def getValidName(self, name):
-        name = bytes(name, 'utf-8').decode('utf-8','ignore')
+        if name is None:
+            return ""
+        name = bytes(str(name), 'utf-8').decode('utf-8', 'ignore')
         return re.sub(r"[^A-Za-z0-9_ ]", "", name)
-
-    # remove all illegal characters from node address
-    def getValidAddress(self, name):
-        name = bytes(name, 'utf-8').decode('utf-8','ignore')
-        tmp = re.sub(r"[^A-Za-z0-9_]", "", name.lower())
-        logging.debug('getValidAddress {}'.format(tmp))
-        return tmp[:14]
-    
-    def node_queue(self, data):
-        self.n_queue.append(data['address'])
-
-    def wait_for_node_done(self):
-        timeout = 50
-        while len(self.n_queue) == 0 and timeout > 0:
-            time.sleep(0.1)
-            timeout -= 1
-            logging.debug('wait_for_node_done')
-        if len(self.n_queue) > 0:
-            self.n_queue.pop()
 
     def _build_uri(self, device_id, h_cmd, val=None):
         if not getattr(self, 'maker_uri', None):
@@ -119,814 +128,344 @@ class HubitatBase(udi_interface.Node):
                 time.sleep(1)
                 logging.error('Hubitat not responding - waiting for good response')
             except Exception as e:
-                logging.error('Hubitat request failed: {}'.format(e))
+                logging.error(f'Hubitat request failed: {e}')
                 time.sleep(1)
             retries += 1
         return None
 
-    """ Basic On/Off controls """
+    def _execute_h_cmd(self, iox_cmd_name, val=None):
+        h_cmd = self.command_map.get(iox_cmd_name)
+        if not h_cmd:
+            logging.warning(f"No Hubitat command mapped for {iox_cmd_name} on {self.address}")
+            return False
+        uri = self._build_uri(self.address, h_cmd, val)
+        return self._send_request(uri) is not None
+
+    def cmd_on(self, command=None):
+        self._execute_h_cmd('DON')
+
+    def cmd_off(self, command=None):
+        self._execute_h_cmd('DOF')
+
+    def cmd_set_level(self, command):
+        val = command.get('value')
+        self._execute_h_cmd('SETLVL', val)
+
+    def cmd_query(self, command=None):
+        uri = self._build_uri(self.address, 'refresh')
+        self._send_request(uri)
+
+    def cmd_set_mode(self, command):
+        val = command.get('value')
+        self._execute_h_cmd('SETMODE', val)
+
+    def cmd_set_fan(self, command):
+        val = command.get('value')
+        self._execute_h_cmd('SETFAN', val)
+
+    def cmd_set_cool(self, command):
+        val = command.get('value')
+        self._execute_h_cmd('SETCOOL', val)
+
+    def cmd_set_heat(self, command):
+        val = command.get('value')
+        self._execute_h_cmd('SETHEAT', val)
+
+    def cmd_set_kelvin(self, command):
+        val = command.get('value')
+        self._execute_h_cmd('SETKELVIN', val)
+
+    def cmd_set_hue(self, command):
+        val = command.get('value')
+        self._execute_h_cmd('SETHUE', val)
+
+    def cmd_set_sat(self, command):
+        val = command.get('value')
+        self._execute_h_cmd('SETSAT', val)
+
+    # Alias methods for legacy compatibility
+    def hubitatRefresh(self):
+        self.cmd_query()
+
     def hubitatCtl(self, command):
-        h_cmd = None
         cmd = command.get('cmd')
         val = command.get('value')
-        if val is not None:
-            val = str(val)
-        device_id = command.get('address') or self.address
-        cmd_ok = True
+        self._execute_h_cmd(cmd, val)
 
-        if cmd in ['DON', 'DFON']:
-            h_cmd = 'on'
-            val = None
-        elif cmd in ['DOF', 'DFOF']:
-            h_cmd = 'off'
-            val = None
-        elif cmd == 'SETLVL':
-            h_cmd = 'setLevel'
-        elif cmd in ['SET_HUE', 'SETHUE']:
-            h_cmd = 'setHue'
-        elif cmd in ['SET_SAT', 'SETSAT']:
-            h_cmd = 'setSaturation'
-        elif cmd in ['SET_KELVIN', 'SETKELVIN']:
-            h_cmd = 'setColorTemperature'
-        elif cmd in ['PUSH_BTN', 'PUSHBTN']:
-            h_cmd = 'push'
-        elif cmd in ['HOLD_BTN', 'HOLDBTN']:
-            h_cmd = 'hold'
-        elif cmd in ['RELEASE_BTN', 'RELEASEBTN']:
-            h_cmd = 'release'
-        else:
-            logging.error('unsupported command; {} , {}'.format(cmd, val))
-            cmd_ok = False
 
-        if cmd_ok:
-            cmd_uri = self._build_uri(device_id, h_cmd, val)
-            return self._send_request(cmd_uri)
-        return None
+# Legacy Base Class & Subclasses for backward compatibility
+class HubitatBase(GenericHubitatNode):
+    pass
 
-    def hubitatRefresh(self):
-        cmd_uri = self._build_uri(self.address, 'refresh')
-        return self._send_request(cmd_uri)
 
-    def hubitatDirectCtrl(self, command, h_cmd):
-        logging.debug('hubitatDirectCtrl: {} , {}'.format(command, h_cmd))
-        val = command.get('value')
-        device_id = command.get('address') or self.address
-        cmd_uri = self._build_uri(device_id, h_cmd, val)
-        return self._send_request(cmd_uri)
-"""
-New Class definitions for generalization
-"""
-class StdLampNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('StdLampNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def start(self):
-        pass
-
-    def setOn(self, command = None):
-        self.node.setDriver('ST', 1)
-        self.node.reportCmd('DON')
-
-    def setOff(self, command = None ):
-        self.node.setDriver('ST', 0)
-        self.node.reportCmd('DOF')
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    def set_level (self, command):
-        logging.debug('StdLampNode set_level : {}'.format(command.get('value')))
-        cmd = command
-        cmd['value'] = str(command.get('value'))
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'setLevel')
-        #self.node.reportCmd('OL', command.get('value'))
-
-    drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
-        {'driver': 'OL', 'value': 75, 'uom': 51, 'name': 'On Level'}
-    ]
+class StdLampNode(GenericHubitatNode):
     id = 'STDLAMP'
-    commands = {
-        'DON': HubitatBase.hubitatCtl, 
-        'DOF': HubitatBase.hubitatCtl, 
-        'QUERY': query,
-        'SETLVL': set_level
-    }
-
-
-class RgbLampNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('RgbLampNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def start(self):
-        pass
-
-    def setOn(self, command):
-        self.node.setDriver('ST', 100)
-
-    def setOff(self, command):
-        self.node.setDriver('ST', 0)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'OL', 'value': 0, 'uom': 51, 'name': 'On Level'},
-        {'driver': 'GV3', 'value': 0, 'uom': 56, 'name': 'Hue'},
-        {'driver': 'GV4', 'value': 0, 'uom': 100, 'name': 'Saturation'},
-        {'driver': 'GV5', 'value': 0, 'uom': 25, 'name': 'Color Mode'},
-        {'driver': 'GV6', 'value': 0, 'uom': 26, 'name': 'Color Temperature'}
-    ]
-
-    id = 'COLORLIGHT'
-    commands = {
-        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
-        'SETLVL': HubitatBase.hubitatCtl, 'SET_HUE': HubitatBase.hubitatCtl, 'SETHUE': HubitatBase.hubitatCtl,
-        'SET_SAT': HubitatBase.hubitatCtl, 'SETSAT': HubitatBase.hubitatCtl, 'SET_KELVIN': HubitatBase.hubitatCtl, 'SETKELVIN': HubitatBase.hubitatCtl
-    }
-
-
-class CtLampNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('CtLampNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def start(self):
-        pass
-
-    def setOn(self, command):
-        self.node.setDriver('ST', 100)
-
-    def setOff(self, command):
-        self.node.setDriver('ST', 0)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'OL', 'value': 0, 'uom': 51, 'name': 'On Level'},
-        {'driver': 'GV6', 'value': 0, 'uom': 26, 'name': 'Color Temperature'}
-    ]
-
-    id = 'COLORLIGHT'
-    commands = {
-        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
-        'SETLVL': HubitatBase.hubitatCtl, 'SET_KELVIN': HubitatBase.hubitatCtl, 'SETKELVIN': HubitatBase.hubitatCtl
-    }
-
-
-class EnergyOutletNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('EnergyOutletNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'CC', 'value': 0, 'uom': 1, 'name': 'Current (Amps)'},
-        {'driver': 'CPW', 'value': 0, 'uom': 73, 'name': 'Power (Watts)'},
-        {'driver': 'CV', 'value': 0, 'uom': 72, 'name': 'Voltage'},
-        {'driver': 'TPW', 'value': 0, 'uom': 33, 'name': 'Total Power Used (energy)'},
-        {'driver': 'GV0', 'value': 0, 'uom': 73, 'name': 'Current High'},
-        {'driver': 'GV1', 'value': 0, 'uom': 73, 'name': 'Current Low'},
-        {'driver': 'GV2', 'value': 0, 'uom': 33, 'name': 'Power High'},
-        {'driver': 'GV3', 'value': 0, 'uom': 33, 'name': 'Power Low'},
-        {'driver': 'GV4', 'value': 0, 'uom': 72, 'name': 'Voltage High'},
-        {'driver': 'GV5', 'value': 0, 'uom': 72, 'name': 'Voltage Low'},
-        {'driver': 'GV6', 'value': 0, 'uom': 45, 'name': 'Duration'}
-    ]
-    id = 'ENERGYOUTLET'
-    commands = {
-        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
-    }
-
-
-class OutletNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('OutletNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
-    ]
-    id = 'OUTLET'
-    commands = {
-        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
-    }
-
-
-class SwitchNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('SwitchNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def start(self):
-        pass
-    #     self.node.setDriver('ST', 0)
-
-    def setOn(self, command):
-        self.node.setDriver('ST', 100)
-
-    def setOff(self, command):
-        self.node.setDriver('ST', 0)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [{'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'}]
-    id = 'SWITCH'
-    commands = {
-        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
-    }
-
-
-
-class DimmerNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('DimmerNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def start(self):
-        pass
-    #     self.node.setDriver('ST', 0)
-
-    def setOn(self, command):
-        self.node.setDriver('ST', 100)
-
-    def setOff(self, command):
-        self.node.setDriver('ST', 0)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
     drivers = [
         {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
         {'driver': 'OL', 'value': 75, 'uom': 51, 'name': 'On Level'}
     ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'STDLAMP', self.drivers,
+                         {'DON': 'on', 'DOF': 'off', 'SETLVL': 'setLevel'})
+
+
+class RgbLampNode(GenericHubitatNode):
+    id = 'COLORLIGHT'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'OL', 'value': 99, 'uom': 51, 'name': 'On Level'},
+        {'driver': 'GV3', 'value': 99, 'uom': 56, 'name': 'Hue'},
+        {'driver': 'GV4', 'value': 99, 'uom': 100, 'name': 'Saturation'},
+        {'driver': 'GV5', 'value': 99, 'uom': 25, 'name': 'Color Mode'},
+        {'driver': 'GV6', 'value': 99, 'uom': 26, 'name': 'Color Temperature'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'COLORLIGHT', self.drivers,
+                         {'DON': 'on', 'DOF': 'off', 'SETLVL': 'setLevel'})
+
+
+class CtLampNode(GenericHubitatNode):
+    id = 'CTLAMP'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'OL', 'value': 99, 'uom': 51, 'name': 'On Level'},
+        {'driver': 'GV0', 'value': 99, 'uom': 26, 'name': 'Color Temperature'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'CTLAMP', self.drivers,
+                         {'DON': 'on', 'DOF': 'off', 'SETLVL': 'setLevel'})
+
+
+class SwitchNode(GenericHubitatNode):
+    id = 'SWITCH'
+    drivers = [{'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'}]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'SWITCH', self.drivers,
+                         {'DON': 'on', 'DOF': 'off'})
+
+
+class OutletNode(GenericHubitatNode):
+    id = 'OUTLET'
+    drivers = [{'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'}]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'OUTLET', self.drivers,
+                         {'DON': 'on', 'DOF': 'off'})
+
+
+class EnergyOutletNode(GenericHubitatNode):
+    id = 'ENERGYOUTLET'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'CC', 'value': 99, 'uom': 1, 'name': 'Current (Amps)'},
+        {'driver': 'CPW', 'value': 99, 'uom': 73, 'name': 'Power (Watts)'},
+        {'driver': 'CV', 'value': 99, 'uom': 72, 'name': 'Voltage'},
+        {'driver': 'TPW', 'value': 99, 'uom': 33, 'name': 'Total Power Used (energy)'},
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'ENERGYOUTLET', self.drivers,
+                         {'DON': 'on', 'DOF': 'off'})
+
+
+class DimmerNode(GenericHubitatNode):
     id = 'DIMMER'
-    commands = {
-        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query,
-        'SETLVL': HubitatBase.hubitatCtl
-    }
-
-
-#class MultiSensorTHLA(polyinterface.Node):
-class MultiSensorTHLA(HubitatBase):
-
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('MultiSensorTHLA Init')
-        HubitatBase.hubitatRefresh(self)
-
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22, 'name': 'Humidity'},
-        {'driver': 'LUMIN', 'value': 0, 'uom': 36, 'name': 'Illuminance'},
-        {'driver': 'ALARM', 'value': 0, 'uom': 2, 'name': 'Tamper Alarm'}
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'OL', 'value': 99, 'uom': 51, 'name': 'On Level'}
     ]
-    id = 'MSTHLASENSOR'
-    commands = {
-        # 'DON': setOn, 'DOF': setOff
-    }
-
-
-#class MultiSensorTLAS(polyinterface.Node):
-class MultiSensorTLAS (HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('MultiSensorTLAS Init')
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
-        {'driver': 'LUMIN', 'value': 0, 'uom': 36, 'name': 'Illuminance'},
-        {'driver': 'ALARM', 'value': 0, 'uom': 2, 'name': 'Tamper Alarm'},
-        {'driver': 'SPEED', 'value': 0, 'uom': 2, 'name': 'Acceleration'}
-    ]
-    id = 'MSTLASSENSOR'
-    commands = {
-        # 'DON': setOn, 'DOF': setOff
-    }
+        super().__init__(polyglot, primary, address, name, marker_uri, 'DIMMER', self.drivers,
+                         {'DON': 'on', 'DOF': 'off', 'SETLVL': 'setLevel'})
 
 
-#class MultiSensorTH(polyinterface.Node):
-class MultiSensorTH(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('MultiSensorTH Init')
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22, 'name': 'Humidity'},
-    ]
-    id = 'MSTHSENSOR'
-    commands = {
-        # 'DON': setOn, 'DOF': setOff
-    }
-
-
-#class MultiSensorT(polyinterface.Node):
-class MultiSensorT(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('MultiSensorT Init')
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'}
-    ]
-    id = 'MSTSENSOR'
-    commands = {
-        # 'DON': setOn, 'DOF': setOff
-    }
-
-
-#class MultiSensorTL(polyinterface.Node):
-class MultiSensorTL(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('MultiSensorTL Init')
-        HubitatBase.hubitatRefresh(self)
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
-        {'driver': 'LUMIN', 'value': 0, 'uom': 36, 'name': 'Illuminance'},
-    ]
-    id = 'MSTLSENSOR'
-    commands = {
-        # 'DON': setOn, 'DOF': setOff
-    }
-
-
-#class MultiSensorL(polyinterface.Node):
-class MultiSensorL(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('MultiSensorL Init')
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
-        {'driver': 'LUMIN', 'value': 0, 'uom': 36, 'name': 'Illuminance'},
-    ]
-    id = 'MSLSENSOR'
-    commands = {
-        # 'DON': setOn, 'DOF': setOff
-    }
-
-
-#class MotionSensor(polyinterface.Node):
-class MotionSensor(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('MotionSensor Init')
-        HubitatBase.hubitatRefresh(self)
-
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
-    ]
+class MotionSensor(GenericHubitatNode):
     id = 'MSSENSOR'
-    commands = {
-        # 'DON': setOn, 'DOF': setOff
-    }
-
-
-class LutronPicoNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('LutronPicoNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def start(self):
-        pass
-    #     self.node.setDriver('ST', 0)
-
-    def setOn(self, command):
-        self.node.setDriver('ST', 100)
-
-    def setOff(self, command):
-        self.node.setDriver('ST', 0)
-
-    def query(self):
-        self.reportDrivers()
-
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 2, 'name': 'Status'},
-        {'driver': 'GV7', 'value': 0, 'uom': 25, 'name': 'Button'},
-        {'driver': 'GV8', 'value': 0, 'uom': 25, 'name': 'Released'},
-        {'driver': 'GV9', 'value': 0, 'uom': 25, 'name': 'Held'}
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery'}
     ]
-    id = 'PICONODE'
-    commands = {
-        # 'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
-    }
-
-
-class LutronFastPicoNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('LutronFastPicoNode Init')
-        HubitatBase.hubitatRefresh(self)
-    def start(self):
-        pass
+        super().__init__(polyglot, primary, address, name, marker_uri, 'MSSENSOR', self.drivers)
 
-    def setOn(self, command):
-        self.node.setDriver('ST', 100)
 
-    def setOff(self, command):
-        self.node.setDriver('ST', 0)
-
-    def query(self):
-        self.reportDrivers()
-
+class ContactNode(GenericHubitatNode):
+    id = 'CONTACT'
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 2, 'name': 'Status'},
-        {'driver': 'GV7', 'value': 0, 'uom': 25, 'name': 'Pushed'},
-        {'driver': 'GV8', 'value': 0, 'uom': 25, 'name': 'Released'},
-        {'driver': 'GV9', 'value': 0, 'uom': 25, 'name': 'Held'}
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery Level'}
     ]
-    id = 'FASTPICONODE'
-    commands = {
-        # 'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
-    }
-
-class THSensor(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('THSensor Init')
-        HubitatBase.hubitatRefresh(self)
+        super().__init__(polyglot, primary, address, name, marker_uri, 'CONTACT', self.drivers)
 
-    drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22, 'name': 'Humidity'},
-    ]
+
+class THSensor(GenericHubitatNode):
     id = 'THSENSOR'
-    commands = {
-        # 'DON': setOn, 'DOF': setOff
-    }
-
-class ContactNode(HubitatBase):
-    def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('ContactNode Init')
-        HubitatBase.hubitatRefresh(self)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 79, 'name': 'Status'},
-        {'driver': 'BATLVL', 'value': 0, 'uom': 51, 'name': 'Battery'}
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLIHUM', 'value': 99, 'uom': 22, 'name': 'Humidity'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Temperature'}
     ]
-    id = 'CONTACTSENSOR'
-    commands = {
-        'DON': HubitatBase.hubitatCtl, 'DOF': HubitatBase.hubitatCtl, 'QUERY': query
-    }
-
-#############
-#   Newly added devices
-###############
-    
-
-class SimpleRemoteNode(HubitatBase):
     def __init__(self, polyglot, primary, address, name, marker_uri):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('SimpleRemoteNode Init')
-        HubitatBase.hubitatRefresh(self)
+        super().__init__(polyglot, primary, address, name, marker_uri, 'THSENSOR', self.drivers)
 
-    def start(self):
-        pass
-    #     self.node.setDriver('ST', 0)
 
-    def setOn(self, command):
-        self.node.setDriver('ST', 100)
-
-    def setOff(self, command):
-        self.node.setDriver('ST', 0)
-
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
+class LutronPicoNode(GenericHubitatNode):
+    id = 'LUTPICO'
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 78, 'name': 'Status'},
-        {'driver': 'GV7', 'value': 0, 'uom': 25, 'name': 'Pushed'},
-        {'driver': 'GV8', 'value': 0, 'uom': 25, 'name': 'Released'},
-        {'driver': 'GV9', 'value': 0, 'uom': 25, 'name': 'Held'},
-        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery Level'},
-        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'},
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'GV4', 'value': 99, 'uom': 57, 'name': 'Last Button Pushed'},
+        {'driver': 'GV5', 'value': 99, 'uom': 57, 'name': 'Last Button Released'}
     ]
-    id = 'REMOTEBTNNODE'
-    commands = {
-        'PUSH_BTN': HubitatBase.hubitatCtl, 'PUSHBTN': HubitatBase.hubitatCtl, 'HOLD_BTN': HubitatBase.hubitatCtl, 'HOLDBTN': HubitatBase.hubitatCtl, 'RELEASE_BTN': HubitatBase.hubitatCtl, 'RELEASEBTN': HubitatBase.hubitatCtl, 'QUERY': query
-    }
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'LUTPICO', self.drivers)
 
 
-class EcobeeSensor(HubitatBase):
+class LutronFastPicoNode(GenericHubitatNode):
+    id = 'LUTPICO'
     drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Motion Detection'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},        
-        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'}
-    ] 
-    id = 'ECOBSENSOR'
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'GV4', 'value': 99, 'uom': 57, 'name': 'Last Button Pushed'},
+        {'driver': 'GV5', 'value': 99, 'uom': 57, 'name': 'Last Button Released'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'LUTPICO', self.drivers)
 
-    def __init__(self, polyglot, primary, address, name, marker_uri, dev):
-        #def __init__(self, polyglot, primary, marker_uri, dev):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('EcobeeSensor Init')
-        self.poly = polyglot
-        self.dev_info = dev
-        logging.debug('EcobeeSensor dev info: {}'.format(dev))
-        HubitatBase.hubitatRefresh(self)
- 
-        
-        try:
-            self.t_unit = dev['attributes']['deviceTemperatureUnit']
-        except:
-            self.t_unit = 1
 
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
-
-    commands = {  'QUERY': query   }
-
-    
-class AirThingsSensor(HubitatBase):    
+class SimpleRemoteNode(GenericHubitatNode):
+    id = 'SIMPLEREMOTE'
     drivers = [
-        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': '24H Longterm Radon Level'},
-        {'driver': 'RADON', 'value': 99, 'uom': 25, 'name': 'Current Radon Reading'},
-        {'driver': 'CLITEMP', 'value': 99, 'uom': 25, 'name': 'Temperature'},
-        {'driver': 'CLIHUM', 'value': 99, 'uom': 25, 'name': 'Relative Humidity'},
-        {'driver': 'GV0', 'value': 99, 'uom': 25, 'name': 'Absolute Humidity'},
-        {'driver': 'ATMPRES', 'value': 99, 'uom': 25, 'name': 'Atmospheric Pressure'},
-        {'driver': 'CO2LVL', 'value': 99, 'uom': 25, 'name': 'CO2 level'},
-        {'driver': 'AQI', 'value': 99, 'uom': 25, 'name': 'Air Quality Index'},
-        {'driver': 'VOCLVL', 'value': 99, 'uom': 25, 'name': 'VOC level'},
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'GV4', 'value': 99, 'uom': 57, 'name': 'Last Button Pushed'},
+        {'driver': 'GV5', 'value': 99, 'uom': 57, 'name': 'Last Button Released'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'SIMPLEREMOTE', self.drivers)
+
+
+class EcobeeSensor(GenericHubitatNode):
+    id = 'ECOBEESENS'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Motion/Occupancy'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'CLIHUM', 'value': 99, 'uom': 22, 'name': 'Relative Humidity'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'ECOBEESENS', self.drivers)
+
+
+class AirThingsSensor(GenericHubitatNode):
+    id = 'AIRTHSENSOR'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 124, 'name': '24H Longterm Radon Level'},
+        {'driver': 'RADON', 'value': 99, 'uom': 124, 'name': 'Current Radon Reading'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'CLIHUM', 'value': 99, 'uom': 22, 'name': 'Relative Humidity'},
+        {'driver': 'GV0', 'value': 99, 'uom': 21, 'name': 'Absolute Humidity'},
+        {'driver': 'ATMPRES', 'value': 99, 'uom': 117, 'name': 'Atmospheric Pressure'},
+        {'driver': 'CO2LVL', 'value': 99, 'uom': 54, 'name': 'CO2 level'},
+        {'driver': 'AQI', 'value': 99, 'uom': 54, 'name': 'Air Quality Index'},
+        {'driver': 'VOCLVL', 'value': 99, 'uom': 54, 'name': 'VOC level'},
         {'driver': 'GV2', 'value': 99, 'uom': 25, 'name': 'VOC state'},
-        {'driver': 'GV25', 'value': 99, 'uom': 25, 'name': '2.5 ppm particle count'},
-        {'driver': 'GV1', 'value': 99, 'uom': 25, 'name': '1 ppm particle count'},
-        {'driver': 'BATLVL', 'value': 99, 'uom': 25, 'name': 'Battery Level'},
+        {'driver': 'GV25', 'value': 99, 'uom': 122, 'name': '2.5 ppm particle count'},
+        {'driver': 'GV1', 'value': 99, 'uom': 122, 'name': '1 ppm particle count'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery Level'},
         {'driver': 'TIME', 'value': int(time.time()), 'uom': 151, 'name': 'Last Update Time'},
         {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'},
     ]
+    def __init__(self, polyglot, primary, address, name, marker_uri, dev=None):
+        node_id = 'AIRTHSENSOR'
+        if dev and dev.get('temp_unit') == 'F':
+            node_id = 'AIRTHSENSORF'
+        super().__init__(polyglot, primary, address, name, marker_uri, node_id, self.drivers)
 
-    id = 'AIRTHSENSOR'
-    def __init__(self, polyglot, primary,address, name, marker_uri, dev):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('AirThingsSensor Init')
-        self.poly = polyglot
-        self.dev_info = dev
 
-        if dev['temp_unit'] == 'F':
-            self.id = 'AIRTHSENSORF'
-
-    def updateAirthingData(self, command):
-        logging.debug('updateAirthingData')
-        HubitatBase.hubitatRefresh(self)
-
-    commands = {'QUERY'     : updateAirthingData,
-
-                }
-
-class EcobeeThermostat(HubitatBase):
+class EcobeeThermostat(GenericHubitatNode):
+    id = 'ECOBEETSTAT'
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 25, 'name': 'State'},
-        {'driver': 'CLITEMP', 'value': 0, 'uom': 17, 'name': 'Temperature'},
-        {'driver': 'CLIHUM', 'value': 0, 'uom': 22, 'name': 'Humidity'},
-        {'driver': 'CLIFS', 'value': 99, 'uom': 25, 'name': 'Fan Operating Mode'},
-        {'driver': 'CLIMD', 'value': 99, 'uom': 25, 'name': 'Thermostat Operating Mode'},
-        {'driver': 'CLISPC', 'value': 90, 'uom': 17, 'name': 'Cooling setpoint'},
-        {'driver': 'CLISPH', 'value': 50, 'uom': 17, 'name': 'Heating setpoint'},
-        {'driver': 'CLIHCS', 'value': 99, 'uom': 25, 'name': 'Thermostat state'},
-        {'driver': 'CLIFRS', 'value': 99, 'uom': 25, 'name': 'Fan State'},
-        {'driver': 'GV19', 'value': 99, 'uom': 25, 'name': 'Supported Modes'},
-        {'driver': 'GV20', 'value': 99, 'uom': 25, 'name': 'Device Status'},
+        {'driver': 'CLIMD', 'value': 99, 'uom': 25, 'name': 'Thermostat Mode'},
+        {'driver': 'CLIFS', 'value': 99, 'uom': 25, 'name': 'Thermostat Fan State'},
+        {'driver': 'CLIFRS', 'value': 99, 'uom': 25, 'name': 'Thermostat Fan Mode'},
+        {'driver': 'CLISPC', 'value': 99, 'uom': 17, 'name': 'Cooling Setpoint'},
+        {'driver': 'CLISPH', 'value': 99, 'uom': 17, 'name': 'Heating Setpoint'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Ambient Temperature'},
+        {'driver': 'CLIHUM', 'value': 99, 'uom': 22, 'name': 'Relative Humidity'}
     ]
-
-    id = 'ECOBTSTAT'
-    
-    def __init__(self, polyglot, primary,address, name, marker_uri, dev):
-        super().__init__(polyglot, primary, address, name, marker_uri)
-        logging.debug('EcobeeThermostat Init')
-        self.poly = polyglot
-        self.dev_info = dev
-        thtype = 99
-        logging.debug('EcobeeThermostat dev info: {}'.format(dev))
-        self.hereawayState = 99
-        #self.node.setDriver('CLISMD', self.hereawayState  )
-        try:
-            thmode = str(dev['attributes']['supportedThermostatModes'])
-            logging.debug('thmode : {}'.format(thmode))
-            
-            thmodes = ['off']
-            if 'heat' in thmode:
-                thmodes.append('heat')
-            if 'cool' in thmode:
-                thmodes.append('cool')
-            if 'auto' in thmode:
-                thmodes.append('auto')
-            logging.debug('thmodes : {}'.format(thmodes))
-
-            if len(thmodes) == 2:
-                if 'heat' in thmodes:
-                    thtype = 0
-                elif 'cool' in thmodes:
-                    thtype = 1
-                elif 'auto' in thmodes:
-                    thtype = 2
-            elif len(thmodes) == 3:
-                thtype = 3
-            elif len(thmodes) == 4:
-                thtype = 4
-            else:
-                thtype = 99
-
-    
-            self.t_unit = dev['attributes']['deviceTemperatureUnit']
-        except Exception as e:
-            logging.error('not able to determine type {}'.format(e))
-            self.t_unit = 1
-            thtype = 99
-
-        self.node.setDriver('GV19', thtype)
-        HubitatBase.hubitatRefresh(self)
-        
-    def query(self):
-        HubitatBase.hubitatRefresh(self)
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'ECOBEETSTAT', self.drivers,
+                         {'SETMODE': 'setThermostatMode', 'SETFAN': 'setThermostatFanMode',
+                          'SETCOOL': 'setCoolingSetpoint', 'SETHEAT': 'setHeatingSetpoint'})
 
 
-    def setOperationMode(self, command):        
-        logging.debug('setOperationMode')
-        cmd = command
-        if int(command.get('value')) == 0:
-            cmd['value'] = ''
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'auto')
-        elif int(command.get('value')) == 1:
-            cmd['value'] = ''
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'cool')
-        elif int(command.get('value')) == 2:
-            cmd['value'] = ''
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'heat')
-        elif int(command.get('value')) == 3:
-            cmd['value'] = ''
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'off')   
-        time.sleep(1)
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
+# MultiSensor variants
+class MultiSensorTHLA(GenericHubitatNode):
+    id = 'MSTHLASENSOR'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLIHUM', 'value': 99, 'uom': 22, 'name': 'Humidity'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'LUMIN', 'value': 99, 'uom': 36, 'name': 'Illuminance'},
+        {'driver': 'ALARM', 'value': 99, 'uom': 2, 'name': 'Tamper Alarm'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'MSTHLASENSOR', self.drivers)
 
 
-    def setThermostatMode(self, command):
-        logging.debug('setTHermostatMode')
-        '''
-        CLIHCS-0 = Auto
-        CLIHCS-1 = Cool
-        CLIHCS-2 = Heat
-        ---
-        CLIHCS-3 = Off
-        ----
-        CLIHCS-4 = Idle
-        ----
-        CLIHCS-5 = Emergency Heat
-        CLIHCS-99 = Unknown
-        '''
-
-        cmd = command
-        if int(command.get('value')) == 0:
-            cmd['value'] = 'auto'
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
-            #HubitatBase.hubitatDirectCtrl(cmd, 'auto')
-
-        elif int(command.get('value')) == 1:
-            cmd['value'] = 'cool'
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
-        elif int(command.get('value')) == 2:
-            cmd['value'] = 'heat'
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
-        elif int(command.get('value')) == 3:
-            cmd['value'] = 'off' 
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatMode')
-        else:
-            logging.error('setThermostatMode unexpected command: {}'.format(command.get('value') ))           
-        time.sleep(3)
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')        
+class MultiSensorTLAS(GenericHubitatNode):
+    id = 'MSTLASSENSOR'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'LUMIN', 'value': 99, 'uom': 36, 'name': 'Illuminance'},
+        {'driver': 'ALARM', 'value': 99, 'uom': 2, 'name': 'Tamper Alarm'},
+        {'driver': 'SPEED', 'value': 99, 'uom': 2, 'name': 'Acceleration'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'MSTLASSENSOR', self.drivers)
 
 
-    def setFanMode(self, command):
-        logging.debug('setFanMode')
-        '''
-        CLIHCS-0 = On
-        CLIHCS-1 = Auto
-        CLIHCS-2 = Circulate
-        '''
-        cmd = command
-        if int(command.get('value')) == 0:
-            cmd['value'] = 'on'   
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')         
-        elif int(command.get('value')) == 1:
-            cmd['value'] = 'auto'
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')
-        elif int(command.get('value')) == 2:
-            cmd['value'] = 'circulate'
-            HubitatBase.hubitatDirectCtrl(self, cmd, 'setThermostatFanMode')
-        else:
-            logging.error('setFanMode unexpected command: {}'.format(command.get('value') ))           
-        time.sleep(1)
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')        
-
-    def setHeatPoint(self, command):
-        logging.debug('setHeatPoint : {}'.format(command))
-        
-        cmd = command#query = command.get("query")
-        unit = command.get('uom')
-        set_temp = command.get('value')
-        cmd['value'] = str(set_temp)
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'setHeatingSetpoint')
-        time.sleep(1)
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
-
-    def setResume(self, command):
-
-        logging.debug('setResume')
-        cmd = command
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'resumeProgram')
-        time.sleep(1)
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
-
-    def setAway(self, command):
-        logging.debug('setAway')
-        cmd = command
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'setAway')
-        time.sleep(1)
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
-
-    def setCoolPoint(self, command):
-        logging.debug('setCoolPoint : {}'.format(command)) 
-        cmd = command
-        unit = command.get('uom')
-        set_temp = str(command.get('value'))
-        cmd['value'] = set_temp     
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'setCoolingSetpoint')
-        time.sleep(1)
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
-
-    def setTempUnit(self, t_unit):
-        logging.debug('setTempUnit')
-        if t_unit.lower()  == 'c':
-            self.t_unit = 'C'
-        elif t_unit.lower()  == 'f':
-            self.t_unit = 'F'
-        else:
-            logging.error('Unknow temp unit: {}'.format(t_unit))
-
-    def updateThermostat(self, command):
-        cmd = command
-        cmd['value'] = ''
-        HubitatBase.hubitatDirectCtrl(self, cmd, 'refresh')
+class MultiSensorTH(GenericHubitatNode):
+    id = 'MSTHSENSOR'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLIHUM', 'value': 99, 'uom': 22, 'name': 'Humidity'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Temperature'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'MSTHSENSOR', self.drivers)
 
 
-    commands = {'QUERY'     : updateThermostat,
-                'FANMODE'   : setFanMode,
-                'TSTATMODE' : setThermostatMode,
-                'AWAY'      : setAway,
-                'RESUME'    : setResume,
-                'HEATPOINT' : setHeatPoint,  
-                'COOLPOINT' : setCoolPoint
-                }
-    
+class MultiSensorT(GenericHubitatNode):
+    id = 'MSTSENSOR'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Temperature'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'MSTSENSOR', self.drivers)
 
+
+class MultiSensorTL(GenericHubitatNode):
+    id = 'MSTLSENSOR'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'CLITEMP', 'value': 99, 'uom': 17, 'name': 'Temperature'},
+        {'driver': 'LUMIN', 'value': 99, 'uom': 36, 'name': 'Illuminance'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'MSTLSENSOR', self.drivers)
+
+
+class MultiSensorL(GenericHubitatNode):
+    id = 'MSLSENSOR'
+    drivers = [
+        {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
+        {'driver': 'BATLVL', 'value': 99, 'uom': 51, 'name': 'Battery'},
+        {'driver': 'LUMIN', 'value': 99, 'uom': 36, 'name': 'Illuminance'}
+    ]
+    def __init__(self, polyglot, primary, address, name, marker_uri):
+        super().__init__(polyglot, primary, address, name, marker_uri, 'MSLSENSOR', self.drivers)

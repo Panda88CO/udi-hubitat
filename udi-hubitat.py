@@ -1,13 +1,40 @@
 #!/usr/bin/env python3
+"""
+Hubitat Elevation NodeServer for Universal Devices Polyglot v3 (PG3x).
+Capability-Driven Generic Connector with Dynamic JSON Profiles.
+"""
 
+import sys
+import os
+import json
+import time
 import re
+import threading
+import traceback
+from datetime import datetime
+
+try:
+    import requests
+except ImportError:
+    requests = None
+
+try:
+    from lomond import WebSocket
+except ImportError:
+    WebSocket = None
+
+import node_types
+import profile_generator
+from udiLib import my_setDriver
+
 try:
     import udi_interface
     logging = udi_interface.LOGGER
     Custom = udi_interface.Custom
 except ImportError:
     import logging
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
+
     class _MockNode:
         def __init__(self, polyglot=None, primary=None, address=None, name=None):
             self.poly = polyglot
@@ -15,67 +42,69 @@ except ImportError:
             self.address = address
             self.name = name
             self.drivers = getattr(self, 'drivers', [])
+
         def setDriver(self, driver, value, report=True, force=False, uom=None):
             pass
+
         def reportCmd(self, cmd, val=None):
             pass
+
         def reportDrivers(self):
             pass
+
     class _MockCustom(dict):
         def __init__(self, polyglot=None, name=None):
             super().__init__()
             self.poly = polyglot
             self.name = name
+
         def load(self, params):
             self.update(params)
+
     class _MockUdi:
         Node = _MockNode
         LOGGER = logging
         Custom = _MockCustom
+
     udi_interface = _MockUdi
     Custom = _MockCustom
 
-from datetime import datetime
-import sys
-import time
-try:
-    import requests
-except ImportError:
-    requests = None
-import traceback
-import json
-try:
-    from lomond import WebSocket
-except ImportError:
-    WebSocket = None
-import node_types
-version = '0.1.31'
-#LOGGER = polyinterface.LOGGER
+version = '0.2.0'
+
 
 class Controller(udi_interface.Node):
-    from udiLib import my_setDriver
+    """
+    Controller node for Hubitat Elevation NodeServer.
+    Manages Maker API discovery, dynamic profile updates, and live WebSocket event dispatch.
+    """
+    id = 'CONTROLLER'
+    drivers = [{'driver': 'ST', 'value': 1, 'uom': 2, 'name': 'NodeServer Online'}]
+
     def __init__(self, polyglot, primary, address, name):
-
-        self.RESPONSE_OK = 200
-        self.RESPONSE_NO_SUPPORT = 400
-        self.RESPONSE_NO_RESPONSE = 404
-        self.RESPONSE_SERVER_ERROR = 500
-
+        super().__init__(polyglot, primary, address, name)
         self.poly = polyglot
         self.primary = primary
         self.address = address
         self.name = name
-        self.id = 'CONTROLLER'
-        if hasattr(logging, 'setLevel'):
-            logging.setLevel(10)
+        self.node = self
+        self.RESPONSE_OK = 200
+
         self.drivers = [{'driver': 'ST', 'value': 1, 'uom': 2, 'name': 'NodeServer Online'}]
         self.nodes = {}
         self.node_list = []
+        self.device_list = {}
+        self.airth_radon_readings = {}
+        self.n_queue = []
         self.hb = 0
+        self.configDone = False
+        self.debug_enabled = True
+        self.temp_unit = 'F'
+        self.EcoBee_t_unit = 'F'
+        self.ws_thread = None
+
         self.Parameters = Custom(self.poly, 'customparams')
         self.Notices = Custom(self.poly, 'notices')
-        self.configDone = False
-        self.n_queue = []
+
         if hasattr(self.poly, 'subscribe'):
             self.poly.subscribe(self.poly.STOP, self.stopHandler)
             self.poly.subscribe(self.poly.START, self.start, address)
@@ -85,352 +114,200 @@ class Controller(udi_interface.Node):
 
         if hasattr(self.poly, 'addNode'):
             self.poly.addNode(self)
-        if hasattr(self.poly, 'getNode'):
-            self.node = self.poly.getNode(self.address)
-        else:
-            self.node = self
-        self.debug_enabled = True
-        if hasattr(self.poly, 'updateProfile'):
-            self.poly.updateProfile()
-        if hasattr(self.poly, 'ready'):
-            self.poly.ready()
-        self.temp_unit= 'F'
-        self.EcoBee_t_unit = 'F'
-        self.device_list = {}
-        self.airth_radon_readings = {}
+
+    def my_setDriver(self, key, value, Unit=None, force=False, type=None):
+        return my_setDriver(self, key, value, Unit, force, type)
 
     def getValidName(self, name):
         if name is None:
             return ""
-        name = bytes(name, 'utf-8').decode('utf-8', 'ignore')
+        name = bytes(str(name), 'utf-8').decode('utf-8', 'ignore')
         return re.sub(r"[^A-Za-z0-9_ ]", "", name)
 
     def node_queue(self, data):
         self.n_queue.append(data['address'])
 
     def wait_for_node_done(self):
-        while len(self.n_queue) == 0:
+        timeout = 50
+        while len(self.n_queue) == 0 and timeout > 0:
             time.sleep(0.1)
-        self.n_queue.pop()
+            timeout -= 1
+        if len(self.n_queue) > 0:
+            self.n_queue.pop()
 
-
-
-    #def shortPoll(self):
-    #    pass
-
-    #def longPoll(self):
-    #    pass
     def heartbeat(self):
-        logging.debug('heartbeat: ' + str(self.hb))
-        
+        logging.debug(f'heartbeat: {self.hb}')
         if self.hb == 0:
-            self.reportCmd('DON',2)
+            self.reportCmd('DON', 2)
             self.hb = 1
         else:
-            self.reportCmd('DOF',2)
+            self.reportCmd('DOF', 2)
             self.hb = 0
 
     def start(self):
-        logging.info('Started Hubitat')
+        logging.info(f'Started Hubitat NodeServer v{version}')
         self.my_setDriver('ST', 1)
-        # Remove all existing notices
-        self.poly.Notices.clear()
-        while not self.configDone:
-            time.sleep(10)
-            logging.info('Waiting for confuguration to complete')
-        #self.removeNoticesAll()
-        self.discover()
-        self.hubitat_events()
+        if hasattr(self.poly, 'Notices') and hasattr(self.poly.Notices, 'clear'):
+            self.poly.Notices.clear()
 
+        # Perform discovery and profile generation
+        self.discover()
+
+        # Start WebSocket event listener in background daemon thread
+        if self.ws_thread is None or not self.ws_thread.is_alive():
+            self.ws_thread = threading.Thread(target=self.hubitat_events, daemon=True, name="HubitatEvents")
+            self.ws_thread.start()
+            logging.info('Started background Hubitat WebSocket event listener.')
 
     def stopHandler(self):
-        # Set nodes offline
         self.my_setDriver('ST', 0)
-        #self.node.setOffline()
-        self.poly.stop()
-
-
+        if hasattr(self.poly, 'stop'):
+            self.poly.stop()
 
     def configDoneHandler(self):
-        # We use this to discover devices, or ask to authenticate if user has not already done so
-        self.poly.Notices.clear()
+        if hasattr(self.poly, 'Notices') and hasattr(self.poly.Notices, 'clear'):
+            self.poly.Notices.clear()
         self.configDone = True
 
-
     def query(self):
-        for node in self.nodes:
-            self.nodes[node].reportDrivers()
-
+        for node_id in self.nodes:
+            if hasattr(self.nodes[node_id], 'reportDrivers'):
+                self.nodes[node_id].reportDrivers()
 
     def customParamsHandler(self, userParams):
         self.Parameters.load(userParams)
-        logging.debug('customParamsHandler called')
         default_maker_uri = 'http://<IP_ADDRESS>/apps/api/<APP_ID>/devices/all?access_token=<TOKEN>'
         self.maker_uri = default_maker_uri
 
         if 'maker_uri' in userParams:
             self.maker_uri = userParams['maker_uri']
-            if self.maker_uri != default_maker_uri:
-                maker_st = True
-            else:
-                maker_st = False
         else:
             logging.error('Hubitat Maker API URL is not defined in configuration')
-            maker_st = False
 
         if 'debug_enabled' in userParams:
-            debug_enabled = userParams['debug_enabled']
-            if debug_enabled == "true" or debug_enabled == "True":
-                self.debug_enabled = True
-            else:
-                self.debug_enabled = False
+            self.debug_enabled = str(userParams['debug_enabled']).lower() in ('true', '1')
 
-        if self.maker_uri == default_maker_uri:
-            self.poly.Notices['maker_uri'] = 'Please set proper Hubitat and Maker API URI, and restart this NodeServer'
+        if self.maker_uri == default_maker_uri and hasattr(self.poly, 'Notices'):
+            self.poly.Notices['maker_uri'] = 'Please set proper Hubitat Maker API URI and restart this NodeServer'
 
         if 'temp_unit' in userParams:
-            temp_unit = userParams['temp_unit']
-            if temp_unit[0] == "C" or temp_unit[0] == "c":
-                 self.temp_unit= 'C'
-            else:
-                self.temp_unit= 'F'
-    '''
-    def check_params(self):
-        default_maker_uri = 'http://<IP_ADDRESS>/apps/api/<APP_ID>/devices/all?access_token=<TOKEN>'
-        maker_uri = default_maker_uri
+            self.temp_unit = 'C' if str(userParams['temp_unit']).upper().startswith('C') else 'F'
+            self.EcoBee_t_unit = self.temp_unit
 
-        if 'maker_uri' in self.polyConfig['customParams']:
-            maker_uri = self.polyConfig['customParams']['maker_uri']
-            if maker_uri != default_maker_uri:
-                maker_st = True
-            else:
-                maker_st = False
-        else:
-            logging.error('Hubitat Maker API URL is not defined in configuration')
-            maker_st = False
+    def update_radon_long(self, _deviceId, current_pci=None):
+        """Calculates 24H rolling average radon level for Airthings sensors."""
+        now = int(time.time())
+        readings = self.airth_radon_readings.setdefault(_deviceId, {})
+        if current_pci is not None:
+            readings[now] = current_pci
 
-        if 'debug_enabled' in self.polyConfig['customParams']:
-            debug_enabled = self.polyConfig['customParams']['debug_enabled']
-            if debug_enabled == "true" or debug_enabled == "True":
-                self.debug_enabled = True
-            else:
-                self.debug_enabled = False
-        else:
-            self.addCustomParam({'debug_enabled': "False"})
-
-        # Make sure they are in the params
-        self.addCustomParam({'maker_uri': maker_uri})
-
-
-        if maker_uri == default_maker_uri:
-            self.addNotice('Please set proper Hubitat and Maker API URI, and restart this NodeServer', 'HubitatNotice')
-
-        if maker_st:
-            return True
-    '''
-    def update_radon_long(self, _deviceId):
-        # Calculate 24H average radon level
         total = 0
         count = 0
         delete_list = []
-        now = int(time.time())
-
-        logging.debug('Calculating Radon 24H average from {} readings'.format(len(self.airth_radon_readings[_deviceId])))  
-        for timestamp in self.airth_radon_readings[_deviceId]:
-            #logging.debug('Radon timestamp: {} value: {}'.format(timestamp, self.airth_radon_readings[timestamp]))
+        for timestamp, val in readings.items():
             if now - timestamp <= 86400:
-                total += self.airth_radon_readings[_deviceId][timestamp]
+                total += val
                 count += 1
             else:
                 delete_list.append(timestamp)
-        for timestamp in delete_list:
-            del self.airth_radon_readings[_deviceId][timestamp]    
 
-        if count > 0:
-            avg_radon = round(total/count,1)
-        else:
-            avg_radon = 0
-        logging.debug('Radon 24H average: {} pCi/L'.format(avg_radon))
+        for timestamp in delete_list:
+            del readings[timestamp]
+
+        avg_radon = round(total / count, 1) if count > 0 else 0
+        logging.debug(f'Radon 24H average for {_deviceId}: {avg_radon} pCi/L ({count} readings)')
         return avg_radon
-    
+
     def discover(self, *args, **kwargs):
+        """
+        Discovers all devices from Hubitat Maker API, dynamically generates
+        the matching JSON profile, and instantiates nodes.
+        """
         assigned_addresses = ['controller']
         if not requests or not getattr(self, 'maker_uri', None):
             logging.error('Cannot discover: requests or maker_uri not available')
             return
+
         try:
             r = requests.get(self.maker_uri, timeout=10)
-            logging.debug('response code {}'.format(r.status_code))
             retries = 0
             while r.status_code != self.RESPONSE_OK and retries < 3:
                 time.sleep(1)
-                logging.error('Hubitat not responding - waiting for good response')
                 r = requests.get(self.maker_uri, timeout=10)
                 retries += 1
             if r.status_code != self.RESPONSE_OK:
-                logging.error('Hubitat discover failed with status {}'.format(r.status_code))
+                logging.error(f'Hubitat discover failed with status {r.status_code}')
                 return
             data = r.json()
         except Exception as e:
-            logging.error('Error during discover: {}'.format(e))
+            logging.error(f'Error during discover: {e}')
             return
-        logging.debug('Hubitat data::{}'.format(json.dumps(data, indent=4, separators=(',', ': '))))
 
+        logging.debug(f'Discovered {len(data)} devices from Hubitat Maker API.')
+
+        # 1. Synthesize and push Dynamic JSON Profile
+        profile_data = profile_generator.generate_profile(data, self.temp_unit)
+        if hasattr(self.poly, 'updateJsonProfile'):
+            try:
+                self.poly.updateJsonProfile(profile_data)
+                logging.info('Successfully sent dynamic JSON profile to Polyglot.')
+            except Exception as e:
+                logging.error(f'Failed to send updateJsonProfile: {e}')
+        elif hasattr(self.poly, 'updateProfile'):
+            self.poly.updateProfile()
+
+        # 2. Instantiate and add nodes
         for dev in data:
-            logging.debug('device id: {}'.format(dev))
+            if not isinstance(dev, dict):
+                continue
             _name = dev.get('name', '')
             _dev_name = dev.get('label') or _name or 'Device'
             if hasattr(self.poly, 'getValidName'):
                 _label = self.poly.getValidName(_dev_name)
             else:
                 _label = self.getValidName(_dev_name)
-            _type = dev.get('type')
+
             _id = str(dev['id'])
             self.device_list[_id] = dev
             dev['temp_unit'] = self.temp_unit
-            logging.debug(' device_list : {}'.format(self.device_list))
-            # if dev['type'] == 'Virtual Switch':
-            #     self.addNode(node_types.VirtualSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # if dev['type'] == 'Generic Z-Wave Switch':
-            #     self.addNode(node_types.ZWaveSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # if dev['type'] == 'Generic Z-Wave Dimmer':
-            #     self.addNode(node_types.ZWaveDimmerNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # if dev['type'] == 'Generic Zigbee Bulb':
-            #     self.addNode(node_types.ZigbeeBulbNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # if dev['type'] == 'NYCE Motion Sensor Series':
-            #     self.addNode(node_types.NYCEMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # if dev['type'] == 'Zooz 4-in-1 Sensor':
-            #     self.addNode(node_types.Zooz4n1SensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # if dev['type'] == 'Hue Motion Sensor':
-            #     self.addNode(node_types.HueMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # if dev['type'] == 'Dome Motion Sensor':
-            #     self.addNode(node_types.DomeMotionSensorNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # # if dev['type'] == 'Zooz Power Switch':
-            # #     self.addNode(node_types.ZoozPowerSwitchNode(self.poly,  self.address, _id, _label, self.maker_uri ))
-            # if dev['type'] == 'Fibaro Motion Sensor ZW5':
-            #     self.addNode(node_types.FibaroZW5Node(self.poly,  self.address, _id, _label, self.maker_uri ))
-            
-            if dev['type'] == 'Lutron Pico':
-                node_types.LutronPicoNode(self.poly, self.address, _id, _label, self.maker_uri )
-                '''
-                elif dev['type'] == 'Lutron Fast Pico':
-                    node_types.LutronFastPicoNode( self.poly, self.address, _id, _label, self.maker_uri )
-                elif dev['type'] == 'Virtual Switch':
-                    node_types.SwitchNode(self.poly, self.address, _id, _label, self.maker_uri )
-                elif dev['type'] == 'Virtual Dimmer':
-                    node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                '''
-            elif dev['type'] == 'Air Things Device':
-                node_types.AirThingsSensor(self.poly,  self.address, _id, _label, self.maker_uri, dev )
 
-            elif dev['type'] == 'Ecobee Sensor':
-                #nodeAdr = str(_id)
-                node_types.EcobeeSensor(self.poly,  self.address, _id, _label, self.maker_uri, dev )
-            elif dev['type'] == 'Ecobee Thermostat':
-                #nodeAdr = str(_id)
-                node_types.EcobeeThermostat(self.poly,  self.address, _id, _label, self.maker_uri, dev )                                
-                
-            elif 'Light' in dev['capabilities']:
-                if 'ColorTemperature' in dev['capabilities']:
-                    if 'ColorControl' in dev['capabilities']:
-                        node_types.RgbLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                    else:
-                        node_types.CtLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                else:
-                    node_types.StdLampNode(self.poly,  self.address, _id, _label, self.maker_uri )
-       
-            elif 'Outlet' in dev['capabilities']:
-                if 'EnergyMeter' in dev['capabilities']:
-                    node_types.EnergyOutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                else:
-                    node_types.OutletNode(self.poly,  self.address, _id, _label, self.maker_uri )
-  
-            elif 'Switch' in dev['capabilities']:
-                if 'Virtual' not in dev['type']:
-                    if 'Outlet' not in dev['capabilities']:
-                        if 'Light' not in dev['capabilities']:
-                            if 'Actuator' in dev['capabilities']:
-                                if 'SwitchLevel' in dev['capabilities']:
-                                    node_types.DimmerNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                                else:
-                                    node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                            else:
-                                node_types.SwitchNode(self.poly,  self.address, _id, _label, self.maker_uri )
+            nodedef_id, drivers, command_map = profile_generator.build_device_nodedef(dev, self.temp_unit)
 
-                '''
-                elif 'MotionSensor' in dev['capabilities']:
-                    if 'TemperatureMeasurement' in dev['capabilities'] and 'IlluminanceMeasurement' in dev['capabilities']:
-                        if 'AccelerationSensor' in dev['capabilities']:
-                            node_types.MultiSensorTLAS(self.poly,  self.address, _id, _label, self.maker_uri )
-                        elif 'RelativeHumidityMeasurement' in dev['capabilities']:
-                            node_types.MultiSensorTHLA(self.poly,  self.address, _id, _label, self.maker_uri )
-                        else:
-                            node_types.MultiSensorTL(self.poly,  self.address, _id, _label, self.maker_uri )
-                    elif 'TemperatureMeasurement' in dev['capabilities'] and 'RelativeHumidityMeasurement' in dev['capabilities']:
-                        if 'IlluminanceMeasurement' not in dev['capabilities']:
-                            node_types.MultiSensorTH(self.poly,  self.address, _id, _label, self.maker_uri )
-                    elif 'IlluminanceMeasurement' in dev['capabilities']:
-                        node_types.MultiSensorL(self.poly,  self.address, _id, _label, self.maker_uri )
-                    elif 'TemperatureMeasurement' in dev['capabilities']:
-                        node_types.MultiSensorT(self.poly,  self.address, _id, _label, self.maker_uri )
-                    else:
-                        node_types.MotionSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+            node = node_types.GenericHubitatNode(
+                self.poly,
+                self.address,
+                _id,
+                _label,
+                self.maker_uri,
+                node_def_id=nodedef_id,
+                drivers=drivers,
+                command_map=command_map
+            )
+            if hasattr(self.poly, 'addNode'):
+                self.poly.addNode(node)
 
-                elif dev['type'] == 'Sonoff Zigbee Temperature/Humidity Sensor':
-                    node_types.THSensor(self.poly,  self.address, _id, _label, self.maker_uri )
+            self.nodes[_id] = node
+            assigned_addresses.append(_id)
 
-                elif 'ContactSensor' in dev['capabilities']:
-                    node_types.ContactNode(self.poly,  self.address, _id, _label, self.maker_uri )
-                # newly added
-                '''
-            
-            elif 'PushableButton' in dev['capabilities']:
-                node_types.SimpleRemoteNode(self.poly,  self.address, _id, _label, self.maker_uri )  
-
-            assigned_addresses.append(_id)    
-            
-        # Build node list
+        # 3. Synchronize nodes from Polyglot & Clean up orphaned nodes
         if hasattr(self.poly, 'getNodes'):
-            self.nodes = self.poly.getNodes()
-            for node in self.nodes:
-                self.node_list.append(self.nodes[node].address)
-        else:
-            self.nodes = {}
-        # remove unused nodes still to be added
+            poly_nodes = self.poly.getNodes()
+            if poly_nodes:
+                self.nodes.update(poly_nodes)
+            for node_key in self.nodes:
+                node_inst = self.nodes[node_key]
+                if hasattr(node_inst, 'address'):
+                    self.node_list.append(node_inst.address)
+
         if hasattr(self.poly, 'getNodesFromDb'):
-            self.nodes_in_db = self.poly.getNodesFromDb() or []
-            logging.debug('Scanning db for extra nodes : {}'.format(assigned_addresses))
-            for nde in range(0, len(self.nodes_in_db)):
-                node = self.nodes_in_db[nde]
-                if node.get('address') not in assigned_addresses:
-                    logging.debug('Removing node : {} {}'.format(node.get('name'), node))
-                    self.poly.delNode(node['address'])
-        
+            nodes_in_db = self.poly.getNodesFromDb() or []
+            logging.debug(f'Scanning DB for extra nodes. Active: {assigned_addresses}')
+            for node in nodes_in_db:
+                addr = node.get('address')
+                if addr and addr not in assigned_addresses:
+                    logging.info(f'Removing orphaned node from DB: {node.get("name")} ({addr})')
+                    self.poly.delNode(addr)
 
-
-    def delete(self):
-        """
-        Example
-        This is sent by Polyglot upon deletion of the NodeServer. If the process is
-        co-resident and controlled by Polyglot, it will be terminiated within 5 seconds
-        of receiving this message.
-        """
-        logging.info('Oh God I\'m being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
-
-    def stop(self):
-        logging.debug('NodeServer stopped.')
-
-    def remove_notices_all(self,command):
-        logging.info('remove_notices_all:')
-        # Remove all existing notices
-        self.poly.Notices.clear()
-        #self.removeNoticesAll()
-
-    def update_profile(self,command):
-        logging.info('update_profile:')
-        st = self.poly.updateProfile()
-        return st
-    
     def isnumber(self, string):
         try:
             float(string)
@@ -439,451 +316,229 @@ class Controller(udi_interface.Node):
             return False
 
     def hubitat_events(self):
-        logging.debug('hubitat_events')
-        maker_uri = self.Parameters['maker_uri']
-        ws_uri = 'ws://' + maker_uri.split('/')[2] + '/eventsocket'
+        """WebSocket event listener loop connecting to Hubitat /eventsocket."""
+        if not WebSocket:
+            logging.error('Lomond WebSocket not installed.')
+            return
 
-        #logging.info(ws_uri)
-        #logging.info(maker_uri)
-        websocket = WebSocket(ws_uri)
-        for event in websocket:
-            if event.name == "text":
-                if event.json['source'] == 'DEVICE':
-                    logging.debug(json.dumps(event.json, indent=4, separators=(',', ': ') ))
-                    _deviceId = str(event.json['deviceId'])
-                    h_value = event.json['value']
-                    if isinstance(h_value, str):
-                        if self.isnumber(h_value):
-                            if '.' in h_value:
-                                h_value = float(h_value)
-                            else:
-                                h_value = int(h_value)
+        maker_uri = getattr(self, 'maker_uri', '')
+        if not maker_uri or 'http' not in maker_uri:
+            logging.error('Cannot connect WebSocket: invalid maker_uri.')
+            return
 
-                    h_name = event.json['name']
-                    h_type = event.json['type']
-                    if h_type in ['null', '', None] and _deviceId in self.device_list: 
-                        h_type = self.device_list[_deviceId]['type']    
-                    if 'date' in event.json:
-                        temp_data = event.json['date']
-                        dt = datetime.strptime(temp_data, '%Y-%m-%dT%H:%M:%S%z')
-                        unixtime = int(dt.timestamp())
-                    else:
-                        unixtime = int(time.time())
+        parts = maker_uri.split('/')
+        if len(parts) < 3:
+            logging.error(f'Invalid maker_uri: {maker_uri}')
+            return
+        ws_uri = f'ws://{parts[2]}/eventsocket'
+        logging.info(f'Connecting WebSocket to {ws_uri}')
 
-                    logging.debug('Device Property: ' + h_name + " " + str(h_value) + " " + h_type)
-
-                    if _deviceId in self.node_list:
-                        m_node = self.nodes[_deviceId]
-
+        while True:
+            try:
+                websocket = WebSocket(ws_uri)
+                for event in websocket:
+                    if event.name == "text":
                         try:
+                            payload = json.loads(event.text)
+                            if payload.get('source') == 'DEVICE':
+                                self.process_event(payload)
+                        except Exception as e:
+                            logging.error(f'Error parsing event: {e}')
+                    elif event.name in ("closed", "disconnected"):
+                        logging.warning('WebSocket disconnected, reconnecting in 5s...')
+                        time.sleep(5)
+                        break
+            except Exception as e:
+                logging.error(f'WebSocket error: {e}, reconnecting in 5s...')
+                time.sleep(5)
 
-                            if h_name == 'switch':
-                                if h_value == 'on':
-                                    m_node.my_setDriver('ST', 100)
-                                    m_node.reportCmd('DON', 2)
-                                elif h_value == 'off':
-                                    m_node.my_setDriver('ST', 0)
-                                    m_node.reportCmd('DOF', 2)
-                            elif h_name == 'level':
-                                m_node.my_setDriver('OL', h_value)
-                            elif h_name == 'colorMode':
-                                if h_value == 'CT':
-                                    m_node.my_setDriver('GV5', 1)
-                                elif h_value == 'RGB':
-                                    m_node.my_setDriver('GV5', 2)
-                                else:
-                                    m_node.my_setDriver('GV5', 0)
-                            elif h_name == 'colorTemperature':
-                                m_node.my_setDriver('GV6', h_value)
-                            elif h_name == 'hue':
-                                m_node.my_setDriver('GV3', h_value)
-                            elif h_name == 'saturation':
-                                m_node.my_setDriver('GV4', h_value)
-                            elif h_name == 'motion':
-                                if h_value == 'active':
-                                    m_node.my_setDriver('ST', 100)
-                                    m_node.reportCmd('DON', 2)
-                                elif h_value == 'inactive':
-                                    m_node.my_setDriver('ST', 0)
-                                    m_node.reportCmd('DOF', 2)
-                            elif h_name == 'tamper':
-                                if h_value == 'detected':
-                                    m_node.my_setDriver('ALARM', 1)
-                                elif h_value == 'clear':
-                                    m_node.my_setDriver('ALARM', 0)
-                            elif h_name == 'acceleration':
-                                if h_value == 'active':
-                                    m_node.my_setDriver('SPEED', 1)
-                                elif h_value == 'inactive':
-                                    m_node.my_setDriver('SPEED', 0)
-                            elif h_name == 'battery':
+    def process_event(self, event_data):
+        """
+        Declaratively routes a Hubitat Maker API live event to the matching node's drivers.
+        """
+        _deviceId = str(event_data.get('deviceId', ''))
+        h_name = event_data.get('name')
+        h_value = event_data.get('value')
+        h_type = event_data.get('type')
 
-                                if isinstance(h_value, (int, float))    :
-                                    if h_type == 'Air Things Device':
-                                        logging.debug('Battery level update Airthings: {} '.format(h_value))
-                                        if h_value == 0:
-                                            m_node.my_setDriver('BATLVL', 98, 25)
-                                        else:
-                                            m_node.my_setDriver('BATLVL', h_value)                                
-                                    else:
-                                        m_node.my_setDriver('BATLVL', h_value)
+        if not _deviceId or not h_name:
+            return
 
-                            elif h_name in ['temperature']:
-                                # Need to separate Ecobee
-                                dev_info = self.device_list.get(_deviceId)
-                                dev_type = dev_info.get('type') if isinstance(dev_info, dict) else dev_info
-                                if dev_type in ['Ecobee Sensor', 'Ecobee Thermostat']:
-                                    if self.temp_unit == 'F':
-                                        if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 17)
-                                        else: # C to F
-                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value*9/5+32)*2.0)/2), 1), 17) 
-                                    else:
-                                        if self.EcoBee_t_unit == 'F': # F to C
-                                            m_node.my_setDriver('CLITEMP', round(int(float((h_value-32)*5/9)*2.0)/2, 1), 4)
-                                        else:
-                                            m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)                                    
-    
-                                else:
-                                    if self.temp_unit == 'F': # assume C for result          
-                                        m_node.my_setDriver('CLITEMP', round(int(float((h_value*9/5+32)*2.0)/2), 1), 17)
-                                    else:
-                                        m_node.my_setDriver('CLITEMP', round(int(float(h_value)*2.0)/2, 1), 4)
-                                logging.debug('Temperature updated to {}'.format(h_value)) 
-                            elif h_name == 'humidity':
-                                m_node.my_setDriver('CLIHUM', h_value, 21)
-                            elif h_name == 'illuminance':
-                                m_node.my_setDriver('LUMIN', h_value)
-                            elif h_name == 'current':
-                                m_node.my_setDriver('CC', h_value)
-                            elif h_name == 'currentH':
-                                m_node.my_setDriver('GV0', h_value)
-                            elif h_name == 'currentL':
-                                m_node.my_setDriver('GV1', h_value)
-                            elif h_name == 'energy':
-                                m_node.my_setDriver('TPW', h_value)
-                            elif h_name == 'power':
-                                m_node.my_setDriver('CPW', h_value)
-                            elif h_name == 'powerH':
-                                m_node.my_setDriver('GV2', h_value)
-                            elif h_name == 'powerL':
-                                m_node.my_setDriver('GV3', h_value)
-                            elif h_name == 'voltage':
-                                m_node.my_setDriver('CV', h_value)
-                            elif h_name == 'voltageH':
-                                m_node.my_setDriver('GV4', h_value)
-                            elif h_name == 'voltageL':
-                                m_node.my_setDriver('GV5', h_value)
-                            elif h_name == 'energyDuration':
-                                _h_value = h_value.split(' ')[0]
-                                m_node.my_setDriver('GV6', _h_value)
-                                # Lutron Pico buttons ## and remote button
-                            elif h_name == 'pushed':
-                                if isinstance(h_value, (int, float)) or (isinstance(h_value, str) and h_value.isdigit()):
-                                    tmp = int(h_value)
-                                    if tmp <= 0:
-                                        tmp = 0
-                                    elif tmp >= 5:
-                                        tmp = 5        
-                                    m_node.my_setDriver('GV7', tmp)
-                                    m_node.reportCmd('DON', 2)
-                                else:
-                                    logging.error('Unexpected value: {}'.format(h_value))
-                                m_node.my_setDriver('GV8', 0)
-                                m_node.my_setDriver('GV9', 0)
-                            elif h_name == 'released':
-                                if isinstance(h_value, (int, float)) or (isinstance(h_value, str) and h_value.isdigit()):
-                                    tmp = int(h_value)
-                                    if tmp <= 0:
-                                        tmp = 0
-                                    elif tmp >= 5:
-                                        tmp = 5        
-                                    m_node.my_setDriver('GV8', tmp)
-                                    m_node.reportCmd('DOF', 2)
-                                else:
-                                    logging.error('Unexpected value: {}'.format(h_value))
-                                m_node.my_setDriver('GV7', 0)
-                                m_node.my_setDriver('GV9', 0)
-                            elif h_name == 'held':
-                                if isinstance(h_value, (int, float)) or (isinstance(h_value, str) and h_value.isdigit()):
-                                    tmp = int(h_value)
-                                    if tmp <= 0:
-                                        tmp = 0
-                                    elif tmp >= 5:
-                                        tmp = 5
-                                    m_node.my_setDriver('GV9', tmp)
-                                else:
-                                    logging.error('Unexpected value: {}'.format(h_value))
-                                m_node.my_setDriver('GV7', 0)
-                                m_node.my_setDriver('GV8', 0)
-                            elif h_name == 'contact':
-                                if h_value == 'open':
-                                    m_node.my_setDriver('ST', 0)
-                                    m_node.reportCmd('DON', 2)
-                                elif h_value == 'closed':
-                                    m_node.my_setDriver('ST', 100)
-                                    m_node.reportCmd('DOF', 2)
+        # Numeric string casting
+        if isinstance(h_value, str) and self.isnumber(h_value):
+            h_value = float(h_value) if '.' in h_value else int(h_value)
 
-                            elif h_name== 'DeviceWatch-DeviceStatus':
-                                if h_value == 'online':
-                                    m_node.my_setDriver('GV20', 1)
-                                else:
-                                    m_node.my_setDriver('GV20', 0)
-                            elif h_name== 'deviceAlive':
-                                if h_value == 'online':
-                                    m_node.my_setDriver('ST', 1)
-                                else:
-                                    m_node.my_setDriver('ST', 0)
+        # Date / Unix timestamp resolution
+        unixtime = int(time.time())
+        if 'date' in event_data:
+            try:
+                dt = datetime.strptime(event_data['date'], '%Y-%m-%dT%H:%M:%S%z')
+                unixtime = int(dt.timestamp())
+            except Exception:
+                pass
 
-                                                    
-                            elif h_name == 'thermostatMode':
-                                if h_value  == 'auto':
-                                    m_node.my_setDriver('CLIMD', 0)
-                                elif h_value  == 'cool':
-                                    m_node.my_setDriver('CLIMD', 1)
-                                elif h_value  == 'heat':                                    
-                                    m_node.my_setDriver('CLIMD', 2)
-                                elif h_value  == 'off':
-                                    m_node.my_setDriver('CLIMD', 3)                                        
-                                #elif h_value  == 'off':
-                                #    m_node.my_setDriver('CLIMD', 4)
-                                #elif h_value  == 'emergencyHeat':
-                                #    m_node.my_setDriver('CLIMD', 5)
-                                else:
-                                    m_node.my_setDriver('CLIMD', 99)
-                                    logging.error('Unknown value for {} {}'.format(h_name, h_value))
-                            elif h_name== 'coolingSetpoint':
-                                    if self.temp_unit == 'F':
-                                        if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), 17)
-                                        else: #C
-                                            m_node.my_setDriver('CLISPC', round(int(float(h_value*9/5+32)*2.0)/2, 1), 17)
-                                    else:
-                                        if self.EcoBee_t_unit == 'F':
-                                             m_node.my_setDriver('CLISPC', round(int(float((h_value-32)*5/9)*2.0)/2, 1), 4)
-                                        else:
-                                            m_node.my_setDriver('CLISPC', round(int(float(h_value)*2.0)/2, 1), 4)
-                            elif h_name== 'heatingSetpoint':
-                                    if self.temp_unit == 'F':
-                                        if self.EcoBee_t_unit == 'F':
-                                            m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), 17)
-                                        else: #C
-                                            m_node.my_setDriver('CLISPH', round(int(float(h_value*9/5+32)*2.0)/2, 1), 17)
-                                    else:
-                                        if self.EcoBee_t_unit == 'F':
-                                             m_node.my_setDriver('CLISPH', round(int(float((h_value-32)*5/9)*2.0)/2, 1), 4)
-                                        else:
-                                            m_node.my_setDriver('CLISPH', round(int(float(h_value)*2.0)/2, 1), 4)                                    
-                            elif h_name == 'thermostatFanMode':
-                                if h_value  == 'auto':
-                                    m_node.my_setDriver('CLIFRS', 0)
-                                elif h_value  == 'on':
-                                    m_node.my_setDriver('CLIFRS', 1)
-                                else:
-                                    m_node.my_setDriver('CLIFRS', 99)
-                                    logging.error('Unknown value for {} {}'.format(h_name, h_value))
-                            elif h_name == 'thermostatOperatingState':
-                                if -1 != h_value.find('auto'):
-                                    m_node.my_setDriver('CLIHCS', 0)
-                                elif -1 != h_value.find('cool'):
-                                    m_node.my_setDriver('CLIHCS', 1)
-                                elif -1 != h_value.find('heat'):                        
-                                    m_node.my_setDriver('CLIHCS', 2)
-                                elif -1 != h_value.find('off'):
-                                    m_node.my_setDriver('CLIHCS', 3)
-                                elif -1 != h_value.find('idle'):
-                                    m_node.my_setDriver('CLIHCS', 4)                             
-                                elif -1 != h_value.find('emergencyHeat'):
-                                    m_node.my_setDriver('CLIHCS', 5)
-                                else:
-                                    m_node.my_setDriver('CLIHCS', 99)
-                                    logging.error('Unknown value for {} {}'.format(h_name, h_value))
-                            elif h_name == 'thermostatFanOperatingState':  # Not found this one yet so guessing name
-                                if h_value  == 'auto':
-                                    m_node.my_setDriver('CLIFS', 0)
-                                elif h_value  == 'on':
-                                    m_node.my_setDriver('CLIFS', 1)
-                                elif h_value  == 'idle':
-                                    m_node.my_setDriver('CLIFS', 2)
-                                else:
-                                    m_node.my_setDriver('CLIFS', 99)
-                                    logging.error('Unknown value for {} {}'.format(h_name, h_value))       
+        m_node = self.nodes.get(_deviceId)
+        if not m_node:
+            return
 
-                            elif h_name == 'deviceTemperatureUnit':
-                                logging.debug('Temp Unit - no need to update')
-                                self.EcoBee_t_unit = h_value
+        logging.debug(f'Event: Device {_deviceId} [{h_name} = {h_value}]')
 
-                            #elif h_name in ['fanAuto', 'fanCirculate', 'fanOn', 'off']:
+        # Routing table
+        if h_name == 'switch':
+            val = 100 if h_value == 'on' else (0 if h_value == 'off' else 99)
+            m_node.my_setDriver('ST', val, 25)
+            if hasattr(m_node, 'reportCmd'):
+                m_node.reportCmd('DON' if val == 100 else 'DOF', 2)
 
-                            #elif h_name in ['resumeProgram']:
-                            #    m_node.my_setDriver(
-                                    
-                            elif h_name == 'deviceAlive':
-                                logging.debug('deviceAlive')
-                                if h_value  == 'true':
-                                    m_node.my_setDriver('ST', 1,  25)
-                                else:
-                                    m_node.my_setDriver('ST', 0,  25)
+        elif h_name == 'level':
+            m_node.my_setDriver('OL', h_value, 51)
 
-                                
+        elif h_name == 'motion':
+            val = 100 if h_value == 'active' else 0
+            # If node has GV5 (multi-sensor), use GV5; else use ST
+            if any(d.get('driver') == 'GV5' for d in getattr(m_node, 'drivers', [])):
+                m_node.my_setDriver('GV5', val, 25)
+            else:
+                m_node.my_setDriver('ST', val, 25)
+            if hasattr(m_node, 'reportCmd'):
+                m_node.reportCmd('DON' if val == 100 else 'DOF', 2)
 
-                            elif h_name == 'motion':
-                                if h_value  == 'inactive':
-                                    m_node.my_setDriver('ST', 0,  25)
-                                elif  h_value  == 'active':
-                                    m_node.my_setDriver('ST', 1,  25)
-                                else:
-                                    m_node.my_setDriver('ST', 99, 25)
+        elif h_name == 'contact':
+            val = 100 if h_value == 'open' else 0
+            if any(d.get('driver') == 'GV6' for d in getattr(m_node, 'drivers', [])):
+                m_node.my_setDriver('GV6', val, 25)
+            else:
+                m_node.my_setDriver('ST', val, 25)
+            if hasattr(m_node, 'reportCmd'):
+                m_node.reportCmd('DON' if val == 100 else 'DOF', 2)
 
-                            elif h_type == 'Air Things Device':
-                                logging.debug('Air Things Device Property: ' + h_name + " " + str(h_value) + " " + h_type)                                  
+        elif h_name == 'battery':
+            m_node.my_setDriver('BATLVL', h_value, 51)
 
-                                #if h_name == 'absHumidity':
-                                #    m_node.my_setDriver('CLIHUM', h_value)
+        elif h_name == 'temperature':
+            uom = 17 if self.temp_unit == 'F' else 4
+            m_node.my_setDriver('CLITEMP', h_value, uom)
 
-                                if h_name in ['co2', 'carbonDioxide']:
-                                    if isinstance(h_value, (int, float)): 
-                                        m_node.my_setDriver('CO2LVL', h_value, 54)
+        elif h_name == 'humidity':
+            m_node.my_setDriver('CLIHUM', h_value, 22)
 
-                                elif h_name in ['airQualityIndex']:
-                                    if isinstance(h_value, (int, float)):
-                                        m_node.my_setDriver('AQI', h_value,54)
+        elif h_name == 'power':
+            m_node.my_setDriver('GV2', h_value, 73)
+            m_node.my_setDriver('CPW', h_value, 73)
 
-                                elif h_name in ['pressure']:
-                                    if isinstance(h_value, (int, float)):
-                                        m_node.my_setDriver('ATMPRES', h_value, 23)     
-                                elif h_name in ['radonShortTermAvg']:
-                                # Need to support Metric value 1 pCi/L is equivalent to 37 Bq/m3
-                                    if isinstance(h_value, (int, float)): 
-                                        if _deviceId not in self.airth_radon_readings:
-                                            self.airth_radon_readings[_deviceId] = {}
-                                        m_node.my_setDriver('RADON', round(h_value/37,1), 124)    
-                                        self.airth_radon_readings[_deviceId][unixtime] = h_value/37
-                                        logging.debug('Radon reading added: {} timestamp: {}'.format(round(h_value/37,1), unixtime))
-                                        radon24H =self.update_radon_long(_deviceId )
-                                        m_node.my_setDriver('ST', radon24H, 124)
-                                    
+        elif h_name == 'energy':
+            m_node.my_setDriver('GV3', h_value, 33)
+            m_node.my_setDriver('TPW', h_value, 33)
 
-                                elif h_name == 'pm25':
-                                    if isinstance(h_value, (int, float)):
-                                        m_node.my_setDriver('GV25', h_value, 122)
-                                    else:
-                                        logging.error ('Unexpected PM2.5 value: {}'.format(h_value))
-                                        m_node.my_setDriver('GV25', None)
-                                elif h_name == 'pm1':
-                                    if isinstance(h_value, (int, float)):
-                                        m_node.my_setDriver('GV1', h_value)
-                                    else:
-                                        logging.error ('Unexpected PM1.0 value: {}'.format(h_value))
-                                        m_node.my_setDriver('GV1', None)
-                                  
-                                elif h_name == 'absHumidity':
-                                    if isinstance(h_value, (int, float)):
-                                        m_node.my_setDriver('GV0', h_value, 22)
-                                    else:
-                                        m_node.my_setDriver('GV0', None)
-                                elif h_name == 'voc':
-                                    if isinstance(h_value, (int, float)):
-                                        m_node.my_setDriver('GV2', h_value, 54)
-                                        if h_value < 250:
-                                            m_node.my_setDriver('VOCLVL', 1, 96)
-                                        elif 250 <= h_value < 500:
-                                            m_node.my_setDriver('VOCLVL', 2, 96) 
-                                        elif 500 <= h_value < 2000:
-                                            m_node.my_setDriver('VOCLVL', 3, 96)
-                                        else:
-                                            m_node.my_setDriver('VOCLVL', 4, 96)
-                                    else:
-                                        logging.error ('Unexpected VOC value: {}'.format(h_value))
-                                        m_node.my_setDriver('VOCLVL', None)
-                                        m_node.my_setDriver('GV2', None)
+        elif h_name == 'illuminance':
+            m_node.my_setDriver('LUMIN', h_value, 36)
 
-                                m_node.my_setDriver('TIME', unixtime)
+        elif h_name == 'colorMode':
+            val = 1 if h_value == 'CT' else (2 if h_value == 'RGB' else 0)
+            m_node.my_setDriver('GV5', val, 25)
 
+        elif h_name == 'colorTemperature':
+            m_node.my_setDriver('GV0', h_value, 26)
+            m_node.my_setDriver('GV6', h_value, 26)
 
-                            else:
-                                print('Driver not implemented for {} {} {}'.format(h_name, h_value, event.json))
-                        
-                                '''
-                                    "dataType": "NUMBER",
-                                    "values": null,
-                                    "pm12": null,
-                                    "pm29": null,
-                                    "relayDeviceType": "hub",
-                                    "pm21": null,
-                                    "rssi": "0",
-                                X "absHumidity": "9.09",
-                                    "pm10": null,
-                                    "pm27": null,
-                                X "pressure": "991.0",
-                                X "co2": "662.0",
-                                    X"carbonDioxide": "662.0",
-                                    X"airQualityIndex": "12",
-                                    "html": null,
-                                    X"temperature": "20.1",
-                                    "pm19": null,
-                                    "pm23": null,
-                                    "pm15": null,
-                                    "humidity": "52.0",
-                                    "pm25AqiText": "<span style='color:green'>Good</span>",
-                                    "pm25": "3.0",
-                                    "pm11": null,
-                                    "pm17": null,
-                                    "pm16": null,
-                                    "pm14": null,
-                                    "pm25Aqi": "12.5",
-                                    "mold": null,
-                                    "lastPoll": null,
-                                    X"radonShortTermAvg": "103.0",
-                                    "pm24": null,
-                                    "pm18": null,
-                                    "pm28": null,
-                                    "pm20": null,
-                                    "battery": "0",
-                                    "pm1": "3.0",
-                                    "pm22": null,
-                                    "pm26": null,
-                                    "voc": "269.0",
-                                    "pm13": null
-                                },
+        elif h_name == 'hue':
+            m_node.my_setDriver('GV1', h_value, 56)
+            m_node.my_setDriver('GV3', h_value, 56)
 
-                                '''
-                        except KeyError:
-                            print('Device not found in ISY')
+        elif h_name == 'saturation':
+            m_node.my_setDriver('GV2', h_value, 100)
+            m_node.my_setDriver('GV4', h_value, 100)
 
-    id = 'CONTROLLER'
+        elif h_name == 'lock':
+            val = 100 if h_value == 'locked' else 0
+            m_node.my_setDriver('ST', val, 25)
+
+        elif h_name in ('pushed', 'held', 'doubleTapped'):
+            btn_val = int(h_value) if self.isnumber(h_value) else 1
+            if h_name == 'pushed':
+                m_node.my_setDriver('GV4', btn_val, 57)
+                m_node.my_setDriver('GV7', btn_val, 57)
+            elif h_name == 'held':
+                m_node.my_setDriver('GV5', btn_val, 57)
+                m_node.my_setDriver('GV8', btn_val, 57)
+            elif h_name == 'doubleTapped':
+                m_node.my_setDriver('GV6', btn_val, 57)
+                m_node.my_setDriver('GV9', btn_val, 57)
+            if hasattr(m_node, 'reportCmd'):
+                m_node.reportCmd('DON', 2)
+
+        elif h_name in ('radonShortTermAvg', 'radon'):
+            if isinstance(h_value, (int, float)):
+                val_pci = round(h_value / 37.0, 1)
+                m_node.my_setDriver('RADON', val_pci, 124)
+                avg_24h = self.update_radon_long(_deviceId, val_pci)
+                m_node.my_setDriver('ST', avg_24h, 124)
+
+        elif h_name == 'co2':
+            m_node.my_setDriver('CO2LVL', h_value, 54)
+
+        elif h_name in ('voc', 'vocLevel'):
+            m_node.my_setDriver('VOCLVL', h_value, 54)
+
+        elif h_name == 'pm25':
+            m_node.my_setDriver('GV25', h_value, 122)
+
+        elif h_name == 'pm1':
+            m_node.my_setDriver('GV1', h_value, 122)
+
+        elif h_name == 'pressure':
+            m_node.my_setDriver('ATMPRES', h_value, 117)
+
+        elif h_name == 'absHumidity':
+            m_node.my_setDriver('GV0', h_value, 21)
+
+        # Thermostat controls
+        elif h_name == 'thermostatMode':
+            mode_map = {'off': 0, 'heat': 1, 'cool': 2, 'auto': 3, 'emergency heat': 4}
+            m_node.my_setDriver('CLIMD', mode_map.get(str(h_value).lower(), 99), 25)
+
+        elif h_name == 'thermostatFanMode':
+            fan_map = {'auto': 0, 'on': 1, 'circulate': 2}
+            m_node.my_setDriver('CLIFRS', fan_map.get(str(h_value).lower(), 99), 25)
+
+        elif h_name == 'thermostatOperatingState':
+            state_map = {'idle': 0, 'heating': 1, 'cooling': 2, 'fan only': 3}
+            m_node.my_setDriver('CLIFS', state_map.get(str(h_value).lower(), 99), 25)
+
+        elif h_name == 'coolingSetpoint':
+            uom = 17 if self.temp_unit == 'F' else 4
+            m_node.my_setDriver('CLISPC', round(float(h_value) * 2.0) / 2, uom)
+
+        elif h_name == 'heatingSetpoint':
+            uom = 17 if self.temp_unit == 'F' else 4
+            m_node.my_setDriver('CLISPH', round(float(h_value) * 2.0) / 2, uom)
+
+    def remove_notices_all(self, command=None):
+        if hasattr(self.poly, 'Notices') and hasattr(self.poly.Notices, 'clear'):
+            self.poly.Notices.clear()
+
+    def update_profile(self, command=None):
+        logging.info('Manual update profile requested.')
+        self.discover()
+
     commands = {
         'DISCOVER': discover,
-        'UPDATE_PROFILE': update_profile, 'UPDATEPROFILE': update_profile,
-        'REMOVE_NOTICES_ALL': remove_notices_all, 'REMOVENOTICESALL': remove_notices_all
+        'UPDATE_PROFILE': update_profile,
+        'UPDATEPROFILE': update_profile,
+        'REMOVE_NOTICES_ALL': remove_notices_all,
+        'REMOVENOTICESALL': remove_notices_all,
     }
-    drivers = [{'driver': 'ST', 'value': 1, 'uom': 2, 'name': 'NodeServer Online'}]
 
 
 if __name__ == "__main__":
     try:
         polyglot = udi_interface.Interface([])
-        """
-        Instantiates the Interface to Polyglot.
-        """
-        polyglot.start({ 'version': version, 'requestId': True })
-        """
-        Starts MQTT and connects to Polyglot.
-        """
+        polyglot.start({'version': version, 'requestId': True})
         polyglot.setCustomParamsDoc()
         control = Controller(polyglot, 'controller', 'controller', 'hubitat')
-        """
-        Creates the Controller Node and passes in the Interface
-        """
         polyglot.ready()
         polyglot.runForever()
-        """
-        Sits around and does nothing forever, keeping your program running.
-        """
     except (KeyboardInterrupt, SystemExit):
         logging.error(f"Error starting Nodeserver: {traceback.format_exc()}")
         polyglot.stop()
         sys.exit(0)
-        """
-        Catch SIGTERM or Control-C and exit cleanly.
-        """

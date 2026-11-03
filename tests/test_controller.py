@@ -91,12 +91,16 @@ class TestController(unittest.TestCase):
             self.ctrl.maker_uri = 'http://192.168.1.100/apps/api/10/devices/all?access_token=token'
             self.ctrl.discover()
 
+            # Check that dynamic profile was sent
+            self.assertTrue(self.poly.profile_updated)
+            self.assertIn('THERMOSTAT', self.poly.last_json_profile['nodedefs'])
+
             # Check that Ecobee Thermostat (id=4) and Ecobee Sensor (id=7) were added
             self.assertIn('4', self.poly.nodes)
-            self.assertEqual(self.poly.nodes['4'].id, 'ECOBTSTAT')
+            self.assertEqual(self.poly.nodes['4'].id, 'THERMOSTAT')
 
             self.assertIn('7', self.poly.nodes)
-            self.assertEqual(self.poly.nodes['7'].id, 'ECOBSENSOR')
+            self.assertEqual(self.poly.nodes['7'].id, 'ND_MOT_TMP')
         finally:
             udi_module.requests = orig_requests
 
