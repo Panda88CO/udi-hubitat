@@ -27,7 +27,7 @@ class TestController(unittest.TestCase):
         self.ctrl = Controller(self.poly, 'controller', 'controller', 'Hubitat Controller')
 
     def test_controller_initial_state_and_drivers(self):
-        self.assertEqual(self.ctrl.id, 'CONTROLLER')
+        self.assertEqual(self.ctrl.id, 'controller')
         self.assertEqual(len(self.ctrl.drivers), 1)
         self.assertEqual(self.ctrl.drivers[0]['name'], 'NodeServer Online')
         self.assertEqual(self.ctrl.drivers[0]['driver'], 'ST')
@@ -93,7 +93,9 @@ class TestController(unittest.TestCase):
 
             # Check that dynamic profile was sent
             self.assertTrue(self.poly.profile_updated)
-            self.assertIn('THERMOSTAT', self.poly.last_json_profile['nodedefs'])
+            nodedef_ids = [nd['id'] for nd in self.poly.last_json_profile['nodedefs']]
+            self.assertIn('controller', nodedef_ids)
+            self.assertIn('THERMOSTAT', nodedef_ids)
 
             # Check that Ecobee Thermostat (id=4) and Ecobee Sensor (id=7) were added
             self.assertIn('4', self.poly.nodes)

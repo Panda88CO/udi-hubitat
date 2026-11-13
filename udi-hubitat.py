@@ -77,7 +77,7 @@ class Controller(udi_interface.Node):
     Controller node for Hubitat Elevation NodeServer.
     Manages Maker API discovery, dynamic profile updates, and live WebSocket event dispatch.
     """
-    id = 'CONTROLLER'
+    id = 'controller'
     drivers = [{'driver': 'ST', 'value': 1, 'uom': 2, 'name': 'NodeServer Online'}]
 
     def __init__(self, polyglot, primary, address, name):

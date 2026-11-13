@@ -1,136 +1,259 @@
 {
-  "profile_version": "1.0.0",
-  "editors": {
-    "TRUEFALSE": [
-      { "uom": 2, "subset": "0,1" },
-      { "uom": 25, "subset": "0,1", "nls": "TRUEFALSE" }
-    ],
-    "STATUS": [
-      { "uom": 78, "subset": "0,100,101" }
-    ],
-    "CONTACT": [
-      { "uom": 79, "subset": "0,100" }
-    ],
-    "OL": [
-      { "uom": 51, "min": 0, "max": 100, "step": 1, "prec": 0 }
-    ],
-    "OUTL": [
-      { "uom": 51, "min": 0, "max": 100, "step": 1, "prec": 0 }
-    ],
-    "BATLVL": [
-      { "uom": 51, "min": 0, "max": 100, "step": 1, "prec": 0 },
-      { "uom": 25, "subset": "0-5,98,99", "nls": "BATLVL" }
-    ],
-    "CLITEMP": [
-      { "uom": 17, "min": -40, "max": 149, "step": 0.5, "prec": 1 },
-      { "uom": 4, "min": -40, "max": 65, "step": 0.5, "prec": 1 },
-      { "uom": 25, "subset": "99", "nls": "UNKNOWN" }
-    ],
-    "CLIHUM": [
-      { "uom": 22, "min": 0, "max": 100, "prec": 0 }
-    ],
-    "LUMIN": [
-      { "uom": 36, "min": 0, "max": 200000, "prec": 0 }
-    ],
-    "ALARM": [
-      { "uom": 2, "subset": "0,1" }
-    ],
-    "SPEED": [
-      { "uom": 2, "subset": "0,1" }
-    ],
-    "CC": [
-      { "uom": 1, "min": 0, "max": 1000, "step": 1, "prec": 3 }
-    ],
-    "CPW": [
-      { "uom": 73, "min": 0, "max": 10000, "step": 1, "prec": 1 }
-    ],
-    "CV": [
-      { "uom": 72, "min": 0, "max": 500, "step": 1, "prec": 1 }
-    ],
-    "TPW": [
-      { "uom": 33, "min": 0, "max": 100000, "step": 1, "prec": 2 }
-    ],
-    "PICOBUTTON": [
-      { "uom": 57, "min": 0, "max": 5, "step": 1, "prec": 0 }
-    ],
-    "REMOTEBTN": [
-      { "uom": 57, "min": 0, "max": 10, "step": 1, "prec": 0 }
-    ],
-    "ZCLHUE": [
-      { "uom": 56, "min": 0, "max": 100, "step": 1, "prec": 0 }
-    ],
-    "ZCLSAT": [
-      { "uom": 100, "min": 0, "max": 100, "step": 1, "prec": 0 }
-    ],
-    "KELVIN": [
-      { "uom": 26, "min": 2000, "max": 6535, "step": 1, "prec": 0 }
-    ],
-    "COLORMODE": [
-      { "uom": 25, "subset": "0-2", "nls": "COLORMODE" }
-    ],
-    "ONLINE": [
-      { "uom": 25, "subset": "0-1,99", "nls": "ONLINE" }
-    ],
-    "MOTION": [
-      { "uom": 25, "subset": "0-1,99,100", "nls": "MOTION" }
-    ],
-    "CLIMD": [
-      { "uom": 25, "subset": "0-4,99", "nls": "CLIMD" }
-    ],
-    "CLIHCS": [
-      { "uom": 25, "subset": "0-5,99", "nls": "CLIHCS" }
-    ],
-    "SETCLIMD": [
-      { "uom": 25, "subset": "0-4", "nls": "CLIHCS" }
-    ],
-    "CLIFRS": [
-      { "uom": 25, "subset": "0-1,99", "nls": "CLIFRS" }
-    ],
-    "CLIFS": [
-      { "uom": 25, "subset": "0-2,99", "nls": "CLIFRS" }
-    ],
-    "ONOFF": [
-      { "uom": 25, "subset": "0-1,99,100", "nls": "ONOFF" }
-    ],
-    "TSTATTEMP": [
-      { "uom": 17, "min": 45, "max": 95, "step": 0.5, "prec": 1 },
-      { "uom": 4, "min": 7, "max": 35, "step": 0.5, "prec": 1 },
-      { "uom": 25, "subset": "99", "nls": "UNKNOWN" }
-    ],
-    "RADON": [
-      { "uom": 124, "min": 0, "max": 100, "step": 0.1, "prec": 1 },
-      { "uom": 25, "subset": "0,99", "nls": "error" }
-    ],
-    "ATMPRES": [
-      { "uom": 117, "min": 0, "max": 2000, "prec": 0 },
-      { "uom": 23, "min": 0, "max": 2000, "prec": 0 },
-      { "uom": 25, "subset": "0,99", "nls": "error" }
-    ],
-    "CO2LVL": [
-      { "uom": 54, "min": 0, "max": 5000, "step": 1, "prec": 0 },
-      { "uom": 25, "subset": "0,99", "nls": "error" }
-    ],
-    "AQI": [
-      { "uom": 54, "min": 0, "max": 500, "step": 1, "prec": 0 },
-      { "uom": 25, "subset": "0,99", "nls": "error" }
-    ],
-    "VOCLVL": [
-      { "uom": 54, "min": 0, "max": 10000, "step": 1, "prec": 0 },
-      { "uom": 25, "subset": "0,99", "nls": "error" }
-    ],
-    "PARTICLE": [
-      { "uom": 122, "min": 0, "max": 2000, "step": 0.1, "prec": 1 },
-      { "uom": 25, "subset": "99", "nls": "error" }
-    ],
-    "ABSCLIHUM": [
-      { "uom": 21, "min": 0, "max": 2000, "step": 0.1, "prec": 1 },
-      { "uom": 25, "subset": "99", "nls": "error" }
-    ],
-    "UNIXTIME": [
-      { "uom": 151, "min": 0, "max": 9999999999, "prec": 0 }
-    ]
-  },
-  "nodedefs": {},
-  "linkdefs": []
+  "editors": [
+    {
+      "id": "TRUEFALSE",
+      "ranges": [
+        { "uom": "2", "subset": "0,1" },
+        { "uom": "25", "subset": "0,1", "names": { "0": "False", "1": "True" } }
+      ]
+    },
+    {
+      "id": "STATUS",
+      "ranges": [
+        { "uom": "78", "subset": "0,100,101" }
+      ]
+    },
+    {
+      "id": "CONTACT",
+      "ranges": [
+        { "uom": "79", "subset": "0,100" }
+      ]
+    },
+    {
+      "id": "OL",
+      "ranges": [
+        { "uom": "51", "min": 0, "max": 100, "step": 1, "prec": 0 }
+      ]
+    },
+    {
+      "id": "OUTL",
+      "ranges": [
+        { "uom": "51", "min": 0, "max": 100, "step": 1, "prec": 0 }
+      ]
+    },
+    {
+      "id": "BATLVL",
+      "ranges": [
+        { "uom": "51", "min": 0, "max": 100, "step": 1, "prec": 0 },
+        {
+          "uom": "25",
+          "subset": "0-5,98,99",
+          "names": {
+            "0": "Empty",
+            "1": "Very Low",
+            "2": "Very Low",
+            "3": "Medium",
+            "4": "Medium High",
+            "5": "Full",
+            "98": "External Power",
+            "99": "Unknown/No support"
+          }
+        }
+      ]
+    },
+    {
+      "id": "CLITEMP",
+      "ranges": [
+        { "uom": "17", "min": -40, "max": 149, "step": 0.5, "prec": 1 },
+        { "uom": "4", "min": -40, "max": 65, "step": 0.5, "prec": 1 },
+        { "uom": "25", "subset": "99", "names": { "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "CLIHUM",
+      "ranges": [
+        { "uom": "22", "min": 0, "max": 100, "prec": 0 }
+      ]
+    },
+    {
+      "id": "LUMIN",
+      "ranges": [
+        { "uom": "36", "min": 0, "max": 200000, "prec": 0 }
+      ]
+    },
+    {
+      "id": "ALARM",
+      "ranges": [
+        { "uom": "2", "subset": "0,1" }
+      ]
+    },
+    {
+      "id": "SPEED",
+      "ranges": [
+        { "uom": "2", "subset": "0,1" }
+      ]
+    },
+    {
+      "id": "CC",
+      "ranges": [
+        { "uom": "1", "min": 0, "max": 1000, "step": 1, "prec": 3 }
+      ]
+    },
+    {
+      "id": "CPW",
+      "ranges": [
+        { "uom": "73", "min": 0, "max": 10000, "step": 1, "prec": 1 }
+      ]
+    },
+    {
+      "id": "CV",
+      "ranges": [
+        { "uom": "72", "min": 0, "max": 500, "step": 1, "prec": 1 }
+      ]
+    },
+    {
+      "id": "TPW",
+      "ranges": [
+        { "uom": "33", "min": 0, "max": 100000, "step": 1, "prec": 2 }
+      ]
+    },
+    {
+      "id": "PICOBUTTON",
+      "ranges": [
+        { "uom": "57", "min": 0, "max": 5, "step": 1, "prec": 0 }
+      ]
+    },
+    {
+      "id": "REMOTEBTN",
+      "ranges": [
+        { "uom": "57", "min": 0, "max": 10, "step": 1, "prec": 0 }
+      ]
+    },
+    {
+      "id": "ZCLHUE",
+      "ranges": [
+        { "uom": "56", "min": 0, "max": 100, "step": 1, "prec": 0 }
+      ]
+    },
+    {
+      "id": "ZCLSAT",
+      "ranges": [
+        { "uom": "100", "min": 0, "max": 100, "step": 1, "prec": 0 }
+      ]
+    },
+    {
+      "id": "KELVIN",
+      "ranges": [
+        { "uom": "26", "min": 2000, "max": 6535, "step": 1, "prec": 0 }
+      ]
+    },
+    {
+      "id": "COLORMODE",
+      "ranges": [
+        { "uom": "25", "subset": "0-2", "names": { "0": "N/A", "1": "CT", "2": "RGB" } }
+      ]
+    },
+    {
+      "id": "ONLINE",
+      "ranges": [
+        { "uom": "25", "subset": "0-1,99", "names": { "0": "Offline", "1": "Online", "99": "Unknown/Not supported" } }
+      ]
+    },
+    {
+      "id": "MOTION",
+      "ranges": [
+        { "uom": "25", "subset": "0-1,99,100", "names": { "0": "Idle", "1": "Motion Detected", "99": "No data", "100": "Motion Detected" } }
+      ]
+    },
+    {
+      "id": "CLIMD",
+      "ranges": [
+        { "uom": "25", "subset": "0-4,99", "names": { "0": "Off", "1": "Heat", "2": "Cool", "3": "Auto", "4": "Emergency Heat", "99": "No data" } }
+      ]
+    },
+    {
+      "id": "CLIHCS",
+      "ranges": [
+        { "uom": "25", "subset": "0-5,99", "names": { "0": "Auto", "1": "Cool", "2": "Heat", "3": "Off", "4": "Idle", "5": "Emergency Heat", "99": "No data" } }
+      ]
+    },
+    {
+      "id": "SETCLIMD",
+      "ranges": [
+        { "uom": "25", "subset": "0-4", "names": { "0": "Auto", "1": "Cool", "2": "Heat", "3": "Off", "4": "Idle" } }
+      ]
+    },
+    {
+      "id": "CLIFRS",
+      "ranges": [
+        { "uom": "25", "subset": "0-2,99", "names": { "0": "Auto", "1": "On", "2": "Circulate", "99": "No data" } }
+      ]
+    },
+    {
+      "id": "CLIFS",
+      "ranges": [
+        { "uom": "25", "subset": "0-3,99", "names": { "0": "Idle", "1": "Heating", "2": "Cooling", "3": "Fan Only", "99": "No data" } }
+      ]
+    },
+    {
+      "id": "ONOFF",
+      "ranges": [
+        { "uom": "25", "subset": "0-1,99,100", "names": { "0": "Off", "1": "On", "99": "No data", "100": "On" } }
+      ]
+    },
+    {
+      "id": "TSTATTEMP",
+      "ranges": [
+        { "uom": "17", "min": 45, "max": 95, "step": 0.5, "prec": 1 },
+        { "uom": "4", "min": 7, "max": 35, "step": 0.5, "prec": 1 },
+        { "uom": "25", "subset": "99", "names": { "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "RADON",
+      "ranges": [
+        { "uom": "124", "min": 0, "max": 100, "step": 0.1, "prec": 1 },
+        { "uom": "25", "subset": "0,99", "names": { "0": "Error", "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "ATMPRES",
+      "ranges": [
+        { "uom": "117", "min": 0, "max": 2000, "prec": 0 },
+        { "uom": "23", "min": 0, "max": 2000, "prec": 0 },
+        { "uom": "25", "subset": "0,99", "names": { "0": "Error", "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "CO2LVL",
+      "ranges": [
+        { "uom": "54", "min": 0, "max": 5000, "step": 1, "prec": 0 },
+        { "uom": "25", "subset": "0,99", "names": { "0": "Error", "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "AQI",
+      "ranges": [
+        { "uom": "54", "min": 0, "max": 500, "step": 1, "prec": 0 },
+        { "uom": "25", "subset": "0,99", "names": { "0": "Error", "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "VOCLVL",
+      "ranges": [
+        { "uom": "54", "min": 0, "max": 10000, "step": 1, "prec": 0 },
+        { "uom": "25", "subset": "0,99", "names": { "0": "Error", "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "PARTICLE",
+      "ranges": [
+        { "uom": "122", "min": 0, "max": 2000, "step": 0.1, "prec": 1 },
+        { "uom": "25", "subset": "99", "names": { "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "ABSCLIHUM",
+      "ranges": [
+        { "uom": "21", "min": 0, "max": 2000, "step": 0.1, "prec": 1 },
+        { "uom": "25", "subset": "99", "names": { "99": "Unknown" } }
+      ]
+    },
+    {
+      "id": "UNIXTIME",
+      "ranges": [
+        { "uom": "151", "min": 0, "max": 9999999999, "prec": 0 }
+      ]
+    }
+  ]
 }
-
