@@ -271,6 +271,13 @@ class Controller(udi_interface.Node):
             self.device_list[_id] = dev
             dev['temp_unit'] = self.temp_unit
 
+            if self.debug_enabled:
+                logging.debug(
+                    f"Discovered Hubitat device id={_id} name={dev.get('name')!r} "
+                    f"label={dev.get('label')!r} type={dev.get('type')!r} "
+                    f"capabilities={dev.get('capabilities')} attributes={dev.get('attributes')}"
+                )
+
             nodedef_id, drivers, command_map = profile_generator.build_device_nodedef(dev, self.temp_unit)
 
             node = node_types.GenericHubitatNode(
