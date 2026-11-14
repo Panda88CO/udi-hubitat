@@ -73,3 +73,5 @@ target/
 polyinterface
 *.lock
 *.pid
+plugin_*.cert
+plugin_*.key
