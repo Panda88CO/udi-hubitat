@@ -35,24 +35,26 @@ class TestDynamicProfiles(unittest.TestCase):
         with open(self.base_profile_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
+        self.assertIn("profile_version", data)
         self.assertIn("editors", data)
+        self.assertIn("linkdefs", data)
         self.assertIsInstance(data["editors"], list)
-        editors_by_id = {ed["id"]: ed["ranges"] for ed in data["editors"]}
+        self.assertIsInstance(data["linkdefs"], list)
 
         # Essential standard editors
         required_editors = [
             'TRUEFALSE', 'STATUS', 'OL', 'BATLVL', 'CLITEMP', 'CLIHUM',
             'LUMIN', 'RADON', 'CO2LVL', 'VOCLVL', 'PARTICLE', 'ATMPRES'
         ]
+        editors_by_id = {e["id"]: e for e in data["editors"]}
         for ed in required_editors:
             self.assertIn(ed, editors_by_id, f"Base profile must define editor {ed}")
-            ranges = editors_by_id[ed]
+            ranges = editors_by_id[ed]["ranges"]
             self.assertIsInstance(ranges, list)
             self.assertGreater(len(ranges), 0)
             for r in ranges:
                 self.assertIn("uom", r)
-                self.assertIsInstance(r["uom"], str, f"uom in {ed} must be a quoted string")
-                self.assertNotIn("nls", r, f"nls in {ed} must be replaced with inline names")
+                self.assertIsInstance(r["uom"], str, f"{ed}: wire-shape uom must be a string")
 
     def test_dynamic_profile_generation_dataset_json(self):
         with open(self.dataset_path, 'r', encoding='utf-8') as f:
@@ -60,39 +62,24 @@ class TestDynamicProfiles(unittest.TestCase):
 
         profile = profile_generator.generate_profile(devices, temp_unit='F')
 
-        self.assertIn("editors", profile)
-        self.assertIsInstance(profile["editors"], list)
         self.assertIn("nodedefs", profile)
-        self.assertIsInstance(profile["nodedefs"], list)
+        nodedefs = {n["id"]: n for n in profile["nodedefs"]}
 
-        nodedefs_by_id = {nd["id"]: nd for nd in profile["nodedefs"]}
-
-        # Controller must always be present with lowercase id 'controller'
-        self.assertIn("controller", nodedefs_by_id)
-        for nd in profile["nodedefs"]:
-            self.assertIn("id", nd)
-            self.assertIn("name", nd)
-            self.assertIn("properties", nd)
-            self.assertIn("cmds", nd)
-            self.assertIn("sends", nd["cmds"])
-            self.assertIn("accepts", nd["cmds"])
-            self.assertEqual(nd["links"], {"ctl": [], "rsp": []})
-            if nd["id"] != "controller":
-                prop_ids = [p["id"] for p in nd["properties"]]
-                self.assertIn("ST", prop_ids, f"NodeDef {nd['id']} must have an ST property")
+        # Controller must always be present
+        self.assertIn("controller", nodedefs)
+        self.assertEqual(nodedefs["controller"]["id"], "controller")
 
         # Ecobee Thermostat in dataset.json must produce THERMOSTAT nodedef
-        self.assertIn("THERMOSTAT", nodedefs_by_id)
-        tstat_drivers = [p["id"] for p in nodedefs_by_id["THERMOSTAT"]["properties"]]
-        self.assertIn("ST", tstat_drivers)
+        self.assertIn("THERMOSTAT", nodedefs)
+        tstat_drivers = [d["id"] for d in nodedefs["THERMOSTAT"]["properties"]]
         self.assertIn("CLIMD", tstat_drivers)
         self.assertIn("CLISPC", tstat_drivers)
         self.assertIn("CLISPH", tstat_drivers)
         self.assertIn("CLITEMP", tstat_drivers)
 
         # Ecobee Sensor must produce motion + temp nodedef
-        self.assertIn("ND_MOT_TMP", nodedefs_by_id)
-        sensor_drivers = [p["id"] for p in nodedefs_by_id["ND_MOT_TMP"]["properties"]]
+        self.assertIn("ND_MOT_TMP", nodedefs)
+        sensor_drivers = [d["id"] for d in nodedefs["ND_MOT_TMP"]["properties"]]
         self.assertIn("ST", sensor_drivers)
         self.assertIn("CLITEMP", sensor_drivers)
 
@@ -103,42 +90,38 @@ class TestDynamicProfiles(unittest.TestCase):
         devices = ast.literal_eval(text)
 
         profile = profile_generator.generate_profile(devices, temp_unit='F')
-        nodedefs_by_id = {nd["id"]: nd for nd in profile["nodedefs"]}
+        nodedefs = {n["id"]: n for n in profile["nodedefs"]}
 
         # Sengled bulb produces ND_SW_LVL
-        self.assertIn("ND_SW_LVL", nodedefs_by_id)
-        sw_lvl_drivers = [p["id"] for p in nodedefs_by_id["ND_SW_LVL"]["properties"]]
+        self.assertIn("ND_SW_LVL", nodedefs)
+        sw_lvl_drivers = [d["id"] for d in nodedefs["ND_SW_LVL"]["properties"]]
         self.assertIn("ST", sw_lvl_drivers)
         self.assertIn("OL", sw_lvl_drivers)
 
         # Zigbee switch produces ND_SW
-        self.assertIn("ND_SW", nodedefs_by_id)
+        self.assertIn("ND_SW", nodedefs)
 
         # Zigbee outlet with power meter produces ND_SW_PWR
-        self.assertIn("ND_SW_PWR", nodedefs_by_id)
-        pwr_drivers = [p["id"] for p in nodedefs_by_id["ND_SW_PWR"]["properties"]]
+        self.assertIn("ND_SW_PWR", nodedefs)
+        pwr_drivers = [d["id"] for d in nodedefs["ND_SW_PWR"]["properties"]]
         self.assertIn("ST", pwr_drivers)
         self.assertIn("GV2", pwr_drivers)
 
         # Aqara button remote produces ND_BTN_BAT
-        self.assertIn("ND_BTN_BAT", nodedefs_by_id)
-        btn_drivers = [p["id"] for p in nodedefs_by_id["ND_BTN_BAT"]["properties"]]
-        self.assertIn("ST", btn_drivers)
+        self.assertIn("ND_BTN_BAT", nodedefs)
+        btn_drivers = [d["id"] for d in nodedefs["ND_BTN_BAT"]["properties"]]
         self.assertIn("GV4", btn_drivers)
         self.assertIn("GV5", btn_drivers)
         self.assertIn("GV6", btn_drivers)
         self.assertIn("BATLVL", btn_drivers)
 
     def test_nodedef_id_rules(self):
-        """Non-controller NodeDef IDs must be uppercase, <= 14 characters, without spaces."""
+        """NodeDef IDs must be uppercase, <= 14 characters, without spaces or lowercase."""
         with open(self.dataset_path, 'r', encoding='utf-8') as f:
             devices = json.load(f)
 
         profile = profile_generator.generate_profile(devices)
-        for nd in profile["nodedefs"]:
-            nodedef_id = nd["id"]
-            if nodedef_id == "controller":
-                continue
+        for nodedef_id in [n["id"] for n in profile["nodedefs"]]:
             self.assertTrue(nodedef_id.isupper(), f"NodeDef ID {nodedef_id} must be uppercase")
             self.assertLessEqual(len(nodedef_id), 14, f"NodeDef ID {nodedef_id} exceeds 14 chars")
             self.assertNotIn(" ", nodedef_id, f"NodeDef ID {nodedef_id} must not contain spaces")

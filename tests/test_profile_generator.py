@@ -95,6 +95,91 @@ class TestProfileGenerator(unittest.TestCase):
         self.assertEqual(drivers[0]['value'], 99)
 
 
+SAMPLE_DEVICES = [
+    {'id': '1', 'name': 'Airthings Wave Plus', 'type': 'Airthings', 'capabilities': ['Sensor'], 'attributes': {'radon': '1'}},
+    {'id': '2', 'name': 'Ecobee', 'capabilities': ['Thermostat', 'ThermostatMode'], 'attributes': {}},
+    {'id': '3', 'name': 'Lock', 'capabilities': ['Lock', 'Battery'], 'attributes': {}},
+    {'id': '4', 'name': 'Dimmer', 'capabilities': ['Switch', 'SwitchLevel'], 'attributes': {}},
+    {'id': '5', 'name': 'RGB', 'capabilities': ['Switch', 'SwitchLevel', 'ColorControl', 'ColorTemperature', 'PowerMeter'], 'attributes': {}},
+    {'id': '6', 'name': 'Multi', 'capabilities': ['MotionSensor', 'TemperatureMeasurement', 'RelativeHumidityMeasurement', 'IlluminanceMeasurement', 'Battery'], 'attributes': {}},
+    {'id': '7', 'name': 'Pico', 'capabilities': ['PushableButton', 'Battery'], 'attributes': {}},
+    {'id': '8', 'name': 'Virtual', 'capabilities': [], 'attributes': {}},
+    {'id': '9', 'name': 'Door', 'capabilities': ['ContactSensor', 'Battery'], 'attributes': {}},
+    {'id': '10', 'name': 'Outlet', 'capabilities': ['Switch', 'PowerMeter', 'EnergyMeter'], 'attributes': {}},
+    {'id': '11', 'name': 'TempOnly', 'capabilities': ['TemperatureMeasurement'], 'attributes': {}},
+]
+
+
+class TestWireShape(unittest.TestCase):
+    """generate_profile() must emit the shape udi_interface.updateJsonProfile() validates."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.profile = profile_generator.generate_profile(SAMPLE_DEVICES, temp_unit='F')
+        cls.editors = {e['id']: e for e in cls.profile['editors']}
+
+    def test_top_level_sections_are_lists_of_dicts_with_string_ids(self):
+        for section in ('editors', 'nodedefs', 'linkdefs'):
+            self.assertIsInstance(self.profile[section], list, f'{section} must be a list')
+            for item in self.profile[section]:
+                self.assertIsInstance(item, dict)
+                self.assertIsInstance(item['id'], str)
+
+    def test_editor_ranges_use_string_uom(self):
+        for ed in self.profile['editors']:
+            self.assertIsInstance(ed['ranges'], list)
+            for r in ed['ranges']:
+                self.assertIsInstance(r['uom'], str, f"editor {ed['id']}")
+                self.assertNotIn('nls', r, 'nls is not used on the wire; use inline names')
+
+    def test_nodedef_structure_and_controller(self):
+        ids = [n['id'] for n in self.profile['nodedefs']]
+        self.assertEqual(ids[0], 'controller')
+        self.assertEqual(len(ids), len(set(ids)), 'nodedef ids must be unique')
+        for nd in self.profile['nodedefs']:
+            self.assertTrue(nd['name'])
+            self.assertEqual(nd['links'], {'ctl': [], 'rsp': []})
+            self.assertEqual(nd['cmds']['sends'], [])
+            self.assertIsInstance(nd['cmds']['accepts'], list)
+            prop_ids = [p['id'] for p in nd['properties']]
+            self.assertEqual(len(prop_ids), len(set(prop_ids)), f"{nd['id']}: duplicate property ids")
+
+    def test_every_nodedef_has_st(self):
+        for nd in self.profile['nodedefs']:
+            self.assertIn('ST', [p['id'] for p in nd['properties']], nd['id'])
+
+    def test_editor_references_resolve(self):
+        for nd in self.profile['nodedefs']:
+            for p in nd['properties']:
+                self.assertIn(p['editor'], self.editors, f"{nd['id']}.{p['id']}")
+            for a in nd['cmds']['accepts']:
+                for param in a.get('parameters', []):
+                    self.assertIn(param['editor'], self.editors, f"{nd['id']}.{a['id']}")
+                    if 'init' in param:
+                        self.assertIn(param['init'], [p['id'] for p in nd['properties']])
+
+    def test_property_editor_has_range_for_driver_uom(self):
+        """Regression: GV1 hue->PARTICLE, GV4 energy->REMOTEBTN, GV0 abs. humidity->TRUEFALSE."""
+        for dev in SAMPLE_DEVICES:
+            _, drivers, _ = profile_generator.build_device_nodedef(dev, 'F')
+            for d in drivers:
+                editor = self.editors[profile_generator._resolve_editor_for_driver(d['driver'], d['uom'])]
+                uoms = {r['uom'] for r in editor['ranges']}
+                self.assertIn(str(d['uom']), uoms, f"{dev['name']}: {d['driver']} (uom {d['uom']}) -> editor {editor['id']}")
+
+    def test_all_generated_commands_have_metadata(self):
+        for dev in SAMPLE_DEVICES:
+            _, _, commands = profile_generator.build_device_nodedef(dev, 'F')
+            for cmd_id in commands:
+                self.assertIn(cmd_id, profile_generator.COMMAND_DEFS, f"{dev['name']}: {cmd_id}")
+
+    def test_thermostat_commands_carry_parameter_editors(self):
+        tstat = next(n for n in self.profile['nodedefs'] if n['id'] == 'THERMOSTAT')
+        setcool = next(a for a in tstat['cmds']['accepts'] if a['id'] == 'SETCOOL')
+        self.assertEqual(setcool['parameters'][0]['editor'], 'TSTATTEMP')
+        self.assertEqual(setcool['parameters'][0]['init'], 'CLISPC')
+
+
 if __name__ == '__main__':
     unittest.main()
 

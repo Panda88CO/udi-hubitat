@@ -93,9 +93,7 @@ class TestController(unittest.TestCase):
 
             # Check that dynamic profile was sent
             self.assertTrue(self.poly.profile_updated)
-            nodedef_ids = [nd['id'] for nd in self.poly.last_json_profile['nodedefs']]
-            self.assertIn('controller', nodedef_ids)
-            self.assertIn('THERMOSTAT', nodedef_ids)
+            self.assertIn('THERMOSTAT', [n['id'] for n in self.poly.last_json_profile['nodedefs']])
 
             # Check that Ecobee Thermostat (id=4) and Ecobee Sensor (id=7) were added
             self.assertIn('4', self.poly.nodes)

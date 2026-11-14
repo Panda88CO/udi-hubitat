@@ -14,14 +14,17 @@ BASE_PROFILE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'base_profil
 
 
 def load_base_profile():
-    """Loads baseline editors from data/base_profile.json."""
+    """Loads baseline editors and profile metadata from data/base_profile.json."""
     if os.path.exists(BASE_PROFILE_PATH):
         try:
             with open(BASE_PROFILE_PATH, 'r') as f:
                 return json.load(f)
         except Exception as e:
             LOGGER.error(f"Error loading base_profile.json: {e}")
-    return {"editors": []}
+    return {
+        "editors": [],
+        "nodedefs": []
+    }
 
 
 def is_airthings(device):
@@ -78,7 +81,7 @@ def build_device_nodedef(device, temp_unit='F'):
     if 'Thermostat' in caps or 'ThermostatMode' in caps:
         t_uom = 17 if temp_unit == 'F' else 4
         drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 25, 'name': 'Status'},
+            {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'},
             {'driver': 'CLIMD', 'value': 0, 'uom': 25, 'name': 'Thermostat Mode'},
             {'driver': 'CLIFS', 'value': 0, 'uom': 25, 'name': 'Fan Operating State'},
             {'driver': 'CLIFRS', 'value': 0, 'uom': 25, 'name': 'Fan Mode'},
@@ -176,11 +179,14 @@ def build_device_nodedef(device, temp_unit='F'):
         drivers.append({'driver': 'BATLVL', 'value': 100, 'uom': 51, 'name': 'Battery Level'})
         features.append('BAT')
 
-    # Ensure every non-controller nodedef has an ST property
+    # Fallback if no features matched: generic sensor/status
+    if not drivers:
+        drivers.append({'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'})
+        features.append('GEN')
+
+    # Every non-controller nodedef needs an ST property; add a plain status one if no feature supplied it.
     if not any(d['driver'] == 'ST' for d in drivers):
         drivers.insert(0, {'driver': 'ST', 'value': 99, 'uom': 25, 'name': 'Status'})
-        if not features:
-            features.append('GEN')
 
     # Build clean uppercase NodeDef ID (<= 14 chars)
     # E.g. 'ND_SW_LVL_PWR' or 'ND_MOT_TMP_HUM'
@@ -192,129 +198,117 @@ def build_device_nodedef(device, temp_unit='F'):
     return (nodedef_id, drivers, commands)
 
 
-_COMMAND_NAMES = {
-    'QUERY': 'Update',
-    'DON': 'On',
-    'DOF': 'Off',
-    'SETLVL': 'Set On Level',
-    'SETKELVIN': 'Set Color Temperature',
-    'SETHUE': 'Set Hue',
-    'SETSAT': 'Set Saturation',
-    'SETMODE': 'Set Thermostat Mode',
-    'SETFAN': 'Set Fan Mode',
-    'SETCOOL': 'Set Cool Setpoint',
-    'SETHEAT': 'Set Heat Setpoint',
+# IoX command metadata for cmds.accepts:
+#   command id -> (display name, native, parameter editor id or None, property id the UI seeds the value from)
+COMMAND_DEFS = {
+    'QUERY':     ('Update', 'true', None, None),
+    'DON':       ('On', 'true', None, None),
+    'DOF':       ('Off', 'true', None, None),
+    'SETLVL':    ('Set On Level', 'false', 'OL', 'OL'),
+    'SETHUE':    ('Set Hue', 'false', 'ZCLHUE', 'GV1'),
+    'SETSAT':    ('Set Saturation', 'false', 'ZCLSAT', 'GV2'),
+    'SETKELVIN': ('Set Color Temperature', 'false', 'KELVIN', 'GV0'),
+    'SETMODE':   ('Set Mode', 'false', 'SETCLIMD', 'CLIMD'),
+    'SETFAN':    ('Set Fan Mode', 'false', 'CLIFRS', 'CLIFRS'),
+    'SETCOOL':   ('Set Cool Setpoint', 'false', 'TSTATTEMP', 'CLISPC'),
+    'SETHEAT':   ('Set Heat Setpoint', 'false', 'TSTATTEMP', 'CLISPH'),
 }
 
-_NODEDEF_NAMES = {
-    'AIRTHINGS': 'Airthings Air Quality',
-    'THERMOSTAT': 'Thermostat',
+# Feature token (from build_device_nodedef's generated id) -> label used in the nodedef display name
+FEATURE_LABELS = {
+    'SW': 'Switch', 'LVL': 'Dimmer', 'CT': 'Color Temp', 'RGB': 'Color', 'PWR': 'Power',
+    'ENG': 'Energy', 'MOT': 'Motion', 'CNT': 'Contact', 'TMP': 'Temperature', 'HUM': 'Humidity',
+    'LUX': 'Illuminance', 'BTN': 'Buttons', 'BAT': 'Battery', 'LCK': 'Lock', 'GEN': 'Generic',
 }
 
 
-def _command_name(cmd_id):
-    return _COMMAND_NAMES.get(cmd_id, cmd_id.replace('_', ' ').title())
+def _nodedef_display_name(nodedef_id):
+    """Human-readable nodedef name derived from the generated id (e.g. ND_SW_LVL -> 'Hubitat Switch / Dimmer')."""
+    if nodedef_id == 'AIRTHINGS':
+        return 'Hubitat Airthings Monitor'
+    if nodedef_id == 'THERMOSTAT':
+        return 'Hubitat Thermostat'
+    tokens = [t for t in nodedef_id.split('_') if t and t != 'ND']
+    return 'Hubitat ' + ' / '.join(FEATURE_LABELS.get(t, t.title()) for t in tokens)
 
 
-def _nodedef_name(nodedef_id):
-    if nodedef_id in _NODEDEF_NAMES:
-        return _NODEDEF_NAMES[nodedef_id]
-    return f"Hubitat {nodedef_id}"
-
-
-def _normalize_editors(raw_editors):
-    """Normalizes editors into a list of {"id": ..., "ranges": [...]} with string uoms."""
-    if isinstance(raw_editors, dict):
-        editor_list = [{"id": ed_id, "ranges": ranges} for ed_id, ranges in raw_editors.items()]
-    elif isinstance(raw_editors, list):
-        editor_list = raw_editors
-    else:
-        return []
-
-    normalized = []
-    for ed in editor_list:
-        ranges = []
-        for r in ed.get("ranges", []):
-            r_copy = dict(r)
-            if "uom" in r_copy:
-                r_copy["uom"] = str(r_copy["uom"])
-            ranges.append(r_copy)
-        normalized.append({"id": ed["id"], "ranges": ranges})
-    return normalized
+def _build_accepts(commands, driver_ids):
+    """cmds.accepts entries for every command id in `commands` (the generator's IoX-name -> Hubitat-command map)."""
+    accepts = []
+    for cmd_id in commands:
+        name, native, editor, init = COMMAND_DEFS.get(cmd_id, (cmd_id, 'false', None, None))
+        entry = {"id": cmd_id, "name": name, "native": native}
+        if editor:
+            param = {"id": "", "editor": editor, "optional": False}
+            if init in driver_ids:
+                param["init"] = init
+            entry["parameters"] = [param]
+        accepts.append(entry)
+    return accepts
 
 
 def generate_profile(devices, temp_unit='F'):
     """
-    Transforms a list of Hubitat devices into the flat wire shape for
-    Polyglot v3 (PG3x) updateJsonProfile:
+    Transforms a list of Hubitat devices into a Dynamic Profiles *wire-shape* document, the shape
+    udi_interface's updateJsonProfile() validates and sends to PG3x:
     {
-        "editors": [{"id": ..., "ranges": [...]}],
-        "nodedefs": [
-            {
-                "id": "controller" | "<nodedef_id>",
-                "name": "...",
-                "properties": [{"id": ..., "editor": ..., "name": ...}],
-                "cmds": {"sends": [...], "accepts": [...]},
-                "links": {"ctl": [], "rsp": []}
-            }
-        ]
+        "profile_version": "1.0.0",
+        "editors":  [ {"id": ..., "ranges": [ {"uom": "25", "subset": "0,1", "names": {...}} ]} ],
+        "nodedefs": [ {"id": ..., "name": ..., "properties": [ {"id", "name", "editor"} ],
+                       "cmds": {"sends": [], "accepts": [ ... ]}, "links": {"ctl": [], "rsp": []}} ],
+        "linkdefs": []
     }
     """
     base = load_base_profile()
-    editors = _normalize_editors(base.get("editors", []))
+    profile_data = {
+        "editors": list(base.get("editors", [])),
+        "nodedefs": []
+    }
 
-    nodedefs = [
-        {
-            "id": "controller",
-            "name": "Hubitat Elevation",
-            "properties": [
-                {"id": "ST", "editor": "ONLINE", "name": "NodeServer Online"}
-            ],
-            "cmds": {
-                "sends": [],
-                "accepts": [
-                    {"id": "DISCOVER", "name": "Re-Discover"},
-                    {"id": "UPDATEPROFILE", "name": "Update Profile"},
-                    {"id": "REMOVENOTICESALL", "name": "Remove Notices"}
-                ]
-            },
-            "links": {"ctl": [], "rsp": []}
-        }
-    ]
-    seen_ids = {"controller"}
+    # Controller definition is always included. Its id must equal Controller.id in udi-hubitat.py.
+    profile_data["nodedefs"].append({
+        "id": "controller",
+        "name": "Hubitat Elevation",
+        "properties": [
+            # Controller.drivers reports ST with uom 2, so use the editor that has a uom-2 range.
+            {"id": "ST", "name": "NodeServer Online", "editor": "TRUEFALSE"}
+        ],
+        "cmds": {
+            "sends": [],
+            "accepts": [
+                {"id": "DISCOVER", "name": "Re-Discover", "native": "false"},
+                {"id": "UPDATEPROFILE", "name": "Update Profile", "native": "false"},
+                {"id": "REMOVENOTICESALL", "name": "Remove Notices", "native": "false"}
+            ]
+        },
+        "links": {"ctl": [], "rsp": []}
+    })
 
+    seen = {"controller"}
     for dev in devices:
         if not isinstance(dev, dict):
             continue
         nodedef_id, drivers, commands = build_device_nodedef(dev, temp_unit)
-        if nodedef_id in seen_ids:
+        if nodedef_id in seen:
             continue
-        seen_ids.add(nodedef_id)
-
+        seen.add(nodedef_id)
         properties = [
             {
-                "id": d["driver"],
-                "editor": _resolve_editor_for_driver(d["driver"], d.get("uom")),
-                "name": d.get("name", d["driver"])
+                "id": d['driver'],
+                "name": d.get('name', d['driver']),
+                "editor": _resolve_editor_for_driver(d['driver'], d.get('uom'))
             }
             for d in drivers
         ]
-        sends_cmds = [cmd for cmd in ("DON", "DOF") if cmd in commands]
-        nodedefs.append({
+        profile_data["nodedefs"].append({
             "id": nodedef_id,
-            "name": _nodedef_name(nodedef_id),
+            "name": _nodedef_display_name(nodedef_id),
             "properties": properties,
-            "cmds": {
-                "sends": [{"id": cmd, "name": _command_name(cmd)} for cmd in sends_cmds],
-                "accepts": [{"id": cmd, "name": _command_name(cmd)} for cmd in commands.keys()]
-            },
+            "cmds": {"sends": [], "accepts": _build_accepts(commands, {d['driver'] for d in drivers})},
             "links": {"ctl": [], "rsp": []}
         })
 
-    return {
-        "editors": editors,
-        "nodedefs": nodedefs
-    }
+    return profile_data
 
 
 def _resolve_editor_for_driver(driver, uom):
@@ -335,7 +329,7 @@ def _resolve_editor_for_driver(driver, uom):
         return 'LUMIN'
     if driver == 'RADON':
         return 'RADON'
-    if driver in ('GV25', 'GV1'):
+    if uom == 122:
         return 'PARTICLE'
     if driver == 'CO2LVL':
         return 'CO2LVL'
@@ -347,16 +341,16 @@ def _resolve_editor_for_driver(driver, uom):
         return 'ATMPRES'
     if driver == 'TIME':
         return 'UNIXTIME'
-    if driver in ('GV4', 'GV5', 'GV6'):
+    if uom == 57:
         return 'REMOTEBTN'
     if driver == 'CLIMD':
         return 'CLIMD'
-    if driver == 'CLIFS':
-        return 'CLIFS'
-    if driver == 'CLIFRS':
+    if driver in ('CLIFS', 'CLIFRS'):
         return 'CLIFRS'
     if driver in ('CLISPC', 'CLISPH'):
         return 'TSTATTEMP'
+    if uom == 21:
+        return 'ABSCLIHUM'
     if uom == 73:
         return 'CPW'
     if uom == 33:
